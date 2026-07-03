@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  docker-mcp-server:
+    build: .
+    image: docker-mcp-server:latest
+    container_name: docker-mcp-server
+    restart: unless-stopped
+    ports:
+      - "8900:8900"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config:/app/config
+      - ./secrets:/app/secrets
+    environment:
+      - TZ=Asia/Shanghai
+      - MCP_CONFIG_DIR=/app/config
+      - MCP_SECRETS_DIR=/app/secrets
+    # 可选：通过环境变量注入 API Key（不挂载 secrets 时使用）
+    # environment:
+    #   - MCP_AUTH_KEYS=sk-dm-xxx:admin,sk-dm-yyy:operator
