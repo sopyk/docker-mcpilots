@@ -1,0 +1,43 @@
+# DockerMaintainer MCP Server 权限配置文件
+# 将此文件复制到 /app/secrets/auth.yaml 后编辑
+# 警告：此文件包含敏感信息，请确保文件权限为 600
+
+# --- 角色定义 ---
+roles:
+  admin:
+    description: "完全控制权限"
+    permissions:
+      - "container:*"
+      - "image:*"
+      - "system:*"
+      - "exec:*"
+  operator:
+    description: "标准管理权限"
+    permissions:
+      - "container:list"
+      - "container:inspect"
+      - "container:start"
+      - "container:stop"
+      - "container:restart"
+      - "container:logs"
+      - "container:stats"
+      - "image:list"
+      - "image:pull"
+      - "system:*"
+  observer:
+    description: "只读权限"
+    permissions:
+      - "container:list"
+      - "container:inspect"
+      - "container:logs"
+      - "container:stats"
+      - "image:list"
+      - "system:*"
+
+# --- API Key 绑定 ---
+# 每个Key包含: key(密钥), name(标识), role(角色名), scope(可选，容器级限制)
+keys:
+  - key: "sk-dm-CHANGE-THIS-KEY-IMMEDIATELY"
+    name: "default-admin"
+    role: admin
+    # 请修改上面的key为你自己的安全密钥，格式建议: sk-dm-<用途>-<随机字符串>

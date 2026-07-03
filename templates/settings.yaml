@@ -1,0 +1,15 @@
+# DockerMaintainer MCP Server 配置文件
+# 将此文件复制到 /app/config/settings.yaml 后编辑
+
+server:
+  host: "0.0.0.0"
+  port: 8900
+  log_level: "info"  # debug / info / warning / error
+
+docker:
+  socket_path: "/var/run/docker.sock"  # 通常不需要修改
+
+features:
+  container_management: true
+  image_management: true
+  system_diagnostics: true
