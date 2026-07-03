@@ -10,3 +10,5 @@ config/settings.yaml
 secrets/auth.yaml
 *.log
 .DS_Store
+*.tar
+*.tar.gz
