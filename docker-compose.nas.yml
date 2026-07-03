@@ -1,0 +1,15 @@
+services:
+  docker-mcp-server:
+    image: docker-mcp-server:latest
+    container_name: docker-mcp-server
+    restart: unless-stopped
+    ports:
+      - "8900:8900"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config:/app/config
+      - ./secrets:/app/secrets
+    environment:
+      - TZ=Asia/Shanghai
+      - MCP_CONFIG_DIR=/app/config
+      - MCP_SECRETS_DIR=/app/secrets
