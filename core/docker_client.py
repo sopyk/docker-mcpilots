@@ -11,7 +11,7 @@ except ImportError:
 
 
 class DockerClient:
-    """Docker 客户端封装"""
+    """Docker 客户端封装（延迟连接，首次调用时才连接 Docker daemon）"""
 
     def __init__(self, socket_path: str = "/var/run/docker.sock"):
         if docker is None:
@@ -19,12 +19,19 @@ class DockerClient:
                 "Docker SDK for Python is not installed. "
                 "Run: pip install docker"
             )
-        self._client = docker.from_env()
+        self._socket_path = socket_path
+        self._client = None
+
+    def _ensure_connected(self):
+        """延迟连接 Docker daemon，仅首次调用时建立连接"""
+        if self._client is None:
+            self._client = docker.from_env()
 
     # ── 容器操作 ──
 
     def list_containers(self, status: str | None = None, all: bool = False) -> list[dict]:
         """列出容器"""
+        self._ensure_connected()
         filters = {}
         if status and status != "all":
             filters["status"] = status
@@ -37,11 +44,13 @@ class DockerClient:
 
     def get_container(self, container_id: str) -> dict:
         """获取单个容器详情"""
+        self._ensure_connected()
         container = self._client.containers.get(container_id)
         return self._format_container_detail(container)
 
     def start_container(self, container_id: str) -> dict:
         """启动容器"""
+        self._ensure_connected()
         try:
             container = self._client.containers.get(container_id)
             container.start()
@@ -54,6 +63,7 @@ class DockerClient:
 
     def stop_container(self, container_id: str) -> dict:
         """停止容器"""
+        self._ensure_connected()
         try:
             container = self._client.containers.get(container_id)
             container.stop()
@@ -66,6 +76,7 @@ class DockerClient:
 
     def restart_container(self, container_id: str) -> dict:
         """重启容器"""
+        self._ensure_connected()
         try:
             container = self._client.containers.get(container_id)
             container.restart()
@@ -78,6 +89,7 @@ class DockerClient:
 
     def remove_container(self, container_id: str, force: bool = False) -> dict:
         """删除容器"""
+        self._ensure_connected()
         try:
             container = self._client.containers.get(container_id)
             container.remove(force=force)
@@ -91,6 +103,7 @@ class DockerClient:
         self, container_id: str, tail: int | None = None
     ) -> str:
         """获取容器日志"""
+        self._ensure_connected()
         container = self._client.containers.get(container_id)
         kwargs = {"stdout": True, "stderr": True}
         if tail is not None:
@@ -100,6 +113,7 @@ class DockerClient:
 
     def get_container_stats(self, container_id: str) -> dict:
         """获取容器实时资源统计（单次采样）"""
+        self._ensure_connected()
         container = self._client.containers.get(container_id)
         raw = container.stats(stream=False, decode=True)
 
@@ -135,11 +149,13 @@ class DockerClient:
 
     def list_images(self, name_filter: str | None = None) -> list[dict]:
         """列出镜像"""
+        self._ensure_connected()
         images = self._client.images.list(name=name_filter)
         return [self._format_image(img) for img in images]
 
     def pull_image(self, image_name: str, tag: str | None = None) -> dict:
         """拉取镜像"""
+        self._ensure_connected()
         try:
             image = self._client.images.pull(image_name, tag=tag or "latest")
             return {
@@ -152,6 +168,7 @@ class DockerClient:
 
     def remove_image(self, image_id: str, force: bool = False) -> dict:
         """删除镜像"""
+        self._ensure_connected()
         try:
             self._client.images.remove(image_id, force=force)
             return {"success": True, "removed": image_id}
