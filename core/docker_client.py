@@ -130,7 +130,7 @@ class DockerClient:
         self._ensure_connected()
         try:
             container = self._client.containers.get(container_id)
-            raw = container.stats(stream=False, decode=True)
+            raw = container.stats(stream=False)
 
             cpu_percent = 0.0
             cpu_usage = raw.get("cpu_stats", {}).get("cpu_usage", {})
