@@ -149,7 +149,7 @@ def create_app() -> FastMCP:
     mcp = FastMCP(
         name="DockerMaintainer",
         instructions="Docker container and image management server with system diagnostics for Synology NAS.",
-        version="0.1.3",
+        version="0.1.4",
     )
 
     # 注册认证中间件
@@ -173,7 +173,7 @@ def create_app() -> FastMCP:
     @mcp.custom_route("/health", methods=["GET"])
     async def health_check(request):
         from starlette.responses import JSONResponse
-        return JSONResponse({"status": "ok", "version": "0.1.3"})
+        return JSONResponse({"status": "ok", "version": "0.1.4"})
 
     logger.info(f"DockerMaintainer MCP Server ready on {settings.host}:{settings.port}")
     logger.info(f"Registered {len(auth_config.keys)} API key(s)")
