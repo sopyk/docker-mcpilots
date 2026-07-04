@@ -1,0 +1,17 @@
+# Dockerfile 改为精确 COPY，下面的目录不会被复制进镜像
+# 这里仅作为兜底防御，避免万一改回 COPY . . 时把敏感或大文件打入镜像
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+.env
+.DS_Store
+*.tar.gz
+config/
+secrets/
+tests/
+scripts/
+docs/
+docker/

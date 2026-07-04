@@ -32,52 +32,61 @@
 
 ## 部署方式
 
-### 方式一：Docker 容器部署（推荐用于 NAS）
+三种部署方式按场景选择，Docker 相关文件统一隔离在 [docker/](docker/) 子目录：
 
-适合群晖等脆弱系统，避免宿主机污染。
+| 场景 | 方式 | 文件 |
+|---|---|---|
+| 群晖 NAS | Docker 容器（预构建镜像 + PUID/PGID） | [docker/nas/docker-compose.yml](docker/nas/docker-compose.yml) |
+| 干净 Linux 服务器 / 开发者本地 | Docker 容器（自己 build） | [docker/docker-compose.yml](docker/docker-compose.yml) |
+| VPS | 宿主机直装（无 Docker） | [docs/deploy-vps.md](docs/deploy-vps.md) |
+
+### 方式一：群晖 NAS 部署
+
+适合 DSM 等脆弱系统，避免宿主机污染。群晖 Container Manager 默认只识别 `docker-compose.yml` 标准文件名，所以 NAS 版单独放在 [docker/nas/](docker/nas/) 子目录，文件名是标准的。
 
 ```bash
-# 1. 构建镜像（本机预构建，避免在 NAS 上构建）
-docker build --platform linux/amd64 -t docker-mcp-server:v0.1.3 .
+# 1. 本机预构建 AMD64 镜像（避免在 NAS 上构建）
+docker build --platform linux/amd64 -f docker/Dockerfile -t docker-mcp-server:v0.1.3 .
 docker save docker-mcp-server:v0.1.3 | gzip > docker-mcp-server-v0.1.3.tar.gz
 
 # 2. 传到 NAS 后加载
 docker load < docker-mcp-server-v0.1.3.tar.gz
 
-# 3. 准备配置目录
-mkdir -p config secrets
+# 3. 把 docker/nas/ 目录上传到 NAS（例如 /volume1/docker/dm/）
+#    在该目录同级创建 config/ 和 secrets/ 目录
+#    上传 templates/ 下的 settings.yaml 和 auth.yaml 到对应目录
 
-# 4. 启动（使用 NAS 专用 compose）
-docker compose -f docker-compose.nas.yml up -d
+# 4. 群晖 Container Manager → 项目 → 创建 → 选择该目录
+#    会自动识别 docker-compose.yml，按需修改 PUID/PGID 后启动
 ```
 
-NAS 部署通过 `PUID`/`PGID` 环境变量解决 docker.sock 和挂载卷的权限问题，详见 [docker-compose.nas.yml](docker-compose.nas.yml) 和 [entrypoint.sh](entrypoint.sh)。
+NAS 部署通过 `PUID`/`PGID` 环境变量解决 docker.sock 和挂载卷的权限问题，详见 [docker/nas/docker-compose.yml](docker/nas/docker-compose.yml) 和 [docker/entrypoint.sh](docker/entrypoint.sh)。
 
-### 方式二：宿主机直装（推荐用于 VPS）
+### 方式二：通用 Docker 部署（自己 build）
 
-适合干净的 Linux 服务器，省去容器嵌套，资源占用更低。
+适合开发者本地或干净的 Linux 服务器，从源码构建镜像。
 
 ```bash
-# 1. 安装 Python 依赖
-pip install -r requirements.txt
+# 从项目根目录执行
+docker compose -f docker/docker-compose.yml up -d --build
+```
 
-# 2. 准备配置
+默认 PUID/PGID=1000:1000，按需修改 [docker/docker-compose.yml](docker/docker-compose.yml)。
+
+### 方式三：VPS 宿主机直装
+
+适合 VPS，省去容器嵌套，资源占用最低。详细步骤（含 systemd + nginx 反代 + TLS）见 [docs/deploy-vps.md](docs/deploy-vps.md)。
+
+```bash
+# 简要步骤
+pip install -r requirements.txt
 mkdir -p config secrets
 cp templates/settings.yaml config/
-cp templates/auth.yaml secrets/
-chmod 600 secrets/auth.yaml
-# 编辑 secrets/auth.yaml 设置你自己的 API Key
-
-# 3. 启动（默认监听 0.0.0.0:8900）
+cp templates/auth.yaml secrets/ && chmod 600 secrets/auth.yaml
 MCP_CONFIG_DIR=./config MCP_SECRETS_DIR=./secrets python main.py
 ```
 
-**前置条件**：运行用户必须能访问 `/var/run/docker.sock`（加入 `docker` 组或用 sudo）。
-
-**生产环境建议**：
-- 用 systemd 托管进程
-- 监听 `127.0.0.1` + nginx 反代 + TLS
-- 用防火墙限制 8900 端口访问来源
+**前置条件**：运行用户必须能访问 `/var/run/docker.sock`（加入 `docker` 组）。
 
 ## 配置说明
 
@@ -93,31 +102,33 @@ MCP_CONFIG_DIR=./config MCP_SECRETS_DIR=./secrets python main.py
 ```
 dockermaintainer/
 ├── main.py                       # FastMCP 入口
-├── entrypoint.sh                 # 容器入口（PUID/PGID 调整 + docker.sock 权限）
-├── core/
+├── core/                         # 业务层
 │   ├── config.py                 # 配置加载
 │   ├── auth.py                   # RBAC 权限检查
 │   ├── docker_client.py          # Docker SDK 封装（所有诊断方法）
 │   └── system_diag.py            # 系统诊断（psutil）
-├── tools/
-│   ├── container_tools.py        # 容器管理 + 容器诊断 MCP 工具
-│   ├── image_tools.py            # 镜像管理 + 镜像诊断 MCP 工具
-│   ├── diag_tools.py             # 系统诊断 MCP 工具
-│   └── docker_diag_tools.py      # 网络和卷诊断 MCP 工具
-├── templates/
-│   ├── settings.yaml             # 默认配置模板
-│   └── auth.yaml                 # 默认权限模板
+├── tools/                        # MCP 工具层
+│   ├── container_tools.py        # 容器管理 + 容器诊断
+│   ├── image_tools.py            # 镜像管理 + 镜像诊断
+│   ├── diag_tools.py             # 系统诊断
+│   └── docker_diag_tools.py      # 网络和卷诊断
+├── templates/                    # 配置模板
+│   ├── settings.yaml
+│   └── auth.yaml
 ├── tests/                        # 单元测试（37 个用例）
-├── scripts/
-│   ├── e2e_test.py               # 端到端测试（模拟 MCP 客户端调 24 个工具）
-│   └── integration_test.py
+├── scripts/                      # e2e + 集成测试
+├── docker/                       # Docker 相关文件（隔离）
+│   ├── Dockerfile
+│   ├── entrypoint.sh             # 容器入口（PUID/PGID 调整）
+│   ├── .dockerignore
+│   ├── docker-compose.yml        # 通用版（自己 build）
+│   └── nas/
+│       └── docker-compose.yml    # NAS 版（预构建镜像 + PUID/PGID）
 ├── docs/
 │   ├── CODE_WIKI.md              # 项目架构 Wiki
+│   ├── deploy-vps.md             # VPS 直装部署指南
 │   ├── specs/                    # 设计规格书
 │   └── plans/                    # 实施计划
-├── Dockerfile
-├── docker-compose.yml            # 通用 compose（含 build）
-├── docker-compose.nas.yml        # NAS 专用 compose（预加载镜像 + PUID/PGID）
 ├── requirements.txt
 ├── CHANGELOG.md
 └── README.md
@@ -153,5 +164,6 @@ docker rm -f dm-e2e-test
 - [设计规格书](docs/specs/2026-07-01-synology-mcp-server-design.md)
 - [实施计划](docs/plans/2026-07-01-synology-mcp-server.md)
 - [版本管理策略](docs/specs/2026-07-03-version-management.md)
+- [VPS 直装部署指南](docs/deploy-vps.md)
 - [项目架构 Wiki](docs/CODE_WIKI.md)
 - [变更日志](CHANGELOG.md)

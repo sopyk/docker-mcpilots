@@ -112,9 +112,10 @@ dockermaintainer/
 │   └── system_diag.py         # 系统诊断信息采集
 ├── tools/                     # MCP Tool 注册模块
 │   ├── __init__.py
-│   ├── container_tools.py     # 容器管理 Tools
-│   ├── image_tools.py         # 镜像管理 Tools
-│   └── diag_tools.py          # 系统诊断 Tools
+│   ├── container_tools.py     # 容器管理 + 容器诊断 Tools
+│   ├── image_tools.py         # 镜像管理 + 镜像诊断 Tools
+│   ├── diag_tools.py          # 系统诊断 Tools
+│   └── docker_diag_tools.py   # 网络和卷诊断 Tools
 ├── templates/                 # 默认配置模板
 │   ├── settings.yaml          # 服务配置模板
 │   └── auth.yaml              # 权限配置模板
@@ -126,17 +127,21 @@ dockermaintainer/
 │   ├── test_system_diag.py
 │   └── test_integration.py
 ├── scripts/                   # 辅助脚本
+│   ├── e2e_test.py            # 端到端测试（24 个工具）
 │   └── integration_test.py    # 容器级集成测试脚本
+├── docker/                    # Docker 相关文件（隔离）
+│   ├── Dockerfile             # 镜像构建定义
+│   ├── entrypoint.sh          # 容器入口脚本 (UID/GID 调整)
+│   ├── .dockerignore          # Docker 构建忽略规则
+│   ├── docker-compose.yml     # 通用 Compose（自己 build）
+│   └── nas/
+│       └── docker-compose.yml # 群晖 NAS 部署用 Compose
 ├── docs/                      # 文档
 │   ├── CODE_WIKI.md           # 本文档
+│   ├── deploy-vps.md          # VPS 直装部署指南
 │   ├── plans/                 # 实施计划
 │   └── specs/                 # 设计规格书
-├── Dockerfile                 # 镜像构建定义
-├── docker-compose.yml         # 本地开发用 Compose
-├── docker-compose.nas.yml     # 群晖 NAS 部署用 Compose
-├── entrypoint.sh              # 容器入口脚本 (UID/GID 调整)
 ├── requirements.txt           # Python 依赖
-├── .dockerignore              # Docker 构建忽略规则
 ├── pytest.ini                 # pytest 配置
 ├── CHANGELOG.md               # 变更日志
 └── README.md                  # 项目说明

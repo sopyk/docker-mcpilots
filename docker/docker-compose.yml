@@ -1,0 +1,25 @@
+# 通用 Docker 部署（自己 build 镜像）
+# 适用：开发者本地、CI/CD、干净的 Linux 服务器
+# 用法：从项目根目录执行
+#   docker compose -f docker/docker-compose.yml up -d --build
+services:
+  docker-mcp-server:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: docker-mcp-server:latest
+    container_name: docker-mcp-server
+    restart: unless-stopped
+    ports:
+      - "8900:8900"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ../config:/app/config
+      - ../secrets:/app/secrets
+    environment:
+      - TZ=Asia/Shanghai
+      - MCP_CONFIG_DIR=/app/config
+      - MCP_SECRETS_DIR=/app/secrets
+      # 通用场景默认 1000:1000，按需调整
+      - PUID=1000
+      - PGID=1000
