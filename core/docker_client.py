@@ -1,6 +1,8 @@
 """Docker SDK 封装 - 统一 Docker 容器和镜像操作的接口层"""
 from __future__ import annotations
 
+from datetime import datetime, timedelta, timezone
+
 try:
     import docker
     from docker.errors import NotFound as DockerNotFound, APIError as DockerAPIError
@@ -8,6 +10,76 @@ except ImportError:
     docker = None
     DockerNotFound = Exception
     DockerAPIError = Exception
+
+
+def _parse_since_until(value: str) -> datetime | None:
+    """把 since/until 字符串解析成 datetime。
+
+    支持格式：
+    - RFC3339: "2026-07-04T00:00:00" / "2026-07-04T00:00:00Z"
+    - 相对时间: "1h" / "30m" / "2d"（向前推 N 时间）
+    """
+    if not value:
+        return None
+
+    # 相对时间格式：数字 + 单位（s/m/h/d）
+    if len(value) >= 2 and value[-1] in "smhd" and value[:-1].isdigit():
+        n = int(value[:-1])
+        delta = {"s": timedelta(seconds=n), "m": timedelta(minutes=n),
+                 "h": timedelta(hours=n), "d": timedelta(days=n)}[value[-1]]
+        return datetime.now(timezone.utc) - delta
+
+    # RFC3339 / ISO 格式
+    try:
+        # 兼容带 Z 结尾的时间
+        v = value.replace("Z", "+00:00") if value.endswith("Z") else value
+        dt = datetime.fromisoformat(v)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
+    except ValueError:
+        return None
+
+
+def _extract_mounts(attrs: dict) -> list[dict]:
+    """从容器 attrs 提取挂载信息"""
+    mounts = []
+    for m in attrs.get("Mounts", []):
+        mounts.append({
+            "type": m.get("Type", ""),
+            "source": m.get("Source", ""),
+            "destination": m.get("Destination", ""),
+            "mode": m.get("Mode", ""),
+            "rw": m.get("RW", True),
+            "name": m.get("Name", ""),
+            "driver": m.get("Driver", ""),
+        })
+    return mounts
+
+
+def _extract_health(state: dict) -> dict:
+    """从容器 state 提取健康检查信息"""
+    health = state.get("Health", {})
+    if not health:
+        return {"status": "none", "failing_streak": 0, "log": []}
+    return {
+        "status": health.get("Status", "none"),
+        "failing_streak": health.get("FailingStreak", 0),
+        "log": [
+            {
+                "start": e.get("Start", ""),
+                "end": e.get("End", ""),
+                "exit_code": e.get("ExitCode", 0),
+                "output": e.get("Output", ""),
+            }
+            for e in health.get("Log", [])
+        ],
+    }
+
+
+def _change_kind_str(kind: int) -> str:
+    """Docker 文件变更类型 0/1/2 转可读字符串"""
+    return {0: "modified", 1: "added", 2: "deleted"}.get(kind, f"unknown({kind})")
 
 
 class DockerClient:
@@ -105,15 +177,28 @@ class DockerClient:
             return {"success": False, "error": str(e)}
 
     def get_container_logs(
-        self, container_id: str, tail: int | None = None
+        self,
+        container_id: str,
+        tail: int | None = None,
+        since: str | None = None,
+        until: str | None = None,
+        timestamps: bool = False,
     ) -> dict:
-        """获取容器日志"""
+        """获取容器日志（支持时间范围过滤和时间戳）"""
         self._ensure_connected()
         try:
             container = self._client.containers.get(container_id)
-            kwargs = {"stdout": True, "stderr": True}
+            kwargs = {"stdout": True, "stderr": True, "timestamps": timestamps}
             if tail is not None:
                 kwargs["tail"] = str(tail)
+            if since:
+                parsed = _parse_since_until(since)
+                if parsed is not None:
+                    kwargs["since"] = parsed
+            if until:
+                parsed = _parse_since_until(until)
+                if parsed is not None:
+                    kwargs["until"] = parsed
             logs = container.logs(**kwargs)
             return {
                 "success": True,
@@ -197,6 +282,189 @@ class DockerClient:
         except DockerAPIError as e:
             return {"success": False, "error": str(e)}
 
+    # ── 容器诊断 ──
+
+    def get_container_processes(self, container_id: str) -> dict:
+        """获取容器内运行的进程列表"""
+        self._ensure_connected()
+        try:
+            container = self._client.containers.get(container_id)
+            processes = container.top()
+            return {
+                "success": True,
+                "container_id": container_id,
+                "titles": processes.get("Titles", []),
+                "processes": processes.get("Processes", []),
+            }
+        except DockerNotFound:
+            return {"success": False, "error": f"Container '{container_id}' not found"}
+        except DockerAPIError as e:
+            return {"success": False, "error": str(e)}
+
+    def get_container_health(self, container_id: str) -> dict:
+        """获取容器健康检查状态（排查"容器为什么不健康"）"""
+        self._ensure_connected()
+        try:
+            container = self._client.containers.get(container_id)
+            state = container.attrs.get("State", {})
+            health = state.get("Health", {})
+            return {
+                "success": True,
+                "container_id": container_id,
+                "status": health.get("Status", "none"),
+                "failing_streak": health.get("FailingStreak", 0),
+                "log": [
+                    {
+                        "start": e.get("Start", ""),
+                        "end": e.get("End", ""),
+                        "exit_code": e.get("ExitCode", 0),
+                        "output": e.get("Output", ""),
+                    }
+                    for e in health.get("Log", [])
+                ],
+            }
+        except DockerNotFound:
+            return {"success": False, "error": f"Container '{container_id}' not found"}
+        except DockerAPIError as e:
+            return {"success": False, "error": str(e)}
+
+    def get_container_networks(self, container_id: str) -> dict:
+        """获取容器网络详情（排查"容器连不上网"）"""
+        self._ensure_connected()
+        try:
+            container = self._client.containers.get(container_id)
+            container.reload()
+            net_settings = container.attrs.get("NetworkSettings", {})
+            networks = {}
+            for name, n in net_settings.get("Networks", {}).items():
+                networks[name] = {
+                    "ip": n.get("IPAddress", ""),
+                    "gateway": n.get("Gateway", ""),
+                    "mac": n.get("MacAddress", ""),
+                    "dns": n.get("DNSNames", []),
+                }
+            return {
+                "success": True,
+                "container_id": container_id,
+                "ip_address": net_settings.get("IPAddress", ""),
+                "ports": net_settings.get("Ports", {}),
+                "networks": networks,
+            }
+        except DockerNotFound:
+            return {"success": False, "error": f"Container '{container_id}' not found"}
+        except DockerAPIError as e:
+            return {"success": False, "error": str(e)}
+
+    def get_container_mounts(self, container_id: str) -> dict:
+        """获取容器挂载卷详情（排查"数据丢失/权限不对"）"""
+        self._ensure_connected()
+        try:
+            container = self._client.containers.get(container_id)
+            mounts = _extract_mounts(container.attrs)
+            return {
+                "success": True,
+                "container_id": container_id,
+                "mounts": mounts,
+            }
+        except DockerNotFound:
+            return {"success": False, "error": f"Container '{container_id}' not found"}
+        except DockerAPIError as e:
+            return {"success": False, "error": str(e)}
+
+    def get_container_changes(self, container_id: str) -> dict:
+        """获取容器文件系统变更（排查"容器里改了什么"）"""
+        self._ensure_connected()
+        try:
+            container = self._client.containers.get(container_id)
+            # Docker SDK for Python 的方法名是 diff()，对应 /containers/{id}/changes API
+            # 注意：某些 Docker 版本/平台下 diff() 可能返回 None，需兜底
+            changes = container.diff() or []
+            return {
+                "success": True,
+                "container_id": container_id,
+                "changes": [
+                    {"path": c.get("Path", ""), "kind": _change_kind_str(c.get("Kind", 0))}
+                    for c in changes
+                ],
+            }
+        except DockerNotFound:
+            return {"success": False, "error": f"Container '{container_id}' not found"}
+        except DockerAPIError as e:
+            return {"success": False, "error": str(e)}
+
+    # ── 网络管理 ──
+
+    def list_networks(self) -> list[dict]:
+        """列出所有 Docker 网络"""
+        self._ensure_connected()
+        networks = self._client.networks.list()
+        return [
+            {
+                "id": n.short_id,
+                "name": n.name,
+                "driver": n.attrs.get("Driver", ""),
+                "scope": n.attrs.get("Scope", ""),
+                "subnet": n.attrs.get("IPAM", {}).get("Config", [{}])[0].get("Subnet", "") if n.attrs.get("IPAM", {}).get("Config") else "",
+                "containers": list(n.attrs.get("Containers", {}).values()),
+            }
+            for n in networks
+        ]
+
+    # ── 卷管理 ──
+
+    def list_volumes(self) -> list[dict]:
+        """列出所有 Docker 卷"""
+        self._ensure_connected()
+        volumes = self._client.volumes.list()
+        return [
+            {
+                "name": v.name,
+                "driver": v.attrs.get("Driver", ""),
+                "mountpoint": v.attrs.get("Mountpoint", ""),
+                "created": v.attrs.get("CreatedAt", ""),
+                "size": v.attrs.get("Options", {}).get("size", ""),
+                "in_use": v.attrs.get("InUse", False),
+            }
+            for v in volumes
+        ]
+
+    # ── 镜像诊断 ──
+
+    def inspect_image(self, image_name: str) -> dict:
+        """获取镜像详细信息（排查"镜像有没有问题"）"""
+        self._ensure_connected()
+        try:
+            image = self._client.images.get(image_name)
+            attrs = image.attrs
+            config = attrs.get("Config", {})
+            return {
+                "success": True,
+                "id": image.short_id,
+                "tags": image.tags,
+                "size": attrs.get("Size", 0),
+                "created": attrs.get("Created", ""),
+                "architecture": attrs.get("Architecture", ""),
+                "os": attrs.get("Os", ""),
+                "config": {
+                    "cmd": config.get("Cmd"),
+                    "entrypoint": config.get("Entrypoint"),
+                    "env": config.get("Env", []),
+                    "working_dir": config.get("WorkingDir", ""),
+                    "user": config.get("User", ""),
+                    "exposed_ports": config.get("ExposedPorts", {}),
+                    "volumes": config.get("Volumes"),
+                    "labels": config.get("Labels", {}),
+                },
+                "history": [
+                    {"created": h.get("Created", ""), "created_by": h.get("CreatedBy", "")[:100]}
+                    for h in attrs.get("History", [])
+                ],
+            }
+        except DockerNotFound:
+            return {"success": False, "error": f"Image '{image_name}' not found"}
+        except DockerAPIError as e:
+            return {"success": False, "error": str(e)}
+
     # ── 内部格式化方法 ──
 
     @staticmethod
@@ -210,14 +478,52 @@ class DockerClient:
 
     @staticmethod
     def _format_container_detail(container) -> dict:
+        attrs = container.attrs or {}
+        state = attrs.get("State", {})
+        config = attrs.get("Config", {})
+        net_settings = attrs.get("NetworkSettings", {})
+
         return {
             "id": container.short_id,
             "name": container.name,
             "status": container.status,
             "image": container.image.tags[0] if container.image.tags else str(container.image.id[:12]),
-            "created": container.attrs.get("Created", ""),
-            "ports": container.attrs.get("NetworkSettings", {}).get("Ports", {}),
+            "created": attrs.get("Created", ""),
             "labels": container.labels,
+            # 诊断关键字段
+            "state": {
+                "status": state.get("Status", ""),
+                "running": state.get("Running", False),
+                "paused": state.get("Paused", False),
+                "restarting": state.get("Restarting", False),
+                "oom_killed": state.get("OOMKilled", False),
+                "dead": state.get("Dead", False),
+                "pid": state.get("Pid", 0),
+                "exit_code": state.get("ExitCode", 0),
+                "error": state.get("Error", ""),
+                "started_at": state.get("StartedAt", ""),
+                "finished_at": state.get("FinishedAt", ""),
+                "restart_count": state.get("RestartCount", 0),
+            },
+            "health": _extract_health(state),
+            "config": {
+                "cmd": config.get("Cmd"),
+                "entrypoint": config.get("Entrypoint"),
+                "env": config.get("Env", []),
+                "image": config.get("Image", ""),
+                "working_dir": config.get("WorkingDir", ""),
+            },
+            "network": {
+                "ip_address": net_settings.get("IPAddress", ""),
+                "gateway": net_settings.get("Gateway", ""),
+                "mac_address": net_settings.get("MacAddress", ""),
+                "ports": net_settings.get("Ports", {}),
+                "networks": {
+                    name: {"ip": n.get("IPAddress", ""), "gateway": n.get("Gateway", ""), "mac": n.get("MacAddress", "")}
+                    for name, n in net_settings.get("Networks", {}).items()
+                },
+            },
+            "mounts": _extract_mounts(attrs),
         }
 
     @staticmethod

@@ -99,7 +99,7 @@ class TestContainerLogs:
         client = DockerClient()
         result = client.get_container_logs("web-server", tail=10)
 
-        mock_container.logs.assert_called_with(tail="10", stdout=True, stderr=True)
+        mock_container.logs.assert_called_with(tail="10", stdout=True, stderr=True, timestamps=False)
         assert result["success"] is True
         assert result["logs"] == "line1\nline2\n"
 

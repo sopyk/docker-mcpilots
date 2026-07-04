@@ -36,3 +36,14 @@ def register_image_tools(mcp: FastMCP, docker_client: DockerClient):
             force: 是否强制删除。
         """
         return docker_client.remove_image(image_name, force=force)
+
+    @mcp.tool
+    def inspect_image(image_name: str) -> dict:
+        """获取镜像详细信息（排查"镜像有没有问题"）。
+
+        返回镜像的入口命令、环境变量、暴露端口、历史构建层等信息。
+
+        Args:
+            image_name: 镜像 ID 或名称（如 "nginx:latest"）。
+        """
+        return docker_client.inspect_image(image_name)

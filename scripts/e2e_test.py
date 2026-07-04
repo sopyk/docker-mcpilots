@@ -101,18 +101,37 @@ def test_tool(client, name, args=None, expect_success=True):
         return False
     result = resp.get("result", {})
     is_error = result.get("isError", False)
+    content = result.get("content", [])
+
+    # 工具层返回 {"success": false, "error": ...} 时 MCP 协议 isError 仍为 false
+    # 需要解析内容判断业务层是否成功
+    business_failed = False
+    if content:
+        text = content[0].get("text", "")
+        try:
+            parsed = json.loads(text) if text else {}
+            if isinstance(parsed, dict) and parsed.get("success") is False:
+                business_failed = True
+        except (json.JSONDecodeError, ValueError):
+            pass
+
     if is_error and expect_success:
-        content = result.get("content", [{}])
         if content:
             print(f"❌ {content[0].get('text', '')[:80]}")
         else:
             print("❌ 未知错误")
         return False
-    if not is_error and not expect_success:
+    if not expect_success and not is_error and not business_failed:
         print("⚠️  意外成功")
         return False
+    if expect_success and business_failed:
+        if content:
+            print(f"❌ 业务失败: {content[0].get('text', '')[:80]}")
+        return False
 
-    content = result.get("content", [])
+    if business_failed and not expect_success:
+        print(f"✅ 业务层返回失败（预期）")
+        return True
     if content:
         text = content[0].get("text", "")
         preview = text[:60].replace("\n", " ")
@@ -196,7 +215,15 @@ def main():
         for tool, args in [
             ("inspect_container", {"container_id": cid}),
             ("get_container_logs", {"container_id": cid, "tail": 5}),
+            ("get_container_logs", {"container_id": cid, "tail": 5, "timestamps": True}),
+            ("get_container_logs", {"container_id": cid, "since": "1h"}),
             ("get_container_stats", {"container_id": cid}),
+            # 新增容器诊断工具
+            ("get_container_processes", {"container_id": cid}),
+            ("get_container_health", {"container_id": cid}),
+            ("get_container_networks", {"container_id": cid}),
+            ("get_container_mounts", {"container_id": cid}),
+            ("get_container_changes", {"container_id": cid}),
         ]:
             cont_total += 1
             if test_tool(client, tool, args):
@@ -219,7 +246,7 @@ def main():
     print(f"\n  结果: {cont_ok}/{cont_total} 通过")
 
     # ── 镜像工具测试 ──
-    print("\n[5/5] 镜像工具测试...")
+    print("\n[5/6] 镜像工具测试...")
     img_ok = 0
     img_total = 0
 
@@ -227,11 +254,45 @@ def main():
     if test_tool(client, "list_images"):
         img_ok += 1
 
+    # 找一个真实镜像做 inspect_image
+    list_resp = client.call_tool("list_images", {})
+    result = list_resp.get("result", {})
+    images = []
+    content = result.get("content", [])
+    if content:
+        text = content[0].get("text", "[]")
+        try:
+            images = json.loads(text) if text else []
+        except json.JSONDecodeError:
+            images = []
+    if images:
+        first = images[0]
+        ref = (first.get("tags") or [None])[0] or first.get("id")
+        if ref:
+            img_total += 1
+            if test_tool(client, "inspect_image", {"image_name": ref}):
+                img_ok += 1
+
     print(f"  结果: {img_ok}/{img_total} 通过")
 
+    # ── Docker 资源诊断（网络/卷） ──
+    print("\n[6/6] Docker 资源诊断测试...")
+    res_ok = 0
+    res_total = 0
+
+    res_total += 1
+    if test_tool(client, "list_networks"):
+        res_ok += 1
+
+    res_total += 1
+    if test_tool(client, "list_volumes"):
+        res_ok += 1
+
+    print(f"  结果: {res_ok}/{res_total} 通过")
+
     # ── 汇总 ──
-    total = diag_total + cont_total + img_total
-    ok = diag_ok + cont_ok + img_ok
+    total = diag_total + cont_total + img_total + res_total
+    ok = diag_ok + cont_ok + img_ok + res_ok
     print("\n" + "=" * 60)
     print(f"总计: {ok}/{total} 通过")
     if ok == total:

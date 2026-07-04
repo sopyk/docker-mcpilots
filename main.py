@@ -16,6 +16,7 @@ from core.system_diag import SystemDiag
 from tools.container_tools import register_container_tools
 from tools.image_tools import register_image_tools
 from tools.diag_tools import register_diag_tools
+from tools.docker_diag_tools import register_docker_diag_tools
 
 logger = logging.getLogger("docker-mcp-server")
 
@@ -165,6 +166,8 @@ def create_app() -> FastMCP:
         register_image_tools(mcp, docker_client)
     if settings.system_diagnostics:
         register_diag_tools(mcp, system_diag)
+    # Docker 资源诊断（网络/卷）始终注册，用于排查容器问题
+    register_docker_diag_tools(mcp, docker_client)
 
     # 健康检查端点
     @mcp.custom_route("/health", methods=["GET"])
