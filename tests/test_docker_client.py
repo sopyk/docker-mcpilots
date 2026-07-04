@@ -7,12 +7,12 @@ from core.docker_client import DockerClient
 
 @pytest.fixture
 def mock_docker_sdk():
-    """Mock docker.from_env()"""
+    """Mock docker.DockerClient() 显式 socket 连接，返回 mock client"""
     with patch("core.docker_client.docker") as mock_docker_module:
         mock_client = MagicMock()
-        mock_docker_module.from_env.return_value = mock_client
-        mock_docker_module.errors.NotFound = Exception
-        mock_docker_module.errors.APIError = Exception
+        mock_docker_module.DockerClient.return_value = mock_client
+        mock_docker_module.errors.NotFound = type("NotFound", (Exception,), {})
+        mock_docker_module.errors.APIError = type("APIError", (Exception,), {})
         yield mock_client
 
 
@@ -79,7 +79,8 @@ class TestContainerOperations:
 
     def test_container_not_found(self, mock_docker_sdk):
         """容器不存在时返回错误"""
-        mock_docker_sdk.containers.get.side_effect = Exception("not found")
+        from core.docker_client import DockerNotFound
+        mock_docker_sdk.containers.get.side_effect = DockerNotFound("not found")
 
         client = DockerClient()
         result = client.start_container("nonexistent")
