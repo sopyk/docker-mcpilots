@@ -1,6 +1,6 @@
 services:
   docker-mcp-server:
-    image: docker-mcp-server:latest
+    image: docker-mcp-server:v0.1.3
     container_name: docker-mcp-server
     restart: unless-stopped
     ports:
@@ -13,3 +13,7 @@ services:
       - TZ=Asia/Shanghai
       - MCP_CONFIG_DIR=/app/config
       - MCP_SECRETS_DIR=/app/secrets
+      # 群晖 DSM 默认管理员 UID=1026, GID=100
+      # 根据你的实际用户调整，id 命令查看
+      - PUID=1026
+      - PGID=100

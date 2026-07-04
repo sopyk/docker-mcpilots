@@ -25,7 +25,7 @@ class DockerClient:
     def _ensure_connected(self):
         """延迟连接 Docker daemon，仅首次调用时建立连接"""
         if self._client is None:
-            self._client = docker.from_env()
+            self._client = docker.DockerClient(base_url=f"unix://{self._socket_path}")
 
     # ── 容器操作 ──
 
