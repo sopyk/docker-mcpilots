@@ -129,9 +129,8 @@ dockermaintainer/
 │   └── integration_test.py    # 容器级集成测试脚本
 ├── docs/                      # 文档
 │   ├── CODE_WIKI.md           # 本文档
-│   └── superpowers/
-│       ├── plans/             # 实施计划
-│       └── specs/             # 设计规格书
+│   ├── plans/                 # 实施计划
+│   └── specs/                 # 设计规格书
 ├── Dockerfile                 # 镜像构建定义
 ├── docker-compose.yml         # 本地开发用 Compose
 ├── docker-compose.nas.yml     # 群晖 NAS 部署用 Compose

@@ -113,7 +113,8 @@ dockermaintainer/
 │   └── integration_test.py
 ├── docs/
 │   ├── CODE_WIKI.md              # 项目架构 Wiki
-│   └── superpowers/              # 设计文档和实施计划
+│   ├── specs/                    # 设计规格书
+│   └── plans/                    # 实施计划
 ├── Dockerfile
 ├── docker-compose.yml            # 通用 compose（含 build）
 ├── docker-compose.nas.yml        # NAS 专用 compose（预加载镜像 + PUID/PGID）
@@ -149,8 +150,8 @@ docker rm -f dm-e2e-test
 
 ## 设计文档
 
-- [设计规格书](docs/superpowers/specs/2026-07-01-synology-mcp-server-design.md)
-- [实施计划](docs/superpowers/plans/2026-07-01-synology-mcp-server.md)
-- [版本管理策略](docs/superpowers/specs/2026-07-03-version-management.md)
+- [设计规格书](docs/specs/2026-07-01-synology-mcp-server-design.md)
+- [实施计划](docs/plans/2026-07-01-synology-mcp-server.md)
+- [版本管理策略](docs/specs/2026-07-03-version-management.md)
 - [项目架构 Wiki](docs/CODE_WIKI.md)
 - [变更日志](CHANGELOG.md)
