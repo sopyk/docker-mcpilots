@@ -10,14 +10,17 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient):
     """注册容器管理相关的 MCP Tools"""
 
     @mcp.tool
-    def list_containers(status: str | None = None) -> list[dict]:
+    def list_containers(
+        status: str | None = None,
+        all: bool = False,
+    ) -> list[dict]:
         """列出 Docker 容器。
 
         Args:
-            status: 过滤状态，可选 "running"、"exited"、"all"，不传则返回运行中的容器。
+            status: 过滤状态，可选 "running"、"exited"，不传则返回运行中的容器。
+            all: 是否返回所有容器（包括已停止的），设为 true 时忽略 status。
         """
-        all_containers = status == "all"
-        return docker_client.list_containers(status=status, all=all_containers)
+        return docker_client.list_containers(status=status, all=all)
 
     @mcp.tool
     def inspect_container(container_id: str) -> dict:
@@ -56,7 +59,7 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient):
         return docker_client.restart_container(container_id)
 
     @mcp.tool
-    def get_container_logs(container_id: str, tail: int | None = None) -> str:
+    def get_container_logs(container_id: str, tail: int | None = None) -> dict:
         """获取容器日志。需要 container:logs 权限。
 
         Args:

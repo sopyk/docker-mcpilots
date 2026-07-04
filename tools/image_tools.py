@@ -28,11 +28,11 @@ def register_image_tools(mcp: FastMCP, docker_client: DockerClient):
         return docker_client.pull_image(image_name, tag=tag)
 
     @mcp.tool
-    def remove_image(image_id: str, force: bool = False) -> dict:
+    def remove_image(image_name: str, force: bool = False) -> dict:
         """删除本地镜像。需要 image:remove 权限（仅 admin 角色）。
 
         Args:
-            image_id: 镜像 ID 或名称（如 "nginx:latest"）。
+            image_name: 镜像 ID 或名称（如 "nginx:latest"）。
             force: 是否强制删除。
         """
-        return docker_client.remove_image(image_id, force=force)
+        return docker_client.remove_image(image_name, force=force)

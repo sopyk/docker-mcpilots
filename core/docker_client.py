@@ -45,8 +45,13 @@ class DockerClient:
     def get_container(self, container_id: str) -> dict:
         """获取单个容器详情"""
         self._ensure_connected()
-        container = self._client.containers.get(container_id)
-        return self._format_container_detail(container)
+        try:
+            container = self._client.containers.get(container_id)
+            return self._format_container_detail(container)
+        except DockerNotFound:
+            return {"success": False, "error": f"Container '{container_id}' not found"}
+        except DockerAPIError as e:
+            return {"success": False, "error": str(e)}
 
     def start_container(self, container_id: str) -> dict:
         """启动容器"""
@@ -101,49 +106,64 @@ class DockerClient:
 
     def get_container_logs(
         self, container_id: str, tail: int | None = None
-    ) -> str:
+    ) -> dict:
         """获取容器日志"""
         self._ensure_connected()
-        container = self._client.containers.get(container_id)
-        kwargs = {"stdout": True, "stderr": True}
-        if tail is not None:
-            kwargs["tail"] = str(tail)
-        logs = container.logs(**kwargs)
-        return logs.decode("utf-8", errors="replace") if isinstance(logs, bytes) else str(logs)
+        try:
+            container = self._client.containers.get(container_id)
+            kwargs = {"stdout": True, "stderr": True}
+            if tail is not None:
+                kwargs["tail"] = str(tail)
+            logs = container.logs(**kwargs)
+            return {
+                "success": True,
+                "container_id": container_id,
+                "logs": logs.decode("utf-8", errors="replace") if isinstance(logs, bytes) else str(logs),
+            }
+        except DockerNotFound:
+            return {"success": False, "error": f"Container '{container_id}' not found"}
+        except DockerAPIError as e:
+            return {"success": False, "error": str(e)}
 
     def get_container_stats(self, container_id: str) -> dict:
         """获取容器实时资源统计（单次采样）"""
         self._ensure_connected()
-        container = self._client.containers.get(container_id)
-        raw = container.stats(stream=False, decode=True)
+        try:
+            container = self._client.containers.get(container_id)
+            raw = container.stats(stream=False, decode=True)
 
-        cpu_percent = 0.0
-        cpu_usage = raw.get("cpu_stats", {}).get("cpu_usage", {})
-        system_cpu = raw.get("cpu_stats", {}).get("system_cpu_usage", 0)
-        online_cpus = raw.get("cpu_stats", {}).get("online_cpus", 1)
-        total_usage = cpu_usage.get("total_usage", 0)
+            cpu_percent = 0.0
+            cpu_usage = raw.get("cpu_stats", {}).get("cpu_usage", {})
+            system_cpu = raw.get("cpu_stats", {}).get("system_cpu_usage", 0)
+            online_cpus = raw.get("cpu_stats", {}).get("online_cpus", 1)
+            total_usage = cpu_usage.get("total_usage", 0)
 
-        if system_cpu > 0:
-            cpu_percent = round((total_usage / system_cpu) * online_cpus * 100.0, 2)
+            if system_cpu > 0:
+                cpu_percent = round((total_usage / system_cpu) * online_cpus * 100.0, 2)
 
-        mem_stats = raw.get("memory_stats", {})
-        mem_usage = mem_stats.get("usage", 0)
-        mem_limit = mem_stats.get("limit", 1)
-        mem_percent = round((mem_usage / mem_limit) * 100.0, 2)
+            mem_stats = raw.get("memory_stats", {})
+            mem_usage = mem_stats.get("usage", 0)
+            mem_limit = mem_stats.get("limit", 1)
+            mem_percent = round((mem_usage / mem_limit) * 100.0, 2)
 
-        networks = raw.get("networks", {})
-        net_rx = sum(n.get("rx_bytes", 0) for n in networks.values())
-        net_tx = sum(n.get("tx_bytes", 0) for n in networks.values())
+            networks = raw.get("networks", {})
+            net_rx = sum(n.get("rx_bytes", 0) for n in networks.values())
+            net_tx = sum(n.get("tx_bytes", 0) for n in networks.values())
 
-        return {
-            "container_id": container_id,
-            "cpu_percent": cpu_percent,
-            "memory_usage": mem_usage,
-            "memory_limit": mem_limit,
-            "memory_percent": mem_percent,
-            "network_rx_bytes": net_rx,
-            "network_tx_bytes": net_tx,
-        }
+            return {
+                "success": True,
+                "container_id": container_id,
+                "cpu_percent": cpu_percent,
+                "memory_usage": mem_usage,
+                "memory_limit": mem_limit,
+                "memory_percent": mem_percent,
+                "network_rx_bytes": net_rx,
+                "network_tx_bytes": net_tx,
+            }
+        except DockerNotFound:
+            return {"success": False, "error": f"Container '{container_id}' not found"}
+        except DockerAPIError as e:
+            return {"success": False, "error": str(e)}
 
     # ── 镜像操作 ──
 
@@ -166,14 +186,14 @@ class DockerClient:
         except DockerAPIError as e:
             return {"success": False, "error": str(e)}
 
-    def remove_image(self, image_id: str, force: bool = False) -> dict:
+    def remove_image(self, image_name: str, force: bool = False) -> dict:
         """删除镜像"""
         self._ensure_connected()
         try:
-            self._client.images.remove(image_id, force=force)
-            return {"success": True, "removed": image_id}
+            self._client.images.remove(image_name, force=force)
+            return {"success": True, "removed": image_name}
         except DockerNotFound:
-            return {"success": False, "error": f"Image '{image_id}' not found"}
+            return {"success": False, "error": f"Image '{image_name}' not found"}
         except DockerAPIError as e:
             return {"success": False, "error": str(e)}
 
