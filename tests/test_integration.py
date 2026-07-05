@@ -46,6 +46,7 @@ class TestInitConfigFiles:
             # 创建模板文件
             (template_dir / "settings.yaml").write_text("server:\n  host: 0.0.0.0\n")
             (template_dir / "auth.yaml").write_text("roles:\n  admin:\n    permissions: ['*']\nkeys:\n  - key: sk-test\n    role: admin\n")
+            (template_dir / "admin.yaml").write_text("username: admin\npassword_hash: ''\n")
 
             with patch("main.CONFIG_DIR", config_dir), \
                  patch("main.SECRETS_DIR", secrets_dir), \
@@ -107,6 +108,7 @@ class TestCreateApp:
             (secrets_dir / "auth.yaml").write_text(yaml.dump(auth))
             (template_dir / "settings.yaml").write_text("")
             (template_dir / "auth.yaml").write_text("")
+            (template_dir / "admin.yaml").write_text("username: admin\npassword_hash: ''\n")
 
             mcp_instance = MagicMock()
             mock_fastmcp.return_value = mcp_instance

@@ -19,6 +19,7 @@ class Settings:
     container_management: bool = True
     image_management: bool = True
     system_diagnostics: bool = True
+    web: dict = None  # type: ignore # web 配置段，默认 None
 
     @classmethod
     def from_yaml(cls, path: str) -> Settings:
@@ -35,6 +36,7 @@ class Settings:
         server = data.get("server", {})
         docker_cfg = data.get("docker", {})
         features = data.get("features", {})
+        web = data.get("web")
 
         return cls(
             host=server.get("host", cls.host),
@@ -44,7 +46,28 @@ class Settings:
             container_management=features.get("container_management", True),
             image_management=features.get("image_management", True),
             system_diagnostics=features.get("system_diagnostics", True),
+            web=web
         )
+
+    def get(self, key: str, default=None):
+        """支持类似字典的 get 调用，兼容性用"""
+        if key == "server":
+            return {
+                "host": self.host,
+                "port": self.port,
+                "log_level": self.log_level
+            }
+        if key == "docker":
+            return {"socket_path": self.socket_path}
+        if key == "features":
+            return {
+                "container_management": self.container_management,
+                "image_management": self.image_management,
+                "system_diagnostics": self.system_diagnostics
+            }
+        if key == "web":
+            return self.web if self.web else {}
+        return default
 
 
 @dataclass

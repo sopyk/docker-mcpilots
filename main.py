@@ -5,6 +5,7 @@ import os
 import shutil
 import logging
 from pathlib import Path
+from datetime import datetime
 
 from fastmcp import FastMCP
 from fastmcp.server.middleware import Middleware, MiddlewareContext
@@ -13,6 +14,10 @@ from core.config import Settings, AuthConfig
 from core.auth import PermissionChecker, AuthenticationError
 from core.docker_client import DockerClient
 from core.system_diag import SystemDiag
+from core.app_state import AppState
+from core.audit import AuditLogger, AuditEntry
+from core.admin_auth import AdminAuth, SessionManager
+from core.csrf import CSRFProtection
 from tools.container_tools import register_container_tools
 from tools.image_tools import register_image_tools
 from tools.diag_tools import register_diag_tools
@@ -29,8 +34,8 @@ TEMPLATE_DIR = Path(__file__).parent / "templates"
 class AuthMiddleware(Middleware):
     """API Key 认证中间件 — 从 HTTP 请求头提取 Bearer Token 并存入 session state"""
 
-    def __init__(self, permission_checker: PermissionChecker):
-        self._checker = permission_checker
+    def __init__(self, app_state: AppState):
+        self._app_state = app_state
 
     async def on_request(self, context: MiddlewareContext, call_next):
         ctx = context.fastmcp_context
@@ -52,8 +57,22 @@ class AuthMiddleware(Middleware):
                     raise McpError(ErrorData(code=-32001, message="Missing or invalid authorization header. Format: Bearer <api_key>"))
 
                 api_key = auth_header[7:]
-                key_config = self._checker.authenticate(api_key)
+                key_config = self._app_state.permission_checker.authenticate(api_key)
                 await ctx.set_state("auth_key_config", key_config, serializable=True)
+
+                # 审计日志记录 MCP 调用前
+                if self._app_state.audit_logger:
+                    # 暂时不知道具体 Tool 名称，先记录调用开始
+                    self._app_state.audit_logger.log(AuditEntry(
+                        timestamp=datetime.utcnow().isoformat() + "Z",
+                        source="mcp",
+                        actor=key_config.name,
+                        action="tools.call",
+                        target="",
+                        detail={},
+                        success=True
+                    ))
+
             except AuthenticationError as e:
                 from mcp import McpError
                 from mcp.types import ErrorData
@@ -117,6 +136,27 @@ def _init_config_files() -> None:
             )
             raise
 
+    admin_file = SECRETS_DIR / "admin.yaml"
+    if not admin_file.exists():
+        template = TEMPLATE_DIR / "admin.yaml"
+        try:
+            shutil.copy2(template, admin_file)
+            logger.warning(
+                f"Generated default admin config: {admin_file}. "
+                "IMPORTANT: Set admin password immediately!"
+            )
+            # 设置文件权限为 600
+            try:
+                os.chmod(admin_file, 0o600)
+            except OSError:
+                logger.warning(f"Could not set permissions on {admin_file}")
+        except PermissionError:
+            logger.error(
+                f"Permission denied writing to {admin_file}. "
+                "Ensure the mounted secrets directory is writable by the container user (check PUID/PGID)."
+            )
+            raise
+
     # 确保 secrets 目录下所有文件权限为 600
     try:
         for f in SECRETS_DIR.iterdir():
@@ -137,7 +177,20 @@ def create_app() -> FastMCP:
     # 加载配置
     settings = Settings.from_yaml(str(CONFIG_DIR / "settings.yaml"))
     auth_config = AuthConfig.from_yaml(str(SECRETS_DIR / "auth.yaml"))
-    permission_checker = PermissionChecker(auth_config)
+
+    # 创建 AppState 作为全局状态容器，支持热加载
+    docker_client = DockerClient(socket_path=settings.socket_path)
+    system_diag = SystemDiag()
+    audit_log_path = SECRETS_DIR / "audit.log"
+    audit_logger = AuditLogger(log_file=str(audit_log_path), memory_size=200)
+    app_state = AppState(
+        settings=settings,
+        auth_config=auth_config,
+        audit_logger=audit_logger
+    )
+    # 手动设置 docker_client 和 system_diag，因为 AppState 初始化时还没它们
+    app_state.docker_client = docker_client  # type: ignore
+    app_state.system_diag = system_diag    # type: ignore
 
     # 配置日志
     logging.basicConfig(
@@ -153,11 +206,7 @@ def create_app() -> FastMCP:
     )
 
     # 注册认证中间件
-    mcp.add_middleware(AuthMiddleware(permission_checker))
-
-    # 创建客户端
-    docker_client = DockerClient(socket_path=settings.socket_path)
-    system_diag = SystemDiag()
+    mcp.add_middleware(AuthMiddleware(app_state))
 
     # 注册 MCP Tools
     if settings.container_management:
@@ -174,6 +223,22 @@ def create_app() -> FastMCP:
     async def health_check(request):
         from starlette.responses import JSONResponse
         return JSONResponse({"status": "ok", "version": "1.0.0"})
+
+    # Web UI 初始化
+    admin_yaml = SECRETS_DIR / "admin.yaml"
+    web_cfg = settings.get("web", {})
+    admin_auth = AdminAuth(
+        admin_yaml=str(admin_yaml),
+        session_secret=web_cfg.get("csrf_secret", "change-me"),
+    )
+    session_mgr = SessionManager(
+        secret=web_cfg.get("csrf_secret", "change-me"),
+        timeout=web_cfg.get("session_timeout", 28800),
+    )
+    csrf = CSRFProtection(secret=web_cfg.get("csrf_secret", "change-me"))
+
+    from web.routes import register_web_routes
+    register_web_routes(mcp, app_state, admin_auth, session_mgr, csrf)
 
     logger.info(f"Docker-MCPilotS MCP Server ready on {settings.host}:{settings.port}")
     logger.info(f"Registered {len(auth_config.keys)} API key(s)")

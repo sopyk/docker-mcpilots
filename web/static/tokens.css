@@ -1,0 +1,64 @@
+/* 暗色科技风主题 Tokens */
+:root {
+  /* 背景色 */
+  --bg: #0d1117;
+  --bg-card: #161b22;
+  --bg-card-hover: #1c2128;
+  --bg-input: #0d1117;
+
+  /* 边框 */
+  --border: #30363d;
+  --border-active: #58a6ff;
+
+  /* 文字色 */
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --text-dim: #6e7681;
+
+  /* 霓虹强调色 */
+  --neon-blue: #58a6ff;
+  --neon-green: #3fb950;
+  --neon-amber: #d29922;
+  --neon-red: #f85149;
+  --neon-purple: #bc8cff;
+
+  /* 字体 */
+  --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", Consolas, monospace;
+  --font-sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* 圆角 */
+  --radius: 6px;
+  --radius-card: 10px;
+  --radius-full: 999px;
+
+  /* 间距 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
+  /* 动效 */
+  --transition-fast: 0.15s ease;
+  --transition: 0.2s ease;
+  --glow: drop-shadow(0 0 4px);
+}
+
+/* 浅色版（预留） */
+:root[data-theme="light"] {
+  --bg: #ffffff;
+  --bg-card: #f6f8fa;
+  --bg-card-hover: #eef1f6;
+  --bg-input: #ffffff;
+  --border: #d0d7de;
+  --border-active: #0969da;
+  --text: #1f2328;
+  --text-muted: #57606a;
+  --text-dim: #818b98;
+  --neon-blue: #0969da;
+  --neon-green: #1a7f37;
+  --neon-amber: #9a6700;
+  --neon-red: #cf222e;
+  --neon-purple: #8250df;
+}

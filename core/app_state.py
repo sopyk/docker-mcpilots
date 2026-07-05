@@ -3,11 +3,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Union
 
-from core.config import AuthConfig, Settings
+from core.config import Settings, AuthConfig
 from core.auth import PermissionChecker
 
 if TYPE_CHECKING:
     from core.audit import AuditLogger
+    from core.docker_client import DockerClient
+    from core.system_diag import SystemDiag
 
 
 class AppState:
@@ -17,11 +19,12 @@ class AppState:
     PermissionChecker 始终读取最新的 auth_config。
     """
 
-    def __init__(self, settings: Settings, auth_config: AuthConfig,
-                 audit_logger: "AuditLogger | None" = None):
+    def __init__(self, settings: Settings, auth_config: AuthConfig, audit_logger: "AuditLogger | None" = None):
         self.settings = settings
         self.auth_config = auth_config
         self.audit_logger = audit_logger
+        self.docker_client: "DockerClient | None" = None  # 后设置
+        self.system_diag: "SystemDiag | None" = None       # 后设置
         self.permission_checker = PermissionChecker(self.auth_config)
 
     def reload_auth(self, auth_yaml_path: str) -> None:

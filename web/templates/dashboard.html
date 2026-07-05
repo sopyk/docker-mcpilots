@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}仪表盘 - Docker-MCPilotS{% endblock %}
+
+{% block body %}
+<nav class="navbar">
+    <a href="/ui/" class="brand">
+        <span class="status-dot"></span>
+        Docker-MCPilotS
+    </a>
+    <div class="nav-links">
+        <a href="/ui/">仪表盘</a>
+        <a href="/ui/containers">容器</a>
+        <a href="/ui/users">用户</a>
+        <a href="/ui/audit">审计</a>
+        <a href="/ui/settings">设置</a>
+        <a href="/ui/logout">退出</a>
+    </div>
+</nav>
+
+<main class="content">
+    <h1>欢迎，{{ user }}</h1>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>容器</h3>
+            <p class="stat-value">{{ container_running }} / {{ container_total }}</p>
+            <p class="stat-label">运行中 / 总数</p>
+        </div>
+        <div class="stat-card">
+            <h3>镜像</h3>
+            <p class="stat-value">{{ image_count }}</p>
+            <p class="stat-label">总数</p>
+        </div>
+        <div class="stat-card">
+            <h3>CPU</h3>
+            <p class="stat-value">{{ "%.1f"|format(cpu_percent) }}%</p>
+            <p class="stat-label">使用率</p>
+        </div>
+        <div class="stat-card">
+            <h3>内存</h3>
+            <p class="stat-value">{{ "%.1f"|format(mem_percent) }}%</p>
+            <p class="stat-label">使用率</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>最近活动</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>时间</th>
+                    <th>来源</th>
+                    <th>操作人</th>
+                    <th>操作</th>
+                    <th>对象</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for log in recent_logs %}
+            <tr>
+                <td>{{ log.timestamp }}</td>
+                <td>{{ log.source }}</td>
+                <td>{{ log.actor }}</td>
+                <td>{{ log.action }}</td>
+                <td>{{ log.target }}</td>
+            </tr>
+            {% endfor %}
+            {% if not recent_logs %}
+            <tr><td colspan="5">暂无记录</td></tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}

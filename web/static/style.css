@@ -1,0 +1,216 @@
+/* 组件样式 - 仅引用 tokens.css 中的变量 */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* 导航栏 */
+.navbar {
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  padding: var(--space-4) var(--space-6);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.navbar .brand {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--neon-blue);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.navbar .brand .status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background-color: var(--neon-green);
+  box-shadow: 0 0 8px var(--neon-green);
+  animation: pulse 2s ease-in-out infinite;
+}
+.nav-links {
+  display: flex;
+  gap: var(--space-4);
+}
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  transition: color var(--transition);
+}
+.nav-links a:hover { color: var(--neon-blue); }
+
+/* 内容区域 */
+.content {
+  padding: var(--space-6);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.content h1 {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: var(--space-5);
+}
+.section { margin-top: var(--space-6); }
+.section h2 {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  color: var(--text);
+  margin-bottom: var(--space-3);
+}
+
+/* 统计网格 */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+.stat-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--space-4);
+  transition: border-color var(--transition), background-color var(--transition);
+}
+.stat-card:hover {
+  border-color: var(--neon-blue);
+  background-color: var(--bg-card-hover);
+}
+.stat-card h3 {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: var(--space-2);
+}
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--neon-purple);
+  text-shadow: 0 0 20px rgba(188,140,255,0.4);
+  margin-bottom: var(--space-1);
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* 数据表格 */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--bg-card);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+.data-table th, .data-table td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 13px;
+}
+.data-table th {
+  background-color: var(--bg-card-hover);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+.data-table td { font-family: var(--font-mono); }
+
+/* 登录卡片 */
+.login-card {
+  max-width: 360px;
+  margin: 6rem auto;
+  padding: var(--space-6);
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+.login-card h1 {
+  font-family: var(--font-mono);
+  color: var(--neon-blue);
+  text-align: center;
+  margin-bottom: var(--space-5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+.login-card .status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background-color: var(--neon-green);
+  box-shadow: 0 0 8px var(--neon-green);
+  animation: pulse 2s ease-in-out infinite;
+}
+.form-group { margin-bottom: var(--space-4); }
+.form-group label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: var(--space-1);
+  font-family: var(--font-mono);
+}
+.form-group input, .form-group select {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  width: 100%;
+}
+.form-group input:focus, .form-group select:focus {
+  outline: none;
+  border-color: var(--border-active);
+  box-shadow: 0 0 0 3px rgba(88,166,255,0.15);
+}
+.login-card button {
+  background-color: var(--neon-blue);
+  color: var(--bg);
+  border: none;
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  width: 100%;
+  transition: opacity var(--transition);
+}
+.login-card button:hover { opacity: 0.85; }
+.error {
+  color: var(--neon-red);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  margin-bottom: var(--space-3);
+}
+
+/* 动效 */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* 无障碍：减少动效偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .status-dot { animation: none; }
+}
