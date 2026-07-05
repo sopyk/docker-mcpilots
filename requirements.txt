@@ -2,3 +2,5 @@ fastmcp>=3.0.0
 docker>=7.0.0
 psutil>=7.0.0
 pyyaml>=6.0
+bcrypt>=4.0.0
+itsdangerous>=2.1.0
