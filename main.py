@@ -1,4 +1,4 @@
-"""DockerMaintainer MCP Server 主入口"""
+"""Docker-MCPilotS MCP Server 主入口"""
 from __future__ import annotations
 
 import os
@@ -18,7 +18,7 @@ from tools.image_tools import register_image_tools
 from tools.diag_tools import register_diag_tools
 from tools.docker_diag_tools import register_docker_diag_tools
 
-logger = logging.getLogger("docker-mcp-server")
+logger = logging.getLogger("docker-mcpilots")
 
 # ── 常量 ──
 CONFIG_DIR = Path(os.environ.get("MCP_CONFIG_DIR", "/app/config"))
@@ -147,9 +147,9 @@ def create_app() -> FastMCP:
 
     # 创建 FastMCP 实例
     mcp = FastMCP(
-        name="DockerMaintainer",
+        name="Docker-MCPilotS",
         instructions="Docker container and image management server with system diagnostics for Synology NAS.",
-        version="0.1.4",
+        version="1.0.0",
     )
 
     # 注册认证中间件
@@ -173,9 +173,9 @@ def create_app() -> FastMCP:
     @mcp.custom_route("/health", methods=["GET"])
     async def health_check(request):
         from starlette.responses import JSONResponse
-        return JSONResponse({"status": "ok", "version": "0.1.4"})
+        return JSONResponse({"status": "ok", "version": "1.0.0"})
 
-    logger.info(f"DockerMaintainer MCP Server ready on {settings.host}:{settings.port}")
+    logger.info(f"Docker-MCPilotS MCP Server ready on {settings.host}:{settings.port}")
     logger.info(f"Registered {len(auth_config.keys)} API key(s)")
     for key_cfg in auth_config.keys:
         logger.info(f"  - {key_cfg.name} (role: {key_cfg.role})")

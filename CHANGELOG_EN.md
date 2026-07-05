@@ -1,4 +1,4 @@
-> 🌐 [English](CHANGELOG_EN.md) | 简体中文
+> 🌐 English | [简体中文](CHANGELOG.md)
 
 # Changelog
 
@@ -8,56 +8,56 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [1.0.0] - 2026-07-04
 
-首次正式发布。
+First official release.
 
 ---
 
-## v1.0.0 首次正式发布
+## v1.0.0 First Official Release
 
-### 新增
+### Added
 
-- **MCP Server 核心功能**：基于 FastMCP 3.x 的 Docker 管理服务
-  - 容器管理：`list_containers` / `inspect_container` / `start_container` / `stop_container` / `restart_container` / `remove_container`
-  - 容器日志：`get_container_logs`（支持 tail / since / until / timestamps 时间段排查）
-  - 容器资源：`get_container_stats`（CPU / 内存 / 网络实时占用）
-  - 容器诊断（新增 8 个工具）：
-    - `get_container_processes`：容器内进程列表（排查"卡死"）
-    - `get_container_health`：健康检查状态 + 失败日志（排查"不健康"）
-    - `get_container_networks`：IP / 网关 / DNS / 端口映射（排查"连不上网"）
-    - `get_container_mounts`：挂载卷 / 绑定路径 / 读写权限（排查"数据丢失/权限不对"）
-    - `get_container_changes`：文件系统增删改（排查"容器里改了什么"）
-  - 镜像管理：`list_images` / `pull_image` / `remove_image` / `inspect_image`
-  - 网络拓扑：`list_networks`（所有 Docker 网络及连接的容器）
-  - 卷清单：`list_volumes`（所有卷及挂载点）
-  - 系统诊断：`get_system_info` / `get_cpu_info` / `get_memory_info` / `get_disk_info` / `get_network_info`
+- **MCP Server Core Features**: Docker management service based on FastMCP 3.x
+  - Container management: `list_containers` / `inspect_container` / `start_container` / `stop_container` / `restart_container` / `remove_container`
+  - Container logs: `get_container_logs` (supports tail / since / until / timestamps for time-range troubleshooting)
+  - Container resources: `get_container_stats` (real-time CPU / memory / network usage)
+  - Container diagnostics (8 new tools):
+    - `get_container_processes`: process list inside container (troubleshooting "stuck" state)
+    - `get_container_health`: health check status + failure logs (troubleshooting "unhealthy" state)
+    - `get_container_networks`: IP / gateway / DNS / port mappings (troubleshooting "no network access")
+    - `get_container_mounts`: mounted volumes / bind paths / read-write permissions (troubleshooting "data loss/permission issues")
+    - `get_container_changes`: filesystem additions, deletions and modifications (troubleshooting "what changed in container")
+  - Image management: `list_images` / `pull_image` / `remove_image` / `inspect_image`
+  - Network topology: `list_networks` (all Docker networks and connected containers)
+  - Volume inventory: `list_volumes` (all volumes and mount points)
+  - System diagnostics: `get_system_info` / `get_cpu_info` / `get_memory_info` / `get_disk_info` / `get_network_info`
 
-- **权限模型**：RBAC 三角色（admin / operator / observer），支持容器级 scope（include/exclude 通配符）
+- **Permission Model**: RBAC three roles (admin / operator / observer), supports container-level scope (include/exclude wildcards)
 
-- **认证系统**：API Key 认证，支持 YAML 配置或环境变量，认证状态跨请求持久化
+- **Authentication System**: API Key authentication, supports YAML config or environment variables, auth state persisted across requests
 
-- **群晖 NAS 适配**：
-  - PUID/PGID 环境变量自动调整运行用户权限
-  - gosu 降权安全运行
-  - 提供两种部署 compose（预构建镜像版 / 源码构建版），适用于群晖等 NAS 及通用 Linux
-  - Docker socket 权限问题根因修复
+- **Synology NAS Adaptation**:
+  - PUID/PGID environment variables auto-adjust runtime user permissions
+  - gosu privilege drop for secure execution
+  - Provides two deployment compose files (pre-built image version / source build version), suitable for Synology NAS and general Linux
+  - Root cause fix for Docker socket permission issue
 
-- **VPS 宿主机直装支持**：无需 Docker 嵌套，资源占用最低，支持 systemd / nginx 反代 / TLS
+- **VPS Host Direct Installation Support**: No nested Docker required, minimal resource footprint, supports systemd / nginx reverse proxy / TLS
 
-### 改进
+### Changed
 
-- Docker 相关文件统一隔离到 `docker/` 子目录
-- 镜像体积优化（.dockerignore 排除干扰，75MB vs 原 1.2GB）
-- VPS 部署文档（含 systemd / nginx 反代 / TLS / 防火墙）
-- 日志功能增强：RFC3339 时间格式 + 相对时间（"1h"/"30m"/"2d"）
-- FastMCP 3.4.2 API 兼容性修复
+- Docker-related files uniformly isolated to `docker/` subdirectory
+- Image size optimization (.dockerignore excludes interference, 75MB vs original 1.2GB)
+- VPS deployment docs (including systemd / nginx reverse proxy / TLS / firewall)
+- Logging enhancement: RFC3339 time format + relative time ("1h"/"30m"/"2d")
+- FastMCP 3.4.2 API compatibility fix
 
-### 修复
+### Fixed
 
-- Docker socket 权限问题（gosu 降权清除补充组）
-- Docker SDK 连接不稳定（显式指定 unix socket 路径）
-- `get_container_changes` 使用正确的 SDK 方法 `diff()`
-- Auth 中间件请求头过滤（authorization 头需显式保留）
-- Auth 状态跨请求持久化（`serializable=True`）
+- Docker socket permission issue (gosu privilege drop clears supplementary groups)
+- Docker SDK connection instability (explicitly specify unix socket path)
+- `get_container_changes` uses correct SDK method `diff()`
+- Auth middleware header filtering (authorization header must be explicitly preserved)
+- Auth state persistence across requests (`serializable=True`)
 
 ---
 
@@ -88,7 +88,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - `get_container_changes` using correct SDK method `diff()`
 - `diff()` returns None on some Docker platforms (now defaults to empty list)
-- `since`/`until` relative time parsing to datetime before传给 Docker SDK
+- `since`/`until` relative time parsing to datetime before passing to Docker SDK
 - Unit test mocks aligned with new `timestamps` param
 
 ## [0.1.3] - 2026-07-04

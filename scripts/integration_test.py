@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-DockerMaintainer MCP Server 容器集成测试脚本
+Docker-MCPilotS MCP Server 容器集成测试脚本
 在本地启动容器，自动验证所有核心功能，无需人工介入。
 """
 import subprocess
@@ -11,7 +11,7 @@ import re
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
-IMAGE_TAG = "docker-mcp-server:latest"
+IMAGE_TAG = "docker-mcpilots:latest"
 TEST_PORT = 18900  # 用非标准端口避免冲突
 API_KEY = "sk-dm-CHANGE-THIS-KEY-IMMEDIATELY"
 TIMEOUT = 60
@@ -101,7 +101,7 @@ def test_version_consistency():
     main_py = (PROJECT_ROOT / "main.py").read_text()
     main_version = None
     for line in main_py.split("\n"):
-        if 'version="' in line and "DockerMaintainer" not in line:
+        if 'version=' in line and "Docker-MCPilotS" not in line:
             m = re.search(r'version="([^"]+)"', line)
             if m:
                 main_version = m.group(1)
@@ -198,7 +198,7 @@ def test_container_startup():
             },
         )
 
-        if init_resp.get("result", {}).get("serverInfo", {}).get("name") == "DockerMaintainer":
+        if init_resp.get("result", {}).get("serverInfo", {}).get("name") == "Docker-MCPilotS":
             version = init_resp["result"]["serverInfo"].get("version", "unknown")
             r.ok(f"MCP Initialize 成功, serverInfo.version={version}")
         else:
@@ -308,7 +308,7 @@ def test_entrypoint_permissions():
 
 def main():
     print("=" * 60)
-    print("DockerMaintainer MCP Server 集成测试")
+    print("Docker-MCPilotS MCP Server 集成测试")
     print("=" * 60)
 
     # 先检查镜像是否存在

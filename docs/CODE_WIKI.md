@@ -1,7 +1,9 @@
-# DockerMaintainer MCP Server - Code Wiki
+# Docker-MCPilotS MCP Server - Code Wiki
 
-> 版本: 0.1.3  
-> 最后更新: 2026-07-04
+> 🌐 [English](CODE_WIKI_EN.md) | 简体中文
+
+> 版本: 1.0.0  
+> 最后更新: 2026-07-05
 
 ---
 
@@ -25,7 +27,7 @@
 
 ### 1.1 项目定位
 
-DockerMaintainer MCP Server 是一个运行在 Docker 容器中的 MCP (Model Context Protocol) 服务端，专为群晖 (Synology) NAS 环境设计。它通过标准化的 MCP 协议向 AI Agent 提供 Docker 容器/镜像管理能力和系统诊断功能，并内置 RBAC 权限控制体系。
+Docker-MCPilotS MCP Server 是一个运行在 Docker 容器中的 MCP (Model Context Protocol) 服务端，专为群晖 (Synology) NAS 环境设计。它通过标准化的 MCP 协议向 AI Agent 提供 Docker 容器/镜像管理能力和系统诊断功能，并内置 RBAC 权限控制体系。
 
 ### 1.2 核心功能
 
@@ -102,7 +104,7 @@ DockerMaintainer MCP Server 是一个运行在 Docker 容器中的 MCP (Model Co
 ## 3. 目录结构
 
 ```
-dockermaintainer/
+docker-mcpilots/
 ├── main.py                    # FastMCP 应用入口与认证中间件
 ├── core/                      # 核心业务模块
 │   ├── __init__.py
@@ -133,18 +135,22 @@ dockermaintainer/
 │   ├── Dockerfile             # 镜像构建定义
 │   ├── entrypoint.sh          # 容器入口脚本 (UID/GID 调整)
 │   ├── .dockerignore          # Docker 构建忽略规则
-│   ├── docker-compose.yml     # 通用 Compose（自己 build）
-│   └── nas/
-│       └── docker-compose.yml # 群晖 NAS 部署用 Compose
+│   ├── docker-compose.yml     # 预构建镜像版（推荐）
+│   └── docker-compose-build.yml  # 源码构建版
 ├── docs/                      # 文档
-│   ├── CODE_WIKI.md           # 本文档
-│   ├── deploy-vps.md          # VPS 直装部署指南
+│   ├── CODE_WIKI.md           # 本文档（中文）
+│   ├── CODE_WIKI_EN.md        # 英文版代码 Wiki
+│   ├── deploy-vps.md          # VPS 直装部署指南（中文）
+│   ├── deploy-vps_EN.md       # VPS 直装部署指南（英文）
 │   ├── plans/                 # 实施计划
 │   └── specs/                 # 设计规格书
 ├── requirements.txt           # Python 依赖
 ├── pytest.ini                 # pytest 配置
-├── CHANGELOG.md               # 变更日志
-└── README.md                  # 项目说明
+├── CHANGELOG.md               # 变更日志（中文）
+├── CHANGELOG_EN.md            # 变更日志（英文）
+├── LICENSE                    # MIT 协议
+├── README.md                  # 项目说明（中文）
+└── README_EN.md               # 项目说明（英文）
 ```
 
 ---
@@ -209,7 +215,7 @@ dockermaintainer/
 2. 加载 Settings 和 AuthConfig
 3. 创建 PermissionChecker
 4. 配置日志级别
-5. 创建 FastMCP 实例 (name="DockerMaintainer", version="0.1.3")
+5. 创建 FastMCP 实例 (name="Docker-MCPilotS", version="1.0.0")
 6. 注册 AuthMiddleware
 7. 创建 DockerClient 和 SystemDiag
 8. 根据功能开关注册对应 Tools
@@ -222,7 +228,7 @@ dockermaintainer/
 ```python
 @mcp.custom_route("/health", methods=["GET"])
 async def health_check(request):
-    return JSONResponse({"status": "ok", "version": "0.1.3"})
+    return JSONResponse({"status": "ok", "version": "1.0.0"})
 ```
 
 无需认证，用于容器健康检查和版本验证。
@@ -710,31 +716,31 @@ docker compose up -d --build
 
 1. 在本地构建 x86_64 镜像（群晖通常为 AMD64）:
 ```bash
-docker build --platform linux/amd64 -t docker-mcp-server:v0.1.3 -t docker-mcp-server:latest .
+docker build --platform linux/amd64 -t docker-mcpilots:v1.0.0 -t docker-mcpilots:latest .
 ```
 
 2. 导出并压缩镜像:
 ```bash
-docker save docker-mcp-server:v0.1.3 docker-mcp-server:latest | gzip > docker-mcp-server-v0.1.3.tar.gz
+docker save docker-mcpilots:v1.0.0 docker-mcpilots:latest | gzip > docker-mcpilots-v1.0.0.tar.gz
 ```
 
 3. 传输到 NAS 并加载:
 ```bash
-docker load -i docker-mcp-server-v0.1.3.tar.gz
+docker load -i docker-mcpilots-v1.0.0.tar.gz
 ```
 
 #### 8.2.2 创建目录和配置
 
 ```bash
-mkdir -p /volume1/docker/docker-mcp/{config,secrets}
-# 将 docker-compose.nas.yml 复制到该目录
+mkdir -p /volume1/docker/docker-mcpilots/{config,secrets}
+# 将 docker-compose.yml 复制到该目录
 ```
 
 #### 8.2.3 启动
 
 ```bash
-cd /volume1/docker/docker-mcp
-docker-compose -f docker-compose.nas.yml up -d
+cd /volume1/docker/docker-mcpilots
+docker compose up -d
 ```
 
 首次启动会自动生成配置模板，编辑 `secrets/auth.yaml` 设置你的 API Key，然后重启。
@@ -743,7 +749,7 @@ docker-compose -f docker-compose.nas.yml up -d
 
 ```bash
 curl http://localhost:8900/health
-# 返回: {"status":"ok","version":"0.1.3"}
+# 返回: {"status":"ok","version":"1.0.0"}
 ```
 
 ### 8.4 MCP 连接配置
@@ -753,7 +759,7 @@ curl http://localhost:8900/health
 ```json
 {
   "mcpServers": {
-    "docker-maintainer": {
+    "docker-mcpilots": {
       "transport": "http",
       "url": "http://nas-ip:8900/mcp",
       "headers": {
@@ -916,6 +922,7 @@ core.system_diag
 
 | 版本 | 日期 | 主要变更 |
 |---|---|---|
+| 1.0.0 | 2026-07-05 | 首个正式发布版：项目改名 Docker-MCPilotS、补全中英双语文档、镜像构建 amd64 架构、LICENSE/MIT |
 | 0.1.3 | 2026-07-04 | 修复 docker.sock 组权限（gosu 清除补充组问题）、Docker SDK 显式 socket 连接 |
 | 0.1.2 | 2026-07-03 | 修复版本号一致性、添加 .dockerignore、优化镜像大小 |
 | 0.1.1 | 2026-07-03 | 添加 PUID/PGID 支持、修复 NAS 权限问题 |
@@ -923,4 +930,4 @@ core.system_diag
 
 ---
 
-*本文档由代码分析自动生成，最后更新于 2026-07-04*
+*本文档由代码分析自动生成，最后更新于 2026-07-05*

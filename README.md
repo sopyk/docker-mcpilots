@@ -1,169 +1,246 @@
-# DockerMaintainer MCP Server
+![Docker-MCPilotS Banner](assets/banner.jpg)
 
-以 MCP（Model Context Protocol）协议暴露 Docker 容器/镜像管理能力和系统诊断功能的轻量级服务，专为 AI agent 远程排查容器问题设计。
+# 🐳 Docker-MCPilotS
 
-支持两种部署方式：
-- **容器化部署**（推荐用于群晖 NAS 等脆弱系统）
-- **宿主机直装**（推荐用于 VPS / 干净的 Linux 服务器）
+> 🌐 [English](README_EN.md) | 简体中文
 
-## 功能概览
+给 AI Agent 一双管理 Docker 的手（MCP Server）——群晖 NAS 上的容器管得好，任何装了 Docker 的机器都能用。
 
-围绕"排查容器问题"核心目标，提供 24 个 MCP 工具：
+## 📦 支持的架构
 
-| 类别 | 工具 | 排查场景 |
-|---|---|---|
-| 容器管理 | list_containers / inspect_container / start / stop / restart / remove | 基础查控 |
-| 容器日志 | get_container_logs | 支持 tail / since / until / timestamps，按时间段排查 |
-| 容器资源 | get_container_stats | CPU / 内存 / 网络实时占用 |
-| 容器进程 | get_container_processes | 容器内进程列表（排查"卡死"） |
-| 容器健康 | get_container_health | 健康检查状态 + 失败日志（排查"不健康"） |
-| 容器网络 | get_container_networks | IP / 网关 / DNS / 端口映射（排查"连不上网"） |
-| 容器挂载 | get_container_mounts | 挂载卷 / 绑定路径 / 读写权限（排查"数据丢失/权限不对"） |
-| 容器变更 | get_container_changes | 文件系统增删改（排查"容器里改了什么"） |
-| 镜像管理 | list_images / pull_image / remove_image | 基础查控 |
-| 镜像诊断 | inspect_image | 入口命令 / 环境变量 / 历史构建层（排查"镜像有没有问题"） |
-| 网络拓扑 | list_networks | 所有 Docker 网络及连接的容器（排查"容器之间通不通"） |
-| 卷清单 | list_volumes | 所有卷及挂载点（排查"数据存储在哪里"） |
-| 系统诊断 | get_system_info / get_cpu_info / get_memory_info / get_disk_info / get_network_info | 主机资源监控 |
+| 架构 | 状态 | 适用设备 |
+|------|------|----------|
+| **linux/amd64 (x86_64)** | ✅ 已支持 | 群晖/威联通等 Intel/AMD 架构 NAS、大多数 VPS、普通 PC 服务器 |
+| **linux/arm64** | 🚧 计划中 | 树莓派、Mac M 系列、部分 ARM 架构 NAS |
+| **linux/arm/v7** | ❌ 暂不支持 | 老款树莓派等 32 位 ARM 设备 |
 
-## 权限模型
+> 💡 目前版本仅提供 amd64 架构镜像。ARM 设备请自行从源码构建镜像。
 
-支持 **admin**、**operator**、**observer** 三个预定义角色，可按容器设置 `include/exclude` scope，支持通配符匹配。详见 [templates/auth.yaml](templates/auth.yaml)。
+## 🤔 为什么做这个？
 
-## 部署方式
+日常使用群晖 NAS，上面跑了几十个 Docker 容器：PT 下载、媒体服务、照片备份、代码仓库……部署新服务的时候、升级更新的时候、甚至正常跑着用着，总会遇到各种问题：容器起不来了、权限不对了、连不上网了、占用资源高了……
 
-三种部署方式按场景选择，Docker 相关文件统一隔离在 [docker/](docker/) 子目录：
+以前排查问题要么 SSH 进去敲命令。群晖这种 NAS 系统跟标准的 Linux 服务器差别很大，命令、路径、权限体系都是定制过的，万一敲错轻则操作失败，重则把整个 NAS 搞坏。更要命的是，NAS 上往往还跑着照片备份、文件同步这些重要功能——搞坏了可不止几个容器不能用的问题，是整个家都瘫了。
 
-| 场景 | 方式 | 文件 |
-|---|---|---|
-| 群晖 NAS | Docker 容器（预构建镜像 + PUID/PGID） | [docker/nas/docker-compose.yml](docker/nas/docker-compose.yml) |
-| 干净 Linux 服务器 / 开发者本地 | Docker 容器（自己 build） | [docker/docker-compose.yml](docker/docker-compose.yml) |
-| VPS | 宿主机直装（无 Docker） | [docs/deploy-vps.md](docs/deploy-vps.md) |
+要么打开群晖那个难用的 Docker 界面，点来点去找半天。
 
-### 方式一：群晖 NAS 部署
+现在 Agent 很发达了，我想：**能不能让 AI 来帮我管这些容器？** 让它帮我排查问题、看看日志、启停服务，出了问题也不用心惊胆战的。
 
-适合 DSM 等脆弱系统，避免宿主机污染。群晖 Container Manager 默认只识别 `docker-compose.yml` 标准文件名，所以 NAS 版单独放在 [docker/nas/](docker/nas/) 子目录，文件名是标准的。
+但又不能真的把 SSH 权限交给 Agent，NAS 系统太特殊了，万一出岔子代价太大。
+
+所以就想到了 MCP（Model Context Protocol）——把 Docker 的管理能力通过 MCP 接口暴露出去，Agent 只能做我们允许的操作，不会误伤系统。本质上就是一个**沙箱里的 Docker 管理工具**。
+
+有了这些念头，说干就干。这个项目是通过 **Vibe Coding** 方式做的。
+
+## ✨ 功能一览
+
+### ✅ 能做的
+
+| 类别 | 能做什么 |
+|------|----------|
+| 📦 容器管理 | 查看列表、查看详情、启动、停止、重启、删除 |
+| 📜 容器日志 | 看日志，支持按时间段筛选（过去 1 小时、最近 30 分钟……） |
+| 📊 容器资源 | CPU、内存、网络占用实时查看 |
+| 🔍 容器诊断 | 进程列表、健康状态、网络连接、挂载卷、文件系统变更、镜像信息 |
+| 🌐 网络拓扑 | 查看所有 Docker 网络和它们连接的容器 |
+| 💾 卷清单 | 查看所有数据卷和它们的挂载点 |
+| 🖥️ 系统诊断 | 宿主机 CPU、内存、磁盘、网络信息 |
+| 🔐 权限控制 | 三种角色：管理员、操作员、观察者，可以按容器设置权限 |
+
+### ❌ 做不了的
+
+| 限制 | 原因 |
+|------|------|
+| 🚫 **Compose 项目管理**（`docker compose up/down`） | Docker SDK 不支持 Compose 操作，只能管单个容器 |
+| 🚫 **编辑 Compose 文件** | 容器内无法访问宿主机上的 compose 文件 |
+| 🚫 **构建镜像** | 出于安全考虑，未开放 `docker build` 能力 |
+| 🚫 **执行任意命令** | 不提供 `docker exec` 能力，避免命令注入风险 |
+| 🚫 **修改 Docker 网络配置** | 只读查看，不能创建/删除/修改网络 |
+
+## 📖 使用方法
+
+### 📋 前置准备
+
+1. 把这个 MCP Server 部署到你的 NAS 上（见下文部署方式）
+2. 在 AI 客户端（OpenClaw、Hermes、Trae、Cursor、Claude Code、Codex……）里添加 MCP Server，填入地址和 API Key
+3. 开始对话，让 Agent 帮你管理容器
+
+### 💬 典型场景
+
+**排查容器为什么起不来：**
+> "帮我看看 jellyfin 容器怎么回事？怎么没起来？"
+
+Agent 会自动调用 `inspect_container` 查看详情、`get_container_logs` 查看错误日志，告诉你原因。
+
+**查看容器资源占用：**
+> "帮我看看所有容器的 CPU 和内存占用情况"
+
+**启停容器：**
+> "把 jellyfin 停一下，我要升级"
+
+**查看日志：**
+> "看看最近 30 分钟的 jellyfin 日志"
+
+**排查网络问题：**
+> "帮我看看 jellyfin 容器的网络配置，端口映射是什么"
+
+## 🚀 部署方式
+
+### 🟢 方式一：使用预构建镜像（推荐，NAS / 通用 Linux）
+
+适合群晖/威联通等 NAS、普通 Linux 服务器，开箱即用。
+
+**步骤：**
+
+1. 创建项目目录：
+   ```bash
+   mkdir docker-mcpilots && cd docker-mcpilots
+   mkdir config secrets
+   ```
+
+2. 下载配置模板并修改：
+   - 从 `templates/settings.yaml` 复制到 `config/settings.yaml`
+   - 从 `templates/auth.yaml` 复制到 `secrets/auth.yaml`
+   - 记得改 API Key！
+
+3. 把 `docker/docker-compose.yml` 放到当前目录
+
+4. 修改 `PUID`/`PGID` 为你的用户 ID（群晖用户通常是 1026/100，其他系统用 `id` 命令查看）
+
+5. 启动：
+   ```bash
+   docker compose up -d
+   ```
+
+**配置文件说明：**
+
+| 文件 | 作用 |
+|------|------|
+| `config/settings.yaml` | 服务端口、Docker socket 路径、功能开关 |
+| `secrets/auth.yaml` | API Key、角色权限、容器范围（敏感文件） |
+
+### 🟡 方式二：从源码构建镜像（开发者 / ARM 设备）
+
+适合开发者本地调试，或者 ARM 架构设备（目前暂不提供 ARM 预构建镜像）。
 
 ```bash
-# 1. 本机预构建 AMD64 镜像（避免在 NAS 上构建）
-docker build --platform linux/amd64 -f docker/Dockerfile -t docker-mcp-server:v0.1.3 .
-docker save docker-mcp-server:v0.1.3 | gzip > docker-mcp-server-v0.1.3.tar.gz
-
-# 2. 传到 NAS 后加载
-docker load < docker-mcp-server-v0.1.3.tar.gz
-
-# 3. 把 docker/nas/ 目录上传到 NAS（例如 /volume1/docker/dm/）
-#    在该目录同级创建 config/ 和 secrets/ 目录
-#    上传 templates/ 下的 settings.yaml 和 auth.yaml 到对应目录
-
-# 4. 群晖 Container Manager → 项目 → 创建 → 选择该目录
-#    会自动识别 docker-compose.yml，按需修改 PUID/PGID 后启动
+git clone https://github.com/sopyk/docker-mcpilots.git
+cd docker-mcpilots
+docker compose -f docker/docker-compose-build.yml up -d --build
 ```
 
-NAS 部署通过 `PUID`/`PGID` 环境变量解决 docker.sock 和挂载卷的权限问题，详见 [docker/nas/docker-compose.yml](docker/nas/docker-compose.yml) 和 [docker/entrypoint.sh](docker/entrypoint.sh)。
+默认端口 8900，记得改 `secrets/auth.yaml` 里的 API Key。
 
-### 方式二：通用 Docker 部署（自己 build）
+### 🔵 方式三：VPS 宿主机直装
 
-适合开发者本地或干净的 Linux 服务器，从源码构建镜像。
+适合追求最低资源占用的场景，不需要 Docker 嵌套。详见 [docs/deploy-vps.md](docs/deploy-vps.md)。
 
-```bash
-# 从项目根目录执行
-docker compose -f docker/docker-compose.yml up -d --build
+## ⚙️ 配置说明
+
+### 🔑 API Key 和权限
+
+`secrets/auth.yaml` 示例：
+
+```yaml
+keys:
+  - key: "你的-secret-api-key"
+    role: admin  # admin / operator / observer
 ```
 
-默认 PUID/PGID=1000:1000，按需修改 [docker/docker-compose.yml](docker/docker-compose.yml)。
+- **admin**：所有操作权限
+- **operator**：启动、停止、重启容器，查看日志和状态（不能删除）
+- **observer**：只读，只能查看不能操作
 
-### 方式三：VPS 宿主机直装
+### 🎯 容器范围控制
 
-适合 VPS，省去容器嵌套，资源占用最低。详细步骤（含 systemd + nginx 反代 + TLS）见 [docs/deploy-vps.md](docs/deploy-vps.md)。
+可以限制某个 API Key 只能操作特定容器：
 
-```bash
-# 简要步骤
-pip install -r requirements.txt
-mkdir -p config secrets
-cp templates/settings.yaml config/
-cp templates/auth.yaml secrets/ && chmod 600 secrets/auth.yaml
-MCP_CONFIG_DIR=./config MCP_SECRETS_DIR=./secrets python main.py
+```yaml
+keys:
+  - key: "只管下载容器"
+    role: operator
+    scope:
+      include: ["qbittorrent", "aria2*", "transmission"]
+      exclude: ["*"]
 ```
 
-**前置条件**：运行用户必须能访问 `/var/run/docker.sock`（加入 `docker` 组）。
-
-## 配置说明
-
-| 文件 | 位置 | 作用 |
-|---|---|---|
-| [templates/settings.yaml](templates/settings.yaml) | 复制到 `config/settings.yaml` | 服务监听地址、Docker socket 路径、功能开关 |
-| [templates/auth.yaml](templates/auth.yaml) | 复制到 `secrets/auth.yaml` | API Key、角色、容器 scope（敏感，权限 600） |
-
-敏感配置（auth.yaml）和非敏感配置（settings.yaml）分目录存放，便于备份和权限隔离。
-
-## 文件结构
+## 📁 文件结构
 
 ```
-dockermaintainer/
-├── main.py                       # FastMCP 入口
-├── core/                         # 业务层
-│   ├── config.py                 # 配置加载
-│   ├── auth.py                   # RBAC 权限检查
-│   ├── docker_client.py          # Docker SDK 封装（所有诊断方法）
-│   └── system_diag.py            # 系统诊断（psutil）
-├── tools/                        # MCP 工具层
-│   ├── container_tools.py        # 容器管理 + 容器诊断
-│   ├── image_tools.py            # 镜像管理 + 镜像诊断
-│   ├── diag_tools.py             # 系统诊断
-│   └── docker_diag_tools.py      # 网络和卷诊断
-├── templates/                    # 配置模板
+docker-mcpilots/
+├── main.py                    # 入口
+├── core/                      # 核心模块
+│   ├── config.py             # 配置加载
+│   ├── auth.py               # 权限检查
+│   ├── docker_client.py      # Docker SDK 封装
+│   └── system_diag.py        # 系统诊断
+├── tools/                    # MCP 工具
+│   ├── container_tools.py    # 容器管理
+│   ├── image_tools.py        # 镜像管理
+│   ├── docker_diag_tools.py # 网络/卷诊断
+│   └── diag_tools.py        # 系统诊断
+├── templates/                 # 配置模板
 │   ├── settings.yaml
 │   └── auth.yaml
-├── tests/                        # 单元测试（37 个用例）
-├── scripts/                      # e2e + 集成测试
-├── docker/                       # Docker 相关文件（隔离）
+├── docker/                   # Docker 相关
 │   ├── Dockerfile
-│   ├── entrypoint.sh             # 容器入口（PUID/PGID 调整）
-│   ├── .dockerignore
-│   ├── docker-compose.yml        # 通用版（自己 build）
-│   └── nas/
-│       └── docker-compose.yml    # NAS 版（预构建镜像 + PUID/PGID）
-├── docs/
-│   ├── CODE_WIKI.md              # 项目架构 Wiki
-│   ├── deploy-vps.md             # VPS 直装部署指南
-│   ├── specs/                    # 设计规格书
-│   └── plans/                    # 实施计划
-├── requirements.txt
-├── CHANGELOG.md
-└── README.md
+│   ├── entrypoint.sh        # 入口脚本
+│   ├── docker-compose.yml    # 预构建镜像版（推荐）
+│   └── docker-compose-build.yml  # 源码构建版
+└── tests/                    # 测试用例（开发用，部署可忽略）
 ```
 
-## 技术栈
+## 🛠️ 技术栈
 
 - Python 3.11 + FastMCP 3.x
 - docker Python SDK 7.x
 - psutil 7.x
-- 单容器架构，资源占用极低
+- 单容器架构，资源占用极低（约 50MB 内存）
 
-## 测试
+## 🧪 测试
 
 ```bash
 # 单元测试
 pytest tests/
 
-# 端到端测试（需启动一个真实容器作为测试目标）
+# 端到端测试
 docker run -d --name dm-e2e-test alpine sh -c 'while true; do echo heartbeat; sleep 5; done'
 MCP_CONFIG_DIR=./config MCP_SECRETS_DIR=./secrets python main.py &
 python scripts/e2e_test.py
 docker rm -f dm-e2e-test
 ```
 
-## 分支策略
+## 🗺️ 后续计划
 
-- `main`：稳定基线，对应已发布版本
-- `dev`：开发分支，新功能先合入 dev，验证后再合入 main 发版
+- 🖼️ **图形化管理界面**：做一个 Web UI，不用 AI 也能直观地查看和管理容器（适合不想用 Agent 的场景，或者快速浏览）
+- 🍓 **ARM 架构支持**：提供 arm64 预构建镜像，覆盖树莓派、Mac M 系列等设备
+- 📈 **更多诊断能力**：容器事件流、资源占用历史曲线、异常告警
+- 🔗 **多节点管理**：一个 MCP Server 管理多台机器上的 Docker
 
-## 设计文档
+## ⚠️ 风险提示
 
-- [设计规格书](docs/specs/2026-07-01-synology-mcp-server-design.md)
-- [实施计划](docs/plans/2026-07-01-synology-mcp-server.md)
-- [版本管理策略](docs/specs/2026-07-03-version-management.md)
-- [VPS 直装部署指南](docs/deploy-vps.md)
-- [项目架构 Wiki](docs/CODE_WIKI.md)
-- [变更日志](CHANGELOG.md)
+**使用本项目即表示你理解并接受以下风险：**
+
+1. **容器操作有风险**：停止、删除容器等操作可能导致数据丢失或服务中断，请确保了解操作后果
+2. **权限配置需谨慎**：admin 角色拥有完整权限，请妥善保管 API Key
+3. **仅限内网使用**：默认配置仅监听本地回环地址，请勿直接暴露到公网
+4. **自担风险**：本项目开源提供，使用者需自行评估风险，作者不对使用过程中造成的任何损失负责
+5. **建议做好备份**：对重要数据和配置做好备份，操作前确认
+
+**🔒 安全建议：**
+- 生产环境务必修改默认 API Key
+- 限制容器 scope 权限，只给必要的权限
+- 通过反向代理加 TLS 访问（详见 VPS 部署文档）
+- 定期检查日志，发现异常及时排查
+
+## 📄 开源协议
+
+MIT License - 详见 [LICENSE](LICENSE) 文件。
+
+## 🔗 链接
+
+- 🐙 GitHub：https://github.com/sopyk/docker-mcpilots
+- 🐛 问题反馈：https://github.com/sopyk/docker-mcpilots/issues
+- 📦 镜像地址：
+  - GHCR：`ghcr.io/sopyk/docker-mcpilots`
+  - Docker Hub：`sopyk/docker-mcpilots`

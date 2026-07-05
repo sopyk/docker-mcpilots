@@ -1,4 +1,4 @@
-# DockerMaintainer MCP Server 配置文件
+# Docker-MCPilotS MCP Server 配置文件
 # 将此文件复制到 /app/config/settings.yaml 后编辑
 
 server:

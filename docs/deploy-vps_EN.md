@@ -1,57 +1,57 @@
-> 🌐 [English](deploy-vps_EN.md) | 简体中文
+> 🌐 English | [简体中文](deploy-vps.md)
 
-# VPS 宿主机直装部署
+# VPS Host-Native Deployment
 
-适用场景：干净的 Linux VPS，希望省去容器嵌套、资源占用最低。
+Use case: a clean Linux VPS where you want to avoid container nesting and keep resource usage minimal.
 
-## 前置条件
+## Prerequisites
 
-- Linux 服务器（Ubuntu/Debian/CentOS 均可）
-- 已安装 Docker daemon 并运行
+- Linux server (Ubuntu/Debian/CentOS all work)
+- Docker daemon installed and running
 - Python 3.11+
-- 运行用户能访问 `/var/run/docker.sock`
+- The runtime user can access `/var/run/docker.sock`
 
-## 1. 安装 Docker（如未安装）
+## 1. Install Docker (if not installed)
 
 ```bash
 curl -fsSL https://get.docker.com | sh
 sudo systemctl enable --now docker
 ```
 
-## 2. 让运行用户能访问 docker.sock
+## 2. Grant the runtime user access to docker.sock
 
 ```bash
 sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-## 3. 获取项目代码
+## 3. Get the project code
 
 ```bash
-# 方式一：从 GitHub 克隆
+# Option 1: Clone from GitHub
 git clone https://github.com/sopyk/docker-mcpilots.git
 cd docker-mcpilots
 
-# 方式二：从 Release 下载精简包
+# Option 2: Download the slim package from Release
 # wget https://github.com/sopyk/docker-mcpilots/releases/download/v1.0.0/docker-mcpilots-v1.0.0.tar.gz
 # tar -xzf docker-mcpilots-v1.0.0.tar.gz
 # cd docker-mcpilots
 ```
 
-## 4. 安装 Python 依赖（推荐用 UV）
+## 4. Install Python dependencies (UV recommended)
 
-**方式一：UV（推荐，速度快 10-100 倍）**
+**Option 1: UV (recommended, 10–100x faster)**
 
 ```bash
-# 安装 UV
+# Install UV
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# 创建虚拟环境并安装依赖
+# Create a virtual environment and install dependencies
 uv venv .venv
 uv pip install -r requirements.txt
 ```
 
-**方式二：传统 pip**
+**Option 2: Traditional pip**
 
 ```bash
 sudo apt install -y python3.11 python3.11-venv
@@ -59,28 +59,28 @@ python3.11 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
 
-## 5. 准备配置
+## 5. Prepare the configuration
 
 ```bash
 mkdir -p config secrets
 cp templates/settings.yaml config/
 cp templates/auth.yaml secrets/
 chmod 600 secrets/auth.yaml
-# 编辑 secrets/auth.yaml，把默认 API Key 改成你自己的
+# Edit secrets/auth.yaml to replace the default API Key with your own
 vi secrets/auth.yaml
 ```
 
-## 6. 启动
+## 6. Start
 
-### 手动启动（测试用）
+### Manual start (for testing)
 
 ```bash
 MCP_CONFIG_DIR=./config MCP_SECRETS_DIR=./secrets .venv/bin/python main.py
 ```
 
-### systemd 托管（生产用）
+### systemd management (for production)
 
-创建 `/etc/systemd/system/docker-mcpilots.service`：
+Create `/etc/systemd/system/docker-mcpilots.service`:
 
 ```ini
 [Unit]
@@ -103,7 +103,7 @@ RestartSec=5
 WantedBy=multi-user.target
 ```
 
-启用：
+Enable:
 
 ```bash
 sudo systemctl daemon-reload
@@ -111,13 +111,13 @@ sudo systemctl enable --now docker-mcpilots
 sudo systemctl status docker-mcpilots
 ```
 
-## 7. 生产环境加固（强烈建议）
+## 7. Production hardening (strongly recommended)
 
-默认监听 `0.0.0.0:8900`，公网直接暴露有风险。推荐：
+By default the service listens on `0.0.0.0:8900`, which is risky to expose directly to the public internet. Recommended:
 
-### 7.1 改为只监听本地
+### 7.1 Listen only on localhost
 
-编辑 `config/settings.yaml`：
+Edit `config/settings.yaml`:
 
 ```yaml
 server:
@@ -125,7 +125,7 @@ server:
   port: 8900
 ```
 
-### 7.2 nginx 反代 + TLS
+### 7.2 nginx reverse proxy + TLS
 
 ```nginx
 server {
@@ -141,13 +141,13 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_http_version 1.1;
         proxy_set_header Connection "";
-        proxy_buffering off;          # MCP 流式响应需要关闭缓冲
-        proxy_read_timeout 86400s;    # 长连接
+        proxy_buffering off;          # Required for MCP streaming responses
+        proxy_read_timeout 86400s;    # Long-lived connection
     }
 }
 ```
 
-### 6.3 防火墙
+### 6.3 Firewall
 
 ```bash
 sudo ufw allow 443/tcp
@@ -155,13 +155,13 @@ sudo ufw deny 8900/tcp
 sudo ufw enable
 ```
 
-## 7. 验证
+## 7. Verify
 
 ```bash
 curl http://127.0.0.1:8900/health
-# 期望: {"status":"ok","version":"1.0.0"}
+# Expected: {"status":"ok","version":"1.0.0"}
 
-# 调用 MCP 工具（需带 API Key）
+# Call an MCP tool (requires API Key)
 curl -X POST http://127.0.0.1:8900/mcp \
   -H "Authorization: Bearer sk-dm-your-key" \
   -H "Content-Type: application/json" \
@@ -169,7 +169,7 @@ curl -X POST http://127.0.0.1:8900/mcp \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}'
 ```
 
-## 升级
+## Upgrade
 
 ```bash
 cd /opt/docker-mcpilots
@@ -178,11 +178,11 @@ git pull
 sudo systemctl restart docker-mcpilots
 ```
 
-## 故障排查
+## Troubleshooting
 
-| 现象 | 排查 |
+| Symptom | Troubleshooting |
 |---|---|
-| 启动报 `Permission denied: /var/run/docker.sock` | 运行用户没在 docker 组，`sudo usermod -aG docker $USER && newgrp docker` |
-| 工具调用返回 401 | API Key 不匹配，检查 `secrets/auth.yaml` |
-| 工具调用返回 `container not found` | 检查容器名是否正确，`docker ps` 查看 |
-| systemd 启动失败 | `journalctl -u docker-mcpilots -f` 查看日志 |
+| Startup reports `Permission denied: /var/run/docker.sock` | The runtime user is not in the docker group; run `sudo usermod -aG docker $USER && newgrp docker` |
+| Tool call returns 401 | API Key mismatch; check `secrets/auth.yaml` |
+| Tool call returns `container not found` | Verify the container name; use `docker ps` to inspect |
+| systemd fails to start | Check logs with `journalctl -u docker-mcpilots -f` |

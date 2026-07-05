@@ -1,0 +1,25 @@
+# Docker 部署（从源码构建镜像）
+# 适用：开发者本地、自己 build 镜像
+# 用法：从项目根目录执行
+#   docker compose -f docker/docker-compose-build.yml up -d --build
+services:
+  docker-mcpilots:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: docker-mcpilots:latest
+    container_name: docker-mcpilots
+    restart: unless-stopped
+    ports:
+      - "8900:8900"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../config:/app/config
+      - ../secrets:/app/secrets
+    environment:
+      - TZ=Asia/Shanghai
+      - MCP_CONFIG_DIR=/app/config
+      - MCP_SECRETS_DIR=/app/secrets
+      # 通用场景默认 1000:1000，按需调整
+      - PUID=1000
+      - PGID=1000
