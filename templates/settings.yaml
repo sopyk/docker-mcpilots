@@ -13,3 +13,7 @@ features:
   container_management: true
   image_management: true
   system_diagnostics: true
+
+web:
+  csrf_secret: "change-me-please"
+  session_timeout: 28800
