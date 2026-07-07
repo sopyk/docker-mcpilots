@@ -93,6 +93,11 @@ def register_web_routes(
         resp.set_cookie("csrf_token", token4, httponly=True, samesite="strict")
         return resp
 
+    # 根路径重定向到 Web UI
+    @mcp.custom_route("/", methods=["GET"])
+    async def root_redirect(request):
+        return RedirectResponse("/ui/", status_code=303)
+
     # 登出
     @mcp.custom_route("/ui/logout", methods=["GET"])
     async def logout_page(request):
