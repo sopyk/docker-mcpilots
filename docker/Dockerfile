@@ -13,6 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 复制源代码（精确复制，避免把 .venv/tests/docs/scripts 等无关文件打入镜像）
 COPY core/ ./core/
 COPY tools/ ./tools/
+COPY web/ ./web/
 COPY main.py .
 COPY templates/ ./templates/
 

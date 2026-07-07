@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}仪表盘 - Docker-MCPilotS{% endblock %}
+
+{% macro ring_progress(percent, label) %}
+{% set r = 52 %}
+{% set circ = 326.726 %}
+{% set offset = circ * (1 - percent / 100) %}
+{% set offset_str = '%.1f'|format(offset) %}
+{% set percent_str = '%.1f'|format(percent) %}
+{% set level = 'low' if percent < 60 else ('mid' if percent < 85 else 'high') %}
+<svg class="ring" viewBox="0 0 120 120" width="140" height="140">
+    <circle class="ring-bg" cx="60" cy="60" r="{{ r }}" />
+    <circle class="ring-fg ring-{{ level }}" cx="60" cy="60" r="{{ r }}"
+            stroke-dasharray="{{ circ }}"
+            stroke-dashoffset="{{ offset_str }}" />
+    <text x="60" y="56" class="ring-value" text-anchor="middle">{{ percent_str }}<tspan class="ring-percent" dy="-3">%</tspan></text>
+    <text x="60" y="78" class="ring-sublabel" text-anchor="middle">{{ label }}</text>
+</svg>
+{% endmacro %}
+
+{% block body %}
+<main class="content">
+    <h1>欢迎，{{ user }}</h1>
+
+    <div class="stats-rings">
+        <div class="stat-card ring-card">
+            <h3>CPU 使用率</h3>
+            {{ ring_progress(cpu_percent, "CPU") }}
+        </div>
+        <div class="stat-card ring-card">
+            <h3>内存使用率</h3>
+            {{ ring_progress(mem_percent, "内存") }}
+        </div>
+    </div>
+
+    <div class="stats-counts">
+        <div class="stat-card">
+            <h3>容器</h3>
+            <p class="stat-value">{{ container_running }} / {{ container_total }}</p>
+            <p class="stat-label">运行中 / 总数</p>
+        </div>
+        <div class="stat-card">
+            <h3>镜像</h3>
+            <p class="stat-value">{{ image_count }}</p>
+            <p class="stat-label">总数</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>最近活动</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>时间</th>
+                    <th>来源</th>
+                    <th>操作人</th>
+                    <th>操作</th>
+                    <th>对象</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for log in recent_logs %}
+            <tr>
+                <td>{{ log.timestamp }}</td>
+                <td>{{ log.source }}</td>
+                <td>{{ log.actor }}</td>
+                <td>{{ log.action }}</td>
+                <td>{{ log.target }}</td>
+            </tr>
+            {% endfor %}
+            {% if not recent_logs %}
+            <tr><td colspan="5">暂无记录</td></tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}

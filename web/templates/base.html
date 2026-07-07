@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Docker-MCPilotS{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/ui/static/tokens.css">
+    <link rel="stylesheet" href="/ui/static/style.css">
+</head>
+<body>
+{% block navbar %}
+<nav class="navbar">
+    <a href="/ui/" class="brand">
+        <span class="status-dot"></span>
+        Docker-MCPilotS
+    </a>
+    <div class="nav-links">
+        <a href="/ui/">仪表盘</a>
+        <a href="/ui/containers">容器</a>
+        <a href="/ui/users">用户</a>
+        <a href="/ui/audit">审计</a>
+        <a href="/ui/settings">设置</a>
+        <a href="/ui/logout">退出</a>
+    </div>
+</nav>
+{% endblock %}
+{% block body %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}审计日志 - Docker-MCPilotS{% endblock %}
+
+{% block body %}
+<main class="content">
+    <h1>审计日志</h1>
+
+    <form class="filter-bar" method="get" action="/ui/audit">
+        <div class="form-group form-inline">
+            <label>来源</label>
+            <select name="source">
+                <option value="" {% if not filter_source %}selected{% endif %}>全部</option>
+                <option value="web" {% if filter_source == "web" %}selected{% endif %}>Web</option>
+                <option value="mcp" {% if filter_source == "mcp" %}selected{% endif %}>MCP</option>
+            </select>
+        </div>
+        <div class="form-group form-inline">
+            <label>操作人</label>
+            <input name="actor" type="text" value="{{ filter_actor }}" placeholder="留空查全部">
+        </div>
+        <div class="form-group form-inline">
+            <label>条数</label>
+            <input name="limit" type="number" value="{{ filter_limit }}" min="1" max="500">
+        </div>
+        <button type="submit" class="btn btn-sm">筛选</button>
+        <a href="/ui/audit" class="btn btn-sm">重置</a>
+    </form>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>时间</th>
+                <th>来源</th>
+                <th>操作人</th>
+                <th>操作</th>
+                <th>对象</th>
+                <th>状态</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for log in logs %}
+        <tr>
+            <td class="text-muted">{{ log.timestamp }}</td>
+            <td><span class="badge badge-{{ 'blue' if log.source == 'mcp' else 'purple' }}">{{ log.source }}</span></td>
+            <td>{{ log.actor }}</td>
+            <td>{{ log.action }}</td>
+            <td>{{ log.target or "-" }}</td>
+            <td>
+                {% if log.success %}
+                <span class="badge badge-green"><span class="badge-dot"></span>成功</span>
+                {% else %}
+                <span class="badge badge-red"><span class="badge-dot"></span>失败</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        {% if not logs %}
+        <tr><td colspan="6" class="empty-row">暂无记录</td></tr>
+        {% endif %}
+        </tbody>
+    </table>
+</main>
+{% endblock %}

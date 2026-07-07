@@ -46,6 +46,7 @@ class TestInitConfigFiles:
             # 创建模板文件
             (template_dir / "settings.yaml").write_text("server:\n  host: 0.0.0.0\n")
             (template_dir / "auth.yaml").write_text("roles:\n  admin:\n    permissions: ['*']\nkeys:\n  - key: sk-test\n    role: admin\n")
+            (template_dir / "admin.yaml").write_text("username: admin\npassword_hash: ''\n")
 
             with patch("main.CONFIG_DIR", config_dir), \
                  patch("main.SECRETS_DIR", secrets_dir), \
@@ -107,6 +108,7 @@ class TestCreateApp:
             (secrets_dir / "auth.yaml").write_text(yaml.dump(auth))
             (template_dir / "settings.yaml").write_text("")
             (template_dir / "auth.yaml").write_text("")
+            (template_dir / "admin.yaml").write_text("username: admin\npassword_hash: ''\n")
 
             mcp_instance = MagicMock()
             mock_fastmcp.return_value = mcp_instance
@@ -125,3 +127,108 @@ class TestCreateApp:
             mock_ct_tools.assert_called_once()
             mock_img_tools.assert_called_once()
             mock_diag_tools.assert_called_once()
+
+    @patch("main.FastMCP")
+    @patch("main.DockerClient")
+    @patch("main.SystemDiag")
+    @patch("main.register_container_tools")
+    @patch("main.register_image_tools")
+    @patch("main.register_diag_tools")
+    @patch("main.register_docker_diag_tools")
+    def test_web_ui_routes_registered_in_create_app(
+        self, mock_dd_tools, mock_diag_tools, mock_img_tools, mock_ct_tools,
+        mock_sysdiag, mock_docker, mock_fastmcp
+    ):
+        """端到端验证：create_app 注册了所有 Web UI 路由"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config_dir = Path(tmpdir) / "config"
+            secrets_dir = Path(tmpdir) / "secrets"
+            template_dir = Path(tmpdir) / "templates"
+            config_dir.mkdir()
+            secrets_dir.mkdir()
+            template_dir.mkdir()
+
+            settings = {"server": {"host": "0.0.0.0", "port": 8900, "log_level": "info"}}
+            auth = {
+                "roles": {"admin": {"description": "a", "permissions": ["*"]}},
+                "keys": [{"key": "sk-admin", "name": "admin", "role": "admin"}],
+            }
+            (config_dir / "settings.yaml").write_text(yaml.dump(settings))
+            (secrets_dir / "auth.yaml").write_text(yaml.dump(auth))
+            (template_dir / "settings.yaml").write_text("")
+            (template_dir / "auth.yaml").write_text("")
+            (template_dir / "admin.yaml").write_text("username: admin\npassword_hash: ''\n")
+
+            mcp_instance = MagicMock()
+            mock_fastmcp.return_value = mcp_instance
+
+            with patch("main.CONFIG_DIR", config_dir), \
+                 patch("main.SECRETS_DIR", secrets_dir), \
+                 patch("main.TEMPLATE_DIR", template_dir):
+                from main import create_app
+                create_app()
+
+            registered_paths = [
+                call.args[0] for call in mcp_instance.custom_route.call_args_list
+            ]
+            expected_web_routes = [
+                "/ui/login", "/ui/logout", "/ui/", "/ui/containers",
+                "/ui/containers/{container_id}/start",
+                "/ui/containers/{container_id}/stop",
+                "/ui/containers/{container_id}/restart",
+                "/ui/containers/{container_id}",
+                "/ui/users", "/ui/users/reload",
+                "/ui/audit", "/ui/settings", "/ui/settings/reload",
+                "/ui/static/{filename}",
+            ]
+            for path in expected_web_routes:
+                assert path in registered_paths, f"Web 路由未注册: {path}"
+
+    @patch("main.FastMCP")
+    @patch("main.DockerClient")
+    @patch("main.SystemDiag")
+    @patch("main.register_container_tools")
+    @patch("main.register_image_tools")
+    @patch("main.register_diag_tools")
+    @patch("main.register_docker_diag_tools")
+    def test_create_app_sets_app_state_paths(
+        self, mock_dd_tools, mock_diag_tools, mock_img_tools, mock_ct_tools,
+        mock_sysdiag, mock_docker, mock_fastmcp
+    ):
+        """端到端验证：create_app 创建的 AppState 持有配置文件路径"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config_dir = Path(tmpdir) / "config"
+            secrets_dir = Path(tmpdir) / "secrets"
+            template_dir = Path(tmpdir) / "templates"
+            config_dir.mkdir()
+            secrets_dir.mkdir()
+            template_dir.mkdir()
+
+            (config_dir / "settings.yaml").write_text(yaml.dump(
+                {"server": {"host": "0.0.0.0", "port": 8900}}))
+            (secrets_dir / "auth.yaml").write_text(yaml.dump(
+                {"roles": {"admin": {"permissions": ["*"]}},
+                 "keys": [{"key": "sk-x", "name": "a", "role": "admin"}]}))
+            (template_dir / "settings.yaml").write_text("")
+            (template_dir / "auth.yaml").write_text("")
+            (template_dir / "admin.yaml").write_text("username: admin\npassword_hash: ''\n")
+
+            mcp_instance = MagicMock()
+            mock_fastmcp.return_value = mcp_instance
+
+            with patch("main.CONFIG_DIR", config_dir), \
+                 patch("main.SECRETS_DIR", secrets_dir), \
+                 patch("main.TEMPLATE_DIR", template_dir):
+                from main import create_app
+                create_app()
+
+                # 验证中间件传入的是 AppState（而非裸 PermissionChecker）
+                middleware_call = mcp_instance.add_middleware.call_args
+                middleware_obj = middleware_call[0][0]
+                assert hasattr(middleware_obj, "_app_state")
+                app_state = middleware_obj._app_state
+                assert app_state.auth_yaml_path == str(secrets_dir / "auth.yaml")
+                assert app_state.settings_yaml_path == str(config_dir / "settings.yaml")
+                assert app_state.docker_client is not None
+                assert app_state.system_diag is not None
+                assert app_state.audit_logger is not None

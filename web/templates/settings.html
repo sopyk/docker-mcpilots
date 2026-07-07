@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}配置 - Docker-MCPilotS{% endblock %}
+
+{% macro opt(value, label, current) %}
+{% if current == value %}
+<option value="{{ value }}" selected>{{ label }}</option>
+{% else %}
+<option value="{{ value }}">{{ label }}</option>
+{% endif %}
+{% endmacro %}
+
+{% block body %}
+<main class="content">
+    <h1>系统配置</h1>
+
+    {% if success %}<div class="alert alert-success">{{ success }}</div>{% endif %}
+    {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+
+    <div class="section">
+        <div class="section-header">
+            <h2>功能开关</h2>
+            <form method="post" action="/ui/settings/reload" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <button type="submit" class="btn btn-sm btn-blue">热加载 settings.yaml</button>
+            </form>
+        </div>
+        <form method="post" action="/ui/settings/save" class="settings-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <div class="settings-group">
+                <h3>服务端</h3>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-name">监听地址</span>
+                        <span class="setting-desc">服务监听的网络接口，0.0.0.0 表示所有接口</span>
+                    </div>
+                    <div class="setting-control">
+                        <input type="text" name="host" value="{{ settings.host }}">
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-name">端口</span>
+                        <span class="setting-desc">HTTP 服务监听端口</span>
+                    </div>
+                    <div class="setting-control">
+                        <input type="number" name="port" value="{{ settings.port }}">
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-name">日志级别</span>
+                        <span class="setting-desc">日志输出的详细程度</span>
+                    </div>
+                    <div class="setting-control">
+                        <select name="log_level">
+                            {{ opt('debug', 'debug', settings.log_level) }}
+                            {{ opt('info', 'info', settings.log_level) }}
+                            {{ opt('warning', 'warning', settings.log_level) }}
+                            {{ opt('error', 'error', settings.log_level) }}
+                        </select>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-name">时区</span>
+                        <span class="setting-desc">系统使用的时区</span>
+                    </div>
+                    <div class="setting-control">
+                        <select name="timezone">
+                            {{ opt('Asia/Shanghai', 'Asia/Shanghai (北京/上海)', settings.timezone) }}
+                            {{ opt('Asia/Hong_Kong', 'Asia/Hong_Kong (香港)', settings.timezone) }}
+                            {{ opt('Asia/Tokyo', 'Asia/Tokyo (东京)', settings.timezone) }}
+                            {{ opt('Asia/Singapore', 'Asia/Singapore (新加坡)', settings.timezone) }}
+                            {{ opt('UTC', 'UTC (协调世界时)', settings.timezone) }}
+                            {{ opt('Europe/London', 'Europe/London (伦敦)', settings.timezone) }}
+                            {{ opt('America/New_York', 'America/New_York (纽约)', settings.timezone) }}
+                            {{ opt('America/Los_Angeles', 'America/Los_Angeles (洛杉矶)', settings.timezone) }}
+                            {{ opt('America/Chicago', 'America/Chicago (芝加哥)', settings.timezone) }}
+                            {{ opt('Australia/Sydney', 'Australia/Sydney (悉尼)', settings.timezone) }}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3>Docker</h3>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-name">Socket 路径</span>
+                        <span class="setting-desc">Docker daemon 的 UNIX socket 路径</span>
+                    </div>
+                    <div class="setting-control">
+                        <input type="text" name="socket_path" value="{{ settings.socket_path }}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3>功能开关</h3>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-name">容器管理</span>
+                        <span class="setting-desc">是否启用容器相关的 MCP 工具和 Web 界面</span>
+                    </div>
+                    <div class="setting-control">
+                        <label class="toggle">
+                            {% if settings.container_management %}
+                            <input type="checkbox" name="container_management" checked>
+                            {% else %}
+                            <input type="checkbox" name="container_management">
+                            {% endif %}
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-name">镜像管理</span>
+                        <span class="setting-desc">是否启用镜像相关的 MCP 工具和 Web 界面</span>
+                    </div>
+                    <div class="setting-control">
+                        <label class="toggle">
+                            {% if settings.image_management %}
+                            <input type="checkbox" name="image_management" checked>
+                            {% else %}
+                            <input type="checkbox" name="image_management">
+                            {% endif %}
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-name">系统诊断</span>
+                        <span class="setting-desc">是否启用系统信息诊断工具</span>
+                    </div>
+                    <div class="setting-control">
+                        <label class="toggle">
+                            {% if settings.system_diagnostics %}
+                            <input type="checkbox" name="system_diagnostics" checked>
+                            {% else %}
+                            <input type="checkbox" name="system_diagnostics">
+                            {% endif %}
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-actions">
+                <button type="submit" class="btn btn-blue">保存设置</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>settings.yaml 原始内容</h2>
+        <pre class="log-view">{{ raw_yaml }}</pre>
+    </div>
+</main>
+{% endblock %}

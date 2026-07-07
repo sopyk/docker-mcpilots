@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}容器管理 - Docker-MCPilotS{% endblock %}
+
+{% block body %}
+<main class="content">
+    <h1>容器管理</h1>
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>名称</th>
+                <th>镜像</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for c in containers %}
+        <tr>
+            <td><a href="/ui/containers/{{ c.id }}" class="link">{{ c.name }}</a></td>
+            <td>{{ c.image }}</td>
+            <td>
+                {% set is_running = c.status.startswith("Up") %}
+                <span class="badge badge-{{ 'green' if is_running else 'gray' }}">
+                    <span class="badge-dot"></span>{{ c.status }}
+                </span>
+            </td>
+            <td class="actions">
+                <form method="post" action="/ui/containers/{{ c.id }}/start" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <button type="submit" class="btn btn-sm btn-green">启动</button>
+                </form>
+                <form method="post" action="/ui/containers/{{ c.id }}/stop" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <button type="submit" class="btn btn-sm btn-amber">停止</button>
+                </form>
+                <form method="post" action="/ui/containers/{{ c.id }}/restart" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <button type="submit" class="btn btn-sm btn-blue">重启</button>
+                </form>
+                <a href="/ui/containers/{{ c.id }}" class="btn btn-sm">详情</a>
+            </td>
+        </tr>
+        {% endfor %}
+        {% if not containers %}
+        <tr><td colspan="4" class="empty-row">暂无容器</td></tr>
+        {% endif %}
+        </tbody>
+    </table>
+</main>
+{% endblock %}

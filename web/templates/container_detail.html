@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}容器详情 - {{ detail.name if detail.success else container_id }}{% endblock %}
+
+{% block body %}
+<main class="content">
+    <h1>容器详情</h1>
+    {% if detail.success %}
+    <div class="detail-header">
+        <div>
+            <h2>{{ detail.name }}</h2>
+            <p class="text-muted">{{ detail.id }} · {{ detail.image }}</p>
+        </div>
+        <div class="actions">
+            <form method="post" action="/ui/containers/{{ detail.id }}/start" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <button type="submit" class="btn btn-sm btn-green">启动</button>
+            </form>
+            <form method="post" action="/ui/containers/{{ detail.id }}/stop" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <button type="submit" class="btn btn-sm btn-amber">停止</button>
+            </form>
+            <form method="post" action="/ui/containers/{{ detail.id }}/restart" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <button type="submit" class="btn btn-sm btn-blue">重启</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <div class="detail-section">
+            <h3>基本信息</h3>
+            <table class="kv-table">
+                <tr><th>名称</th><td>{{ detail.name }}</td></tr>
+                <tr><th>ID</th><td>{{ detail.id }}</td></tr>
+                <tr><th>镜像</th><td>{{ detail.image }}</td></tr>
+                <tr><th>状态</th><td>{{ detail.status }}</td></tr>
+                <tr><th>创建时间</th><td>{{ detail.created }}</td></tr>
+            </table>
+        </div>
+        <div class="detail-section">
+            <h3>运行状态</h3>
+            <table class="kv-table">
+                <tr><th>运行中</th><td>{{ "是" if detail.state.running else "否" }}</td></tr>
+                <tr><th>PID</th><td>{{ detail.state.pid }}</td></tr>
+                <tr><th>退出码</th><td>{{ detail.state.exit_code }}</td></tr>
+                <tr><th>重启次数</th><td>{{ detail.state.restart_count }}</td></tr>
+                <tr><th>OOM Killed</th><td>{{ "是" if detail.state.oom_killed else "否" }}</td></tr>
+                <tr><th>启动时间</th><td>{{ detail.state.started_at }}</td></tr>
+                <tr><th>结束时间</th><td>{{ detail.state.finished_at }}</td></tr>
+            </table>
+        </div>
+    </div>
+
+    {% if detail.network %}
+    <div class="section">
+        <h3>网络</h3>
+        <table class="kv-table">
+            <tr><th>IP 地址</th><td>{{ detail.network.ip_address or "-" }}</td></tr>
+            <tr><th>网关</th><td>{{ detail.network.gateway or "-" }}</td></tr>
+            <tr><th>MAC 地址</th><td>{{ detail.network.mac_address or "-" }}</td></tr>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if detail.mounts %}
+    <div class="section">
+        <h3>挂载卷</h3>
+        <table class="data-table">
+            <thead><tr><th>类型</th><th>源路径</th><th>目标路径</th><th>读写</th></tr></thead>
+            <tbody>
+            {% for m in detail.mounts %}
+            <tr>
+                <td>{{ m.type }}</td>
+                <td>{{ m.source }}</td>
+                <td>{{ m.destination }}</td>
+                <td>{{ "可读写" if m.rw else "只读" }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <div class="section">
+        <h3>日志（最近 200 行）</h3>
+        <pre class="log-view">{{ logs }}</pre>
+    </div>
+    {% else %}
+    <div class="error">{{ detail.error }}</div>
+    {% endif %}
+
+    <a href="/ui/containers" class="btn">返回列表</a>
+</main>
+{% endblock %}
