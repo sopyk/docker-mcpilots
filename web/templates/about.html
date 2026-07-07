@@ -44,6 +44,32 @@
     </div>
 
     <div class="section">
+        <h2>🚀 如何在 Agent APP 里配置 MCP</h2>
+        <p>在你的 AI 客户端（Trae、Cursor、Claude Code、OpenClaw 等）的 MCP 配置里添加下面这段代码即可：</p>
+        <div style="background-color: #1a1a2e; border-radius: 8px; padding: 16px; margin-top: 12px;">
+            <pre style="margin: 0; color: #f0f0f0; font-family: monospace; font-size: 13px; overflow-x: auto;">
+{
+  "mcpServers": {
+    "docker-mcpilots": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/transport-http",
+        "http://localhost:8900/mcp",
+        "--header",
+        "Authorization: sk-dm-你的APIKey"
+      ]
+    }
+  }
+}
+            </pre>
+        </div>
+        <p style="margin-top: 12px;">
+            💡 提示：记得把 <code style="background-color: #1a1a2e; padding: 2px 6px; border-radius: 4px;">http://localhost:8900</code> 和 <code style="background-color: #1a1a2e; padding: 2px 6px; border-radius: 4px;">sk-dm-你的APIKey</code> 换成你实际的地址和 API Key！
+        </p>
+    </div>
+
+    <div class="section">
         <h2>🔗 链接</h2>
         <div class="links">
             <p><strong>GitHub 项目地址：</strong> <a href="https://github.com/sopyk/docker-mcpilots" target="_blank" rel="noopener">https://github.com/sopyk/docker-mcpilots</a></p>
