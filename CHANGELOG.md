@@ -6,6 +6,33 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.0.0] - 2026-07-07
+
+### 新增
+
+- **Web UI 界面**：完整的图形化管理界面（`/ui/`）
+  - 仪表盘：CPU 内存使用率环形图、容器/镜像计数、最近审计日志
+  - 容器列表：查看所有容器、启停/删除/查看详情
+  - 用户管理：创建/编辑/删除 API Key，支持修改 Key 名称、角色、权限和范围
+  - 审计日志：查看所有操作记录（筛选功能）
+  - 系统设置：编辑系统设置（端口、时区、功能开关）、修改管理员密码
+  - 关于页：项目介绍、Agent 配置示例、版本信息
+- **Admin 认证系统**：Web UI 用户名密码登录（bcrypt 加密存储）
+- **CSRF 防护**：所有 POST 请求需要 CSRF Token
+- **审计日志**：记录所有 MCP 和 Web UI 操作
+- **时区支持**：配置时区选项，显示本地化时间
+- **静态资源**：支持子目录（/static/assets），正确识别图片 mime 类型
+
+### 改进
+
+- 模板安全优化：使用条件块代替未加引号的 Jinja2 表达式
+- 完整的单元/集成/端到端测试（130+ 个用例，100% 覆盖核心模块）
+
+### 修复
+
+- 修复静态文件路由不支持子目录问题
+- 修复 semgrep 发现的安全隐患（subprocess shell 仅用于测试、模板安全加固）
+
 ## [1.0.0] - 2026-07-04
 
 首次正式发布。
