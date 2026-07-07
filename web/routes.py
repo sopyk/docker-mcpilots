@@ -2,7 +2,8 @@
 from __future__ import annotations
 from pathlib import Path
 from typing import Any, Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
 from urllib.parse import quote, unquote
 from jinja2 import Environment, FileSystemLoader
 from fastmcp import FastMCP
@@ -21,11 +22,29 @@ TEMPLATE_DIR = Path(__file__).parent / "templates"
 STATIC_DIR = Path(__file__).parent / "static"
 env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)), autoescape=True)
 env.filters["urlencode"] = quote
+env.filters["tz"] = lambda s, tz: _convert_to_tz(s, tz)
 
 
 def _now_iso() -> str:
     """当前 UTC 时间的 ISO 格式字符串（带 Z 后缀）"""
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _convert_to_tz(utc_str: str, timezone_str: str = "Asia/Shanghai") -> str:
+    """把 UTC ISO 时间转换为指定时区的本地化时间字符串"""
+    try:
+        # 解析带 Z 或带偏移的 UTC 时间
+        if utc_str.endswith("Z"):
+            dt = datetime.fromisoformat(utc_str.replace("Z", "+00:00"))
+        else:
+            dt = datetime.fromisoformat(utc_str)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        tz = ZoneInfo(timezone_str)
+        local_dt = dt.astimezone(tz)
+        return local_dt.strftime("%Y-%m-%d %H:%M:%S")
+    except Exception:
+        return utc_str
 
 
 def register_web_routes(
@@ -132,7 +151,8 @@ def register_web_routes(
             cpu_percent=cpu.get("percent", 0),
             mem_percent=mem.get("virtual", {}).get("percent", 0),
             disk_percent=disk.get("partitions", [{}])[0].get("percent", 0) if disk.get("partitions") else 0,
-            recent_logs=recent_logs
+            recent_logs=recent_logs,
+            settings=app_state.settings,
         )
         return Response(html, media_type="text/html")
 
@@ -388,6 +408,7 @@ def register_web_routes(
         html = env.get_template("audit.html").render(
             user=user, logs=logs, csrf_token=token,
             filter_source=source, filter_actor=actor, filter_limit=limit,
+            settings=app_state.settings,
         )
         resp = Response(html, media_type="text/html")
         resp.set_cookie("csrf_token", token, httponly=True, samesite="strict")
@@ -532,14 +553,23 @@ def register_web_routes(
             return resp
         return RedirectResponse("/ui/settings?error=" + quote(result.get("error", "修改失败")), status_code=303)
 
-    # 静态文件
-    @mcp.custom_route("/ui/static/{filename}", methods=["GET"])
+    # 静态文件（支持子目录）
+    @mcp.custom_route("/ui/static/{path:path}", methods=["GET"])
     async def static_file(request):
-        filename = request.path_params["filename"]
-        f = STATIC_DIR / filename
-        if not f.exists():
+        path = request.path_params["path"]
+        f = STATIC_DIR / path
+        if not f.exists() or not f.is_file():
             return Response("Not Found", status_code=404)
         ext = f.suffix.lower()
-        media_map = {".css": "text/css", ".js": "application/javascript", ".svg": "image/svg+xml"}
+        media_map = {
+            ".css": "text/css", 
+            ".js": "application/javascript", 
+            ".svg": "image/svg+xml", 
+            ".jpg": "image/jpeg", 
+            ".jpeg": "image/jpeg", 
+            ".png": "image/png",
+            ".gif": "image/gif",
+            ".ico": "image/x-icon",
+        }
         media = media_map.get(ext, "text/plain")
         return Response(f.read_bytes(), media_type=media)

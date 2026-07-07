@@ -14,9 +14,11 @@ body {
 }
 .banner-img {
   width: 100%;
+  max-height: 280px;
   height: auto;
   border-radius: var(--radius-card);
   object-fit: cover;
+  display: block;
 }
 .navbar {
   background-color: var(--bg-card);

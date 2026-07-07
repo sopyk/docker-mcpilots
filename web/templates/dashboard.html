@@ -64,7 +64,7 @@
             <tbody>
             {% for log in recent_logs %}
             <tr>
-                <td>{{ log.timestamp }}</td>
+                <td>{{ log.timestamp|tz(settings.timezone) }}</td>
                 <td>{{ log.source }}</td>
                 <td>{{ log.actor }}</td>
                 <td>{{ log.action }}</td>
