@@ -12,3 +12,6 @@ secrets/auth.yaml
 .DS_Store
 *.tar
 *.tar.gz
+dev-config/
+dev-secrets/
+set-admin-pass.py

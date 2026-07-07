@@ -1,26 +1,26 @@
-/* 暗色科技风主题 Tokens */
+/* 柔和深色主题 Tokens */
 :root {
   /* 背景色 */
-  --bg: #0d1117;
-  --bg-card: #161b22;
-  --bg-card-hover: #1c2128;
-  --bg-input: #0d1117;
+  --bg: #1a1d24;
+  --bg-card: #232730;
+  --bg-card-hover: #2a303c;
+  --bg-input: #1e2128;
 
   /* 边框 */
-  --border: #30363d;
-  --border-active: #58a6ff;
+  --border: #3a3f4b;
+  --border-active: #5c6bc0;
 
   /* 文字色 */
-  --text: #e6edf3;
-  --text-muted: #8b949e;
-  --text-dim: #6e7681;
+  --text: #e8eaed;
+  --text-muted: #9aa0b0;
+  --text-dim: #6b7280;
 
-  /* 霓虹强调色 */
-  --neon-blue: #58a6ff;
-  --neon-green: #3fb950;
-  --neon-amber: #d29922;
-  --neon-red: #f85149;
-  --neon-purple: #bc8cff;
+  /* 强调色 - 柔和自然 */
+  --blue: #5c6bc0;
+  --green: #66bb6a;
+  --amber: #ffa726;
+  --red: #ef5350;
+  --purple: #ab47bc;
 
   /* 字体 */
   --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", Consolas, monospace;
@@ -42,7 +42,7 @@
   /* 动效 */
   --transition-fast: 0.15s ease;
   --transition: 0.2s ease;
-  --glow: drop-shadow(0 0 4px);
+  --glow: drop-shadow(0 0 3px);
 }
 
 /* 浅色版（预留） */
@@ -56,9 +56,9 @@
   --text: #1f2328;
   --text-muted: #57606a;
   --text-dim: #818b98;
-  --neon-blue: #0969da;
-  --neon-green: #1a7f37;
-  --neon-amber: #9a6700;
-  --neon-red: #cf222e;
-  --neon-purple: #8250df;
+  --blue: #0969da;
+  --green: #1a7f37;
+  --amber: #9a6700;
+  --red: #cf222e;
+  --purple: #8250df;
 }

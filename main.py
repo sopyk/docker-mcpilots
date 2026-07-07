@@ -5,7 +5,7 @@ import os
 import shutil
 import logging
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastmcp import FastMCP
 from fastmcp.server.middleware import Middleware, MiddlewareContext
@@ -24,6 +24,12 @@ from tools.diag_tools import register_diag_tools
 from tools.docker_diag_tools import register_docker_diag_tools
 
 logger = logging.getLogger("docker-mcpilots")
+
+
+def _now_iso() -> str:
+    """当前 UTC 时间的 ISO 格式字符串（带 Z 后缀，兼容 Python 3.14+）"""
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
 
 # ── 常量 ──
 CONFIG_DIR = Path(os.environ.get("MCP_CONFIG_DIR", "/app/config"))
@@ -60,25 +66,50 @@ class AuthMiddleware(Middleware):
                 key_config = self._app_state.permission_checker.authenticate(api_key)
                 await ctx.set_state("auth_key_config", key_config, serializable=True)
 
-                # 审计日志记录 MCP 调用前
+            except AuthenticationError as e:
                 if self._app_state.audit_logger:
-                    # 暂时不知道具体 Tool 名称，先记录调用开始
                     self._app_state.audit_logger.log(AuditEntry(
-                        timestamp=datetime.utcnow().isoformat() + "Z",
+                        timestamp=_now_iso(),
                         source="mcp",
-                        actor=key_config.name,
-                        action="tools.call",
+                        actor="unknown",
+                        action="auth.failed",
                         target="",
                         detail={},
-                        success=True
+                        success=False,
                     ))
-
-            except AuthenticationError as e:
                 from mcp import McpError
                 from mcp.types import ErrorData
                 raise McpError(ErrorData(code=-32001, message=str(e)))
 
         return await call_next(context)
+
+    async def on_call_tool(self, context: MiddlewareContext, call_next):
+        """Tool 调用审计：记录 tool 名、调用者、成功/失败"""
+        ctx = context.fastmcp_context
+        message = context.message
+        tool_name = getattr(message, "name", "") if message else ""
+        actor = "unknown"
+        if ctx and ctx.request_context:
+            key_config = await ctx.get_state("auth_key_config")
+            if key_config is not None:
+                actor = getattr(key_config, "name", str(key_config))
+        success = True
+        try:
+            return await call_next(context)
+        except Exception:
+            success = False
+            raise
+        finally:
+            if self._app_state.audit_logger:
+                self._app_state.audit_logger.log(AuditEntry(
+                    timestamp=_now_iso(),
+                    source="mcp",
+                    actor=actor,
+                    action="tools.call",
+                    target=tool_name,
+                    detail={},
+                    success=success,
+                ))
 
 
 def _init_config_files() -> None:
@@ -186,7 +217,9 @@ def create_app() -> FastMCP:
     app_state = AppState(
         settings=settings,
         auth_config=auth_config,
-        audit_logger=audit_logger
+        audit_logger=audit_logger,
+        auth_yaml_path=str(SECRETS_DIR / "auth.yaml"),
+        settings_yaml_path=str(CONFIG_DIR / "settings.yaml"),
     )
     # 手动设置 docker_client 和 system_diag，因为 AppState 初始化时还没它们
     app_state.docker_client = docker_client  # type: ignore

@@ -57,6 +57,32 @@ features:
     assert state.settings.container_management is False
 
 
+def test_app_state_reload_auth_with_stored_path(tmp_path):
+    """用初始化时存储的路径热加载（无参数调用）"""
+    auth_yaml = tmp_path / "auth.yaml"
+    _write_auth_yaml(auth_yaml, "old", "sk-old")
+    state = AppState(
+        settings=Settings(),
+        auth_config=AuthConfig.from_yaml(str(auth_yaml)),
+        auth_yaml_path=str(auth_yaml),
+    )
+    assert state.permission_checker.authenticate("sk-old").name == "old"
+
+    _write_auth_yaml(auth_yaml, "new", "sk-new")
+    state.reload_auth()
+
+    assert state.permission_checker.authenticate("sk-new").name == "new"
+    with pytest.raises(Exception):
+        state.permission_checker.authenticate("sk-old")
+
+
+def test_app_state_reload_auth_no_path_raises(tmp_path):
+    """未设置路径且不传参数时，热加载报错"""
+    state = AppState(settings=Settings(), auth_config=_minimal_auth(tmp_path))
+    with pytest.raises(ValueError):
+        state.reload_auth()
+
+
 def test_app_state_permission_checker_compatible_with_auth_config(tmp_path):
     """PermissionChecker 兼容直接传 AuthConfig（向后兼容）"""
     from core.auth import PermissionChecker

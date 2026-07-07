@@ -19,6 +19,7 @@ class Settings:
     container_management: bool = True
     image_management: bool = True
     system_diagnostics: bool = True
+    timezone: str = "Asia/Shanghai"
     web: dict = None  # type: ignore # web 配置段，默认 None
 
     @classmethod
@@ -46,6 +47,7 @@ class Settings:
             container_management=features.get("container_management", True),
             image_management=features.get("image_management", True),
             system_diagnostics=features.get("system_diagnostics", True),
+            timezone=data.get("timezone", cls.timezone),
             web=web
         )
 
@@ -67,6 +69,8 @@ class Settings:
             }
         if key == "web":
             return self.web if self.web else {}
+        if key == "timezone":
+            return self.timezone
         return default
 
 

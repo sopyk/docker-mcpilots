@@ -1,15 +1,16 @@
-"""Docker SDK 封装 - 统一 Docker 容器和镜像操作的接口层"""
+"""Docker SDK for Python 封装 - 统一 Docker 容器和镜像操作的接口层"""
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
 try:
     import docker
-    from docker.errors import NotFound as DockerNotFound, APIError as DockerAPIError
+    from docker.errors import NotFound as DockerNotFound, APIError as DockerAPIError, DockerException
 except ImportError:
     docker = None
     DockerNotFound = Exception
     DockerAPIError = Exception
+    DockerException = Exception
 
 
 def _parse_since_until(value: str) -> datetime | None:
@@ -22,16 +23,13 @@ def _parse_since_until(value: str) -> datetime | None:
     if not value:
         return None
 
-    # 相对时间格式：数字 + 单位（s/m/h/d）
     if len(value) >= 2 and value[-1] in "smhd" and value[:-1].isdigit():
         n = int(value[:-1])
         delta = {"s": timedelta(seconds=n), "m": timedelta(minutes=n),
                  "h": timedelta(hours=n), "d": timedelta(days=n)}[value[-1]]
         return datetime.now(timezone.utc) - delta
 
-    # RFC3339 / ISO 格式
     try:
-        # 兼容带 Z 结尾的时间
         v = value.replace("Z", "+00:00") if value.endswith("Z") else value
         dt = datetime.fromisoformat(v)
         if dt.tzinfo is None:
@@ -58,7 +56,7 @@ def _extract_mounts(attrs: dict) -> list[dict]:
 
 
 def _extract_health(state: dict) -> dict:
-    """从容器 state 提取健康检查信息"""
+    """从容器 state 提取健康检查状态"""
     health = state.get("Health", {})
     if not health:
         return {"status": "none", "failing_streak": 0, "log": []}
@@ -83,7 +81,12 @@ def _change_kind_str(kind: int) -> str:
 
 
 class DockerClient:
-    """Docker 客户端封装（延迟连接，首次调用时才连接 Docker daemon）"""
+    """Docker 客户端封装（延迟连接，首次调用时才连接 Docker daemon）
+
+    如果 Docker daemon 不可用（未启动、无权限等），所有操作优雅降级：
+    - list_containers/list_images：返回空列表
+    - 其他操作：返回 {"success": False, "error": "..."}
+    """
 
     def __init__(self, socket_path: str = "/var/run/docker.sock"):
         if docker is None:
@@ -93,17 +96,29 @@ class DockerClient:
             )
         self._socket_path = socket_path
         self._client = None
+        self._available = None
 
-    def _ensure_connected(self):
-        """延迟连接 Docker daemon，仅首次调用时建立连接"""
-        if self._client is None:
+    def _ensure_connected(self) -> bool:
+        """延迟连接 Docker daemon，仅首次调用时建立连接
+        返回值：连接成功返回 True，失败返回 False
+        """
+        if self._client is not None:
+            return self._available
+        try:
             self._client = docker.DockerClient(base_url=f"unix://{self._socket_path}")
+            self._client.ping()
+            self._available = True
+            return True
+        except (DockerAPIError, DockerException, FileNotFoundError, OSError):
+            self._available = False
+            return False
 
     # ── 容器操作 ──
 
     def list_containers(self, status: str | None = None, all: bool = False) -> list[dict]:
-        """列出容器"""
-        self._ensure_connected()
+        """列出容器（Docker 不可用时返回空列表）"""
+        if not self._ensure_connected():
+            return []
         filters = {}
         if status and status != "all":
             filters["status"] = status
@@ -111,12 +126,12 @@ class DockerClient:
             containers = self._client.containers.list(all=True, filters=filters if status != "all" else {})
         else:
             containers = self._client.containers.list(filters=filters)
-
         return [self._format_container(c) for c in containers]
 
     def get_container(self, container_id: str) -> dict:
         """获取单个容器详情"""
-        self._ensure_connected()
+        if not self._ensure_connected():
+            return {"success": False, "error": "Docker daemon is not available"}
         try:
             container = self._client.containers.get(container_id)
             return self._format_container_detail(container)
@@ -127,7 +142,8 @@ class DockerClient:
 
     def start_container(self, container_id: str) -> dict:
         """启动容器"""
-        self._ensure_connected()
+        if not self._ensure_connected():
+            return {"success": False, "error": "Docker daemon is not available"}
         try:
             container = self._client.containers.get(container_id)
             container.start()
@@ -140,7 +156,8 @@ class DockerClient:
 
     def stop_container(self, container_id: str) -> dict:
         """停止容器"""
-        self._ensure_connected()
+        if not self._ensure_connected():
+            return {"success": False, "error": "Docker daemon is not available"}
         try:
             container = self._client.containers.get(container_id)
             container.stop()
@@ -153,7 +170,8 @@ class DockerClient:
 
     def restart_container(self, container_id: str) -> dict:
         """重启容器"""
-        self._ensure_connected()
+        if not self._ensure_connected():
+            return {"success": False, "error": "Docker daemon is not available"}
         try:
             container = self._client.containers.get(container_id)
             container.restart()
@@ -166,7 +184,8 @@ class DockerClient:
 
     def remove_container(self, container_id: str, force: bool = False) -> dict:
         """删除容器"""
-        self._ensure_connected()
+        if not self._ensure_connected():
+            return {"success": False, "error": "Docker daemon is not available"}
         try:
             container = self._client.containers.get(container_id)
             container.remove(force=force)
@@ -185,7 +204,8 @@ class DockerClient:
         timestamps: bool = False,
     ) -> dict:
         """获取容器日志（支持时间范围过滤和时间戳）"""
-        self._ensure_connected()
+        if not self._ensure_connected():
+            return {"success": False, "logs": "", "error": "Docker daemon is not available"}
         try:
             container = self._client.containers.get(container_id)
             kwargs = {"stdout": True, "stderr": True, "timestamps": timestamps}
@@ -206,35 +226,31 @@ class DockerClient:
                 "logs": logs.decode("utf-8", errors="replace") if isinstance(logs, bytes) else str(logs),
             }
         except DockerNotFound:
-            return {"success": False, "error": f"Container '{container_id}' not found"}
+            return {"success": False, "logs": "", "error": f"Container '{container_id}' not found"}
         except DockerAPIError as e:
-            return {"success": False, "error": str(e)}
+            return {"success": False, "logs": "", "error": str(e)}
 
     def get_container_stats(self, container_id: str) -> dict:
         """获取容器实时资源统计（单次采样）"""
-        self._ensure_connected()
+        if not self._ensure_connected():
+            return {"success": False, "error": "Docker daemon is not available"}
         try:
             container = self._client.containers.get(container_id)
             raw = container.stats(stream=False)
-
             cpu_percent = 0.0
             cpu_usage = raw.get("cpu_stats", {}).get("cpu_usage", {})
             system_cpu = raw.get("cpu_stats", {}).get("system_cpu_usage", 0)
             online_cpus = raw.get("cpu_stats", {}).get("online_cpus", 1)
             total_usage = cpu_usage.get("total_usage", 0)
-
             if system_cpu > 0:
                 cpu_percent = round((total_usage / system_cpu) * online_cpus * 100.0, 2)
-
             mem_stats = raw.get("memory_stats", {})
             mem_usage = mem_stats.get("usage", 0)
             mem_limit = mem_stats.get("limit", 1)
             mem_percent = round((mem_usage / mem_limit) * 100.0, 2)
-
             networks = raw.get("networks", {})
             net_rx = sum(n.get("rx_bytes", 0) for n in networks.values())
             net_tx = sum(n.get("tx_bytes", 0) for n in networks.values())
-
             return {
                 "success": True,
                 "container_id": container_id,
@@ -253,14 +269,19 @@ class DockerClient:
     # ── 镜像操作 ──
 
     def list_images(self, name_filter: str | None = None) -> list[dict]:
-        """列出镜像"""
-        self._ensure_connected()
-        images = self._client.images.list(name=name_filter)
-        return [self._format_image(img) for img in images]
+        """列出镜像（Docker 不可用时返回空列表）"""
+        if not self._ensure_connected():
+            return []
+        try:
+            images = self._client.images.list(name=name_filter)
+            return [self._format_image(img) for img in images]
+        except DockerAPIError:
+            return []
 
     def pull_image(self, image_name: str, tag: str | None = None) -> dict:
         """拉取镜像"""
-        self._ensure_connected()
+        if not self._ensure_connected():
+            return {"success": False, "error": "Docker daemon is not available"}
         try:
             image = self._client.images.pull(image_name, tag=tag or "latest")
             return {
@@ -273,7 +294,8 @@ class DockerClient:
 
     def remove_image(self, image_name: str, force: bool = False) -> dict:
         """删除镜像"""
-        self._ensure_connected()
+        if not self._ensure_connected():
+            return {"success": False, "error": "Docker daemon is not available"}
         try:
             self._client.images.remove(image_name, force=force)
             return {"success": True, "removed": image_name}
@@ -286,7 +308,8 @@ class DockerClient:
 
     def get_container_processes(self, container_id: str) -> dict:
         """获取容器内运行的进程列表"""
-        self._ensure_connected()
+        if not self._ensure_connected():
+            return {"success": False, "error": "Docker daemon is not available"}
         try:
             container = self._client.containers.get(container_id)
             processes = container.top()
@@ -302,8 +325,9 @@ class DockerClient:
             return {"success": False, "error": str(e)}
 
     def get_container_health(self, container_id: str) -> dict:
-        """获取容器健康检查状态（排查"容器为什么不健康"）"""
-        self._ensure_connected()
+        """获取容器健康检查状态"""
+        if not self._ensure_connected():
+            return {"success": False, "error": "Docker daemon is not available"}
         try:
             container = self._client.containers.get(container_id)
             state = container.attrs.get("State", {})
@@ -329,8 +353,9 @@ class DockerClient:
             return {"success": False, "error": str(e)}
 
     def get_container_networks(self, container_id: str) -> dict:
-        """获取容器网络详情（排查"容器连不上网"）"""
-        self._ensure_connected()
+        """获取容器网络详情"""
+        if not self._ensure_connected():
+            return {"success": False, "error": "Docker daemon is not available"}
         try:
             container = self._client.containers.get(container_id)
             container.reload()
@@ -356,8 +381,9 @@ class DockerClient:
             return {"success": False, "error": str(e)}
 
     def get_container_mounts(self, container_id: str) -> dict:
-        """获取容器挂载卷详情（排查"数据丢失/权限不对"）"""
-        self._ensure_connected()
+        """获取容器挂载卷详情"""
+        if not self._ensure_connected():
+            return {"success": False, "error": "Docker daemon is not available"}
         try:
             container = self._client.containers.get(container_id)
             mounts = _extract_mounts(container.attrs)
@@ -372,12 +398,11 @@ class DockerClient:
             return {"success": False, "error": str(e)}
 
     def get_container_changes(self, container_id: str) -> dict:
-        """获取容器文件系统变更（排查"容器里改了什么"）"""
-        self._ensure_connected()
+        """获取容器文件系统变更"""
+        if not self._ensure_connected():
+            return {"success": False, "error": "Docker daemon is not available"}
         try:
             container = self._client.containers.get(container_id)
-            # Docker SDK for Python 的方法名是 diff()，对应 /containers/{id}/changes API
-            # 注意：某些 Docker 版本/平台下 diff() 可能返回 None，需兜底
             changes = container.diff() or []
             return {
                 "success": True,
@@ -395,44 +420,53 @@ class DockerClient:
     # ── 网络管理 ──
 
     def list_networks(self) -> list[dict]:
-        """列出所有 Docker 网络"""
-        self._ensure_connected()
-        networks = self._client.networks.list()
-        return [
-            {
-                "id": n.short_id,
-                "name": n.name,
-                "driver": n.attrs.get("Driver", ""),
-                "scope": n.attrs.get("Scope", ""),
-                "subnet": n.attrs.get("IPAM", {}).get("Config", [{}])[0].get("Subnet", "") if n.attrs.get("IPAM", {}).get("Config") else "",
-                "containers": list(n.attrs.get("Containers", {}).values()),
-            }
-            for n in networks
-        ]
+        """列出所有 Docker 网络（Docker 不可用时返回空列表）"""
+        if not self._ensure_connected():
+            return []
+        try:
+            networks = self._client.networks.list()
+            return [
+                {
+                    "id": n.short_id,
+                    "name": n.name,
+                    "driver": n.attrs.get("Driver", ""),
+                    "scope": n.attrs.get("Scope", ""),
+                    "subnet": n.attrs.get("IPAM", {}).get("Config", [{}])[0].get("Subnet", "") if n.attrs.get("IPAM", {}).get("Config") else "",
+                    "containers": list(n.attrs.get("Containers", {}).values()),
+                }
+                for n in networks
+            ]
+        except DockerAPIError:
+            return []
 
     # ── 卷管理 ──
 
     def list_volumes(self) -> list[dict]:
-        """列出所有 Docker 卷"""
-        self._ensure_connected()
-        volumes = self._client.volumes.list()
-        return [
-            {
-                "name": v.name,
-                "driver": v.attrs.get("Driver", ""),
-                "mountpoint": v.attrs.get("Mountpoint", ""),
-                "created": v.attrs.get("CreatedAt", ""),
-                "size": v.attrs.get("Options", {}).get("size", ""),
-                "in_use": v.attrs.get("InUse", False),
-            }
-            for v in volumes
-        ]
+        """列出所有 Docker 卷（Docker 不可用时返回空列表）"""
+        if not self._ensure_connected():
+            return []
+        try:
+            volumes = self._client.volumes.list()
+            return [
+                {
+                    "name": v.name,
+                    "driver": v.attrs.get("Driver", ""),
+                    "mountpoint": v.attrs.get("Mountpoint", ""),
+                    "created": v.attrs.get("CreatedAt", ""),
+                    "size": v.attrs.get("Options", {}).get("size", ""),
+                    "in_use": v.attrs.get("InUse", False),
+                }
+                for v in volumes
+            ]
+        except DockerAPIError:
+            return []
 
     # ── 镜像诊断 ──
 
     def inspect_image(self, image_name: str) -> dict:
-        """获取镜像详细信息（排查"镜像有没有问题"）"""
-        self._ensure_connected()
+        """获取镜像详细信息"""
+        if not self._ensure_connected():
+            return {"success": False, "error": "Docker daemon is not available"}
         try:
             image = self._client.images.get(image_name)
             attrs = image.attrs
@@ -490,7 +524,6 @@ class DockerClient:
             "image": container.image.tags[0] if container.image.tags else str(container.image.id[:12]),
             "created": attrs.get("Created", ""),
             "labels": container.labels,
-            # 诊断关键字段
             "state": {
                 "status": state.get("Status", ""),
                 "running": state.get("Running", False),
