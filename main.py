@@ -113,7 +113,7 @@ class AuthMiddleware(Middleware):
 
 
 def _init_config_files() -> None:
-    """首次启动时自动生成默认配置模板（自动处理挂载卷权限）"""
+    """首次启动时自动生成默认配置模板（自动处理挂载卷权限，支持环境变量初始化）"""
     # 确保 config 目录存在
     try:
         CONFIG_DIR.mkdir(parents=True, exist_ok=True)
@@ -133,6 +133,7 @@ def _init_config_files() -> None:
         )
         raise
 
+    # 处理 settings.yaml
     settings_file = CONFIG_DIR / "settings.yaml"
     if not settings_file.exists():
         template = TEMPLATE_DIR / "settings.yaml"
@@ -146,6 +147,7 @@ def _init_config_files() -> None:
             )
             raise
 
+    # 处理 auth.yaml，支持 INITIAL_API_KEYS 环境变量
     auth_file = SECRETS_DIR / "auth.yaml"
     if not auth_file.exists():
         template = TEMPLATE_DIR / "auth.yaml"
@@ -167,6 +169,28 @@ def _init_config_files() -> None:
             )
             raise
 
+    # 从环境变量 INITIAL_API_KEYS 初始化 API Key（格式：name1:key1:role1,name2:key2:role2）
+    initial_api_keys = os.environ.get("INITIAL_API_KEYS", "")
+    if initial_api_keys and initial_api_keys.strip():
+        auth_config = AuthConfig.from_yaml(str(auth_file))
+        for pair in initial_api_keys.strip().split(","):
+            parts = pair.strip().split(":")
+            if len(parts) == 3:
+                name, key, role = parts[0], parts[1], parts[2]
+                # 检查是否已存在同名 key
+                existing = next((k for k in auth_config.keys if k.name == name), None)
+                if existing:
+                    logger.warning(f"API key '{name}' already exists, skipping")
+                    continue
+                # 添加新 key
+                auth_config.keys.append(
+                    AuthConfig.Key(name=name, key=key, role=role)
+                )
+                logger.info(f"Created API key from environment: {name} (role: {role})")
+        auth_config.to_yaml(str(auth_file))
+        logger.info(f"Updated auth config with initial API keys: {auth_file}")
+
+    # 处理 admin.yaml，支持 ADMIN_USERNAME、ADMIN_PASSWORD 环境变量
     admin_file = SECRETS_DIR / "admin.yaml"
     if not admin_file.exists():
         template = TEMPLATE_DIR / "admin.yaml"
@@ -187,6 +211,28 @@ def _init_config_files() -> None:
                 "Ensure the mounted secrets directory is writable by the container user (check PUID/PGID)."
             )
             raise
+
+    # 从环境变量设置管理员用户名和密码
+    admin_username = os.environ.get("ADMIN_USERNAME", "admin")
+    admin_password = os.environ.get("ADMIN_PASSWORD", "")
+    from core.admin_auth import AdminAuth
+    admin_auth = AdminAuth(str(admin_file), session_secret="temp-secret-just-for-init")
+    # 读取当前 config
+    try:
+        current_config = AdminConfig.from_yaml(str(admin_file))
+    except Exception:
+        current_config = None
+
+    if admin_password and admin_password.strip():
+        # 如果密码不为空，设置/更新密码
+        admin_auth.set_password(admin_username, admin_password.strip())
+        logger.info(f"Set admin password from environment: {admin_file}")
+    elif current_config and not current_config.password_hash:
+        # 密码为空，生成随机密码并警告
+        import secrets
+        random_password = secrets.token_urlsafe(16)
+        admin_auth.set_password(admin_username, random_password)
+        logger.warning(f"Generated random admin password: '{random_password}'. Please change this immediately!")
 
     # 确保 secrets 目录下所有文件权限为 600
     try:
@@ -237,7 +283,7 @@ def create_app() -> FastMCP:
     mcp = FastMCP(
         name="Docker-MCPilotS",
         instructions="Docker container and image management server with system diagnostics for Synology NAS.",
-        version="1.0.0",
+        version="2.0.0",
     )
 
     # 注册认证中间件
@@ -257,7 +303,7 @@ def create_app() -> FastMCP:
     @mcp.custom_route("/health", methods=["GET"])
     async def health_check(request):
         from starlette.responses import JSONResponse
-        return JSONResponse({"status": "ok", "version": "1.0.0"})
+        return JSONResponse({"status": "ok", "version": "2.0.0"})
 
     # Web UI 初始化
     admin_yaml = SECRETS_DIR / "admin.yaml"

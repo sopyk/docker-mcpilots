@@ -20,10 +20,16 @@ services:
       - ./config:/app/config
       - ./secrets:/app/secrets
     environment:
+      # 时区
       - TZ=Asia/Shanghai
+      # 配置目录（通常不需要修改）
       - MCP_CONFIG_DIR=/app/config
       - MCP_SECRETS_DIR=/app/secrets
-      # 群晖 DSM 默认管理员 UID=1026, GID=100
-      # 其他系统用 id 命令查看你的实际用户，按需修改
+      # 文件权限（群晖 DSM 默认管理员 UID=1026, GID=100，其他系统用 id 命令查看）
       - PUID=1026
       - PGID=100
+      # Web UI 管理员密码（首次启动时设置，后续修改请用 Web UI）
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=change-me
+      # 初始 API Key（格式：name1:key1:role1,name2:key2:role2，可选）
+      # - INITIAL_API_KEYS=default-admin:sk-dm-your-key:admin
