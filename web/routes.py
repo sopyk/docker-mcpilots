@@ -156,6 +156,12 @@ def register_web_routes(
         )
         return Response(html, media_type="text/html")
 
+    # 关于页面（无需登录）
+    @mcp.custom_route("/ui/about", methods=["GET"])
+    async def about_page(request):
+        html = env.get_template("about.html").render(user=None)
+        return Response(html, media_type="text/html")
+
     # ── 容器管理页面 ──
 
     @mcp.custom_route("/ui/containers", methods=["GET"])
