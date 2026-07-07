@@ -155,6 +155,56 @@
     </div>
 
     <div class="section">
+        <h2>管理员账号</h2>
+        <form method="post" action="/ui/settings/password" class="settings-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <div class="settings-group">
+                <h3>修改账号信息</h3>
+                <p class="setting-hint">修改密码或用户名后需要重新登录。若只需改用户名，请保持密码字段不变并填入原密码。</p>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-name">用户名</span>
+                        <span class="setting-desc">当前登录使用的管理员用户名</span>
+                    </div>
+                    <div class="setting-control">
+                        <input type="text" name="admin_username" value="{{ admin_username }}" autocomplete="username">
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-name">旧密码</span>
+                        <span class="setting-desc">验证身份，必须填写</span>
+                    </div>
+                    <div class="setting-control">
+                        <input type="password" name="old_password" required autocomplete="current-password">
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-name">新密码</span>
+                        <span class="setting-desc">至少 6 位；留空则不修改密码</span>
+                    </div>
+                    <div class="setting-control">
+                        <input type="password" name="new_password" autocomplete="new-password">
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-name">确认新密码</span>
+                        <span class="setting-desc">再次输入新密码</span>
+                    </div>
+                    <div class="setting-control">
+                        <input type="password" name="confirm_password" autocomplete="new-password">
+                    </div>
+                </div>
+            </div>
+            <div class="settings-actions">
+                <button type="submit" class="btn btn-blue">更新账号</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="section">
         <h2>settings.yaml 原始内容</h2>
         <pre class="log-view">{{ raw_yaml }}</pre>
     </div>

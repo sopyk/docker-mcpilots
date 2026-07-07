@@ -131,9 +131,10 @@ def update_api_key(
     key: str | None = None,
     scope_include: str = "",
     scope_exclude: str = "",
+    new_name: str | None = None,
     app_state=None,
 ) -> dict[str, Any]:
-    """更新现有 API Key。name 用于定位，不可修改。"""
+    """更新现有 API Key。name 用于定位，new_name 非空则重命名。"""
     if not name:
         return {"success": False, "error": "名称不能为空"}
 
@@ -148,6 +149,16 @@ def update_api_key(
 
     if target is None:
         return {"success": False, "error": f"未找到名为 '{name}' 的 API Key"}
+
+    final_name = name
+    if new_name is not None:
+        nn = new_name.strip()
+        if not nn:
+            return {"success": False, "error": "名称不能为空"}
+        if nn != name and any(k.get("name") == nn for k in keys):
+            return {"success": False, "error": f"已存在名为 '{nn}' 的 API Key"}
+        target["name"] = nn
+        final_name = nn
 
     if role is not None:
         target["role"] = role
@@ -170,7 +181,7 @@ def update_api_key(
     if app_state is not None:
         app_state.reload_auth(auth_yaml)
 
-    return {"success": True, "name": name}
+    return {"success": True, "name": final_name, "renamed": final_name != name}
 
 
 def delete_api_key(auth_yaml: str, name: str, app_state=None) -> dict[str, Any]:

@@ -548,6 +548,12 @@ body {
   padding-bottom: var(--space-2);
   border-bottom: 1px solid var(--border);
 }
+.setting-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 var(--space-3) 0;
+  line-height: 1.5;
+}
 .setting-row {
   display: flex;
   justify-content: space-between;

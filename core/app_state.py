@@ -26,14 +26,16 @@ class AppState:
         audit_logger: "AuditLogger | None" = None,
         auth_yaml_path: str | None = None,
         settings_yaml_path: str | None = None,
+        admin_yaml_path: str | None = None,
     ):
         self.settings = settings
         self.auth_config = auth_config
         self.audit_logger = audit_logger
         self.auth_yaml_path = auth_yaml_path
         self.settings_yaml_path = settings_yaml_path
-        self.docker_client: "DockerClient | None" = None  # 后设置
-        self.system_diag: "SystemDiag | None" = None       # 后设置
+        self.admin_yaml_path = admin_yaml_path
+        self.docker_client: "DockerClient | None" = None
+        self.system_diag: "SystemDiag | None" = None
         self.permission_checker = PermissionChecker(self.auth_config)
 
     def reload_auth(self, auth_yaml_path: str | None = None) -> None:

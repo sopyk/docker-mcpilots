@@ -208,6 +208,7 @@ def create_app() -> FastMCP:
     # 加载配置
     settings = Settings.from_yaml(str(CONFIG_DIR / "settings.yaml"))
     auth_config = AuthConfig.from_yaml(str(SECRETS_DIR / "auth.yaml"))
+    admin_yaml = SECRETS_DIR / "admin.yaml"
 
     # 创建 AppState 作为全局状态容器，支持热加载
     docker_client = DockerClient(socket_path=settings.socket_path)
@@ -220,6 +221,7 @@ def create_app() -> FastMCP:
         audit_logger=audit_logger,
         auth_yaml_path=str(SECRETS_DIR / "auth.yaml"),
         settings_yaml_path=str(CONFIG_DIR / "settings.yaml"),
+        admin_yaml_path=str(admin_yaml),
     )
     # 手动设置 docker_client 和 system_diag，因为 AppState 初始化时还没它们
     app_state.docker_client = docker_client  # type: ignore

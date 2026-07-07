@@ -1,12 +1,14 @@
 """系统设置管理工具函数
 
-提供对 settings.yaml 的读写，支持热加载到 AppState。
+提供对 settings.yaml 和 admin.yaml 的读写，支持热加载到 AppState。
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any
 
+import bcrypt
 import yaml
 
 
@@ -42,6 +44,28 @@ def _save_settings_yaml(path: str, data: dict[str, Any]) -> None:
     p.parent.mkdir(parents=True, exist_ok=True)
     with p.open("w", encoding="utf-8") as f:
         yaml.safe_dump(data, f, allow_unicode=True, sort_keys=False)
+
+
+def _load_admin_yaml(path: str) -> dict[str, Any]:
+    p = Path(path)
+    if not p.exists():
+        raise ValueError(f"Admin config not found: {path}")
+    with p.open("r", encoding="utf-8") as f:
+        data = yaml.safe_load(f) or {}
+    if not isinstance(data, dict):
+        raise ValueError(f"Invalid admin config format: {path}")
+    return data
+
+
+def _save_admin_yaml(path: str, data: dict[str, Any]) -> None:
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with p.open("w", encoding="utf-8") as f:
+        yaml.safe_dump(data, f, allow_unicode=True, sort_keys=False)
+    try:
+        os.chmod(p, 0o600)
+    except OSError:
+        pass
 
 
 def update_settings_from_form(settings_yaml: str, form_data: dict[str, Any], app_state=None) -> dict[str, Any]:
@@ -89,3 +113,56 @@ def update_settings_from_form(settings_yaml: str, form_data: dict[str, Any], app
         app_state.reload_settings(settings_yaml)
 
     return {"success": True}
+
+
+def change_admin_password(
+    admin_yaml: str,
+    old_password: str,
+    new_password: str,
+    new_username: str | None = None,
+    app_state=None,
+) -> dict[str, Any]:
+    """修改管理员账号密码（可同时修改用户名）
+
+    Args:
+        admin_yaml: admin.yaml 路径
+        old_password: 旧密码（用于验证身份）
+        new_password: 新密码（至少 6 位）；若留空则不修改密码
+        new_username: 新用户名（若传则更新，否则保持不变）
+        app_state: 可选 AppState（用于记录）
+
+    Returns:
+        {"success": True} 或 {"success": False, "error": "..."}
+    """
+    data = _load_admin_yaml(admin_yaml)
+    current_username = str(data.get("username", ""))
+    current_hash = str(data.get("password_hash", ""))
+
+    if not old_password or not bcrypt.checkpw(
+        old_password.encode("utf-8"), current_hash.encode("utf-8")
+    ):
+        return {"success": False, "error": "旧密码不正确"}
+
+    changed = False
+    new_pw = new_password.strip()
+    if new_pw:
+        if len(new_pw) < 6:
+            return {"success": False, "error": "新密码至少需要 6 位"}
+        data["password_hash"] = bcrypt.hashpw(new_pw.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+        changed = True
+
+    final_username = current_username
+    if new_username is not None:
+        u = new_username.strip()
+        if not u:
+            return {"success": False, "error": "用户名不能为空"}
+        if u != current_username:
+            data["username"] = u
+            final_username = u
+            changed = True
+
+    if not changed:
+        return {"success": True, "username": final_username}
+
+    _save_admin_yaml(admin_yaml, data)
+    return {"success": True, "username": final_username}
