@@ -21,9 +21,9 @@ if [ "${CURRENT_UID}" != "${PUID}" ] || [ "${CURRENT_GID}" != "${PGID}" ]; then
     if getent group "${PGID}" >/dev/null 2>&1; then
         GROUP_NAME=$(getent group "${PGID}" | cut -d: -f1)
         echo "[entrypoint] GID ${PGID} already exists as group '${GROUP_NAME}'"
-        # 删除现有用户，重新创建
+        # 删除现有用户，重新创建（使用 -G 指定主组）
         deluser mcpuser 2>/dev/null || true
-        adduser -S -D -h /app -u "${PUID}" mcpuser "${GROUP_NAME}"
+        adduser -S -D -h /app -u "${PUID}" -G "${GROUP_NAME}" mcpuser
     else
         # 修改组和用户 ID
         deluser mcpuser 2>/dev/null || true
@@ -42,10 +42,24 @@ fi
 chown -R "${PUID}:${PGID}" /app/config /app/secrets 2>/dev/null || true
 chmod 755 /app/config /app/secrets 2>/dev/null || true
 
-# 修正 docker.sock 的组权限，让 mcpuser 的主组可以访问
+# 处理 docker.sock 权限：把 mcpuser 加入 docker.sock 所属的组
+# 这样不需要修改 socket 本身的权限，更安全
 if [ -S /var/run/docker.sock ]; then
-    chgrp "${PGID}" /var/run/docker.sock 2>/dev/null || true
-    echo "[entrypoint] Set docker.sock group to GID=${PGID}"
+    DOCKER_GID=$(stat -c '%g' /var/run/docker.sock 2>/dev/null || echo "")
+    if [ -n "${DOCKER_GID}" ]; then
+        # 检查这个 GID 是否已有组名
+        if getent group "${DOCKER_GID}" >/dev/null 2>&1; then
+            DOCKER_GROUP=$(getent group "${DOCKER_GID}" | cut -d: -f1)
+            echo "[entrypoint] Adding mcpuser to docker socket group '${DOCKER_GROUP}' (GID=${DOCKER_GID})"
+            addgroup mcpuser "${DOCKER_GROUP}" 2>/dev/null || true
+        else
+            # 创建一个临时组，然后把用户加进去
+            DOCKER_GROUP="docker-sock"
+            addgroup -g "${DOCKER_GID}" "${DOCKER_GROUP}" 2>/dev/null || true
+            echo "[entrypoint] Created group '${DOCKER_GROUP}' with GID=${DOCKER_GID} for docker socket access"
+            addgroup mcpuser "${DOCKER_GROUP}" 2>/dev/null || true
+        fi
+    fi
 fi
 
 echo "[entrypoint] Running as mcpuser (UID=${PUID}, GID=${PGID})"

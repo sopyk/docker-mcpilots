@@ -216,7 +216,7 @@ def _init_config_files() -> None:
     # 从环境变量设置管理员用户名和密码
     admin_username = os.environ.get("ADMIN_USERNAME", "admin")
     admin_password = os.environ.get("ADMIN_PASSWORD", "")
-    from core.admin_auth import AdminAuth
+    from core.admin_auth import AdminAuth, AdminConfig
     admin_auth = AdminAuth(str(admin_file), session_secret="temp-secret-just-for-init")
     # 读取当前 config
     try:
