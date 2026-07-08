@@ -20,9 +20,9 @@
             <td><a href="/ui/containers/{{ c.id }}" class="link">{{ c.name }}</a></td>
             <td>{{ c.image }}</td>
             <td>
-                {% if c.status.startswith("Up") %}
+                {% if c.status == "running" %}
                 {% set status_class = "green" %}
-                {% elif c.status.startswith("Restarting") or "unhealthy" in c.status or "dead" in c.status %}
+                {% elif c.status == "restarting" or c.status == "dead" %}
                 {% set status_class = "red" %}
                 {% else %}
                 {% set status_class = "gray" %}

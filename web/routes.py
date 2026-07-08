@@ -198,7 +198,9 @@ def register_web_routes(
     # 关于页面（无需登录）
     @mcp.custom_route("/ui/about", methods=["GET"])
     async def about_page(request):
-        html = env.get_template("about.html").render(user=None)
+        token = request.cookies.get("session")
+        user = session_mgr.validate_token(token) if token else None
+        html = env.get_template("about.html").render(user=user)
         return Response(html, media_type="text/html")
 
     # ── 容器管理页面 ──
