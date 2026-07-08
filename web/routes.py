@@ -175,6 +175,11 @@ def register_web_routes(
             return RedirectResponse("/ui/login", status_code=303)
         docker = app_state.docker_client
         sysdiag = app_state.system_diag
+        
+        # 检查 Docker 连接
+        docker_available = docker._ensure_connected() if docker else False
+        docker_error = docker.get_last_error() if (docker and not docker_available) else None
+        
         containers = docker.list_containers(all=True) if docker else []
         running = [c for c in containers if c.get("status", "").startswith("Up")]
         images = docker.list_images() if docker else []
@@ -192,6 +197,8 @@ def register_web_routes(
             disk_percent=disk.get("partitions", [{}])[0].get("percent", 0) if disk.get("partitions") else 0,
             recent_logs=recent_logs,
             settings=app_state.settings,
+            docker_available=docker_available,
+            docker_error=docker_error,
         )
         return Response(html, media_type="text/html")
 
@@ -211,10 +218,16 @@ def register_web_routes(
         if not user:
             return RedirectResponse("/ui/login", status_code=303)
         docker = app_state.docker_client
+        
+        # 检查 Docker 连接
+        docker_available = docker._ensure_connected() if docker else False
+        docker_error = docker.get_last_error() if (docker and not docker_available) else None
+        
         containers = docker.list_containers(all=True) if docker else []
         token = csrf.generate_token()
         html = env.get_template("containers.html").render(
-            user=user, containers=containers, csrf_token=token, error=""
+            user=user, containers=containers, csrf_token=token, error="",
+            docker_available=docker_available, docker_error=docker_error
         )
         resp = Response(html, media_type="text/html")
         resp.set_cookie("csrf_token", token, httponly=True, samesite="strict")

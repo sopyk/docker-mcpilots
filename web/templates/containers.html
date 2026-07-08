@@ -5,6 +5,24 @@
 <main class="content">
     <h1>容器管理</h1>
     {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    
+    {% if not docker_available %}
+    <div class="error-box" style="background: #fee2e2; border: 1px solid #f87171; border-radius: 8px; padding: 16px; margin: 16px 0;">
+        <h3 style="margin:0 0 8px 0; color:#991b1b;">⚠️ Docker 连接失败</h3>
+        <p style="margin:0; color:#7f1d1d;">请检查：
+        <ul style="margin: 8px 0 0 0; padding-left: 20px;">
+            <li>Docker socket 是否正确挂载：<code>/var/run/docker.sock</code></li>
+            <li>PUID/PGID 设置是否正确（群晖一般是 1026/100）</li>
+            <li>查看容器日志：<code>docker logs docker-mcpilots</code></li>
+        </ul>
+        {% if docker_error %}
+        <p style="margin: 8px 0 0 0; color:#7f1d1d; font-family: monospace; font-size: 12px;">
+            错误详情：{{ docker_error }}
+        </p>
+        {% endif %}
+    </div>
+    {% endif %}
+    
     <table class="data-table">
         <thead>
             <tr>

@@ -340,9 +340,10 @@ def create_app() -> FastMCP:
 if __name__ == "__main__":
     mcp = create_app()
     settings = Settings.from_yaml(str(CONFIG_DIR / "settings.yaml"))
+    # 禁用 host origin 保护，允许从任意地址访问（NAS场景安全）
     mcp.run(
         transport="http",
         host=settings.host,
         port=settings.port,
-        host_origin_protection=False,
+        uvicorn_config={"forwarded_allow_ips": "*", "proxy_headers": False},
     )

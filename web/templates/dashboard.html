@@ -25,6 +25,23 @@
     </div>
     <h1>欢迎，{{ user }}</h1>
 
+    {% if not docker_available %}
+    <div class="error-box" style="background: #fee2e2; border: 1px solid #f87171; border-radius: 8px; padding: 16px; margin: 16px 0;">
+        <h3 style="margin:0 0 8px 0; color:#991b1b;">⚠️ Docker 连接失败</h3>
+        <p style="margin:0; color:#7f1d1d;">请检查：
+        <ul style="margin: 8px 0 0 0; padding-left: 20px;">
+            <li>Docker socket 是否正确挂载：<code>/var/run/docker.sock</code></li>
+            <li>PUID/PGID 设置是否正确（群晖一般是 1026/100）</li>
+            <li>查看容器日志：<code>docker logs docker-mcpilots</code></li>
+        </ul>
+        {% if docker_error %}
+        <p style="margin: 8px 0 0 0; color:#7f1d1d; font-family: monospace; font-size: 12px;">
+            错误详情：{{ docker_error }}
+        </p>
+        {% endif %}
+    </div>
+    {% endif %}
+
     <div class="stats-rings">
         <div class="stat-card ring-card">
             <h3>CPU 使用率</h3>
