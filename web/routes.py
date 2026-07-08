@@ -578,4 +578,5 @@ def register_web_routes(
             ".ico": "image/x-icon",
         }
         media = media_map.get(ext, "text/plain")
-        return Response(f.read_bytes(), media_type=media)
+        headers = {"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"}
+        return Response(f.read_bytes(), media_type=media, headers=headers)
