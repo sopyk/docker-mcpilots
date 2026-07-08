@@ -14,11 +14,22 @@ body {
 }
 .banner-img {
   width: 100%;
-  max-height: 280px;
+  max-height: 200px;
   height: auto;
   border-radius: var(--radius-card);
   object-fit: cover;
   display: block;
+}
+
+@media (max-width: 768px) {
+  .banner-img {
+    max-height: 140px;
+  }
+}
+@media (max-width: 480px) {
+  .banner-img {
+    max-height: 100px;
+  }
 }
 .navbar {
   background-color: var(--bg-card);
@@ -215,6 +226,18 @@ body {
   background-color: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
+}
+.login-card .login-logo {
+  width: 100px;
+  height: auto;
+  border-radius: 16px;
+  margin: 0 auto 16px auto;
+  display: block;
+}
+@media (max-width: 480px) {
+  .login-card .login-logo {
+    width: 80px;
+  }
 }
 .login-card h1 {
   font-family: var(--font-mono);
