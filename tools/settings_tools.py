@@ -68,6 +68,14 @@ def update_settings_from_form(settings_yaml: str, form_data: dict[str, Any], app
         if level not in VALID_LOG_LEVELS:
             return {"success": False, "error": f"无效的日志级别: {level}"}
         server["log_level"] = level
+    if "host_origin_protection" in form_data:
+        server["host_origin_protection"] = form_data["host_origin_protection"] in (True, "on", "1", "true")
+    if "allowed_hosts" in form_data:
+        hosts_str = str(form_data["allowed_hosts"]).strip()
+        if hosts_str:
+            server["allowed_hosts"] = [h.strip() for h in hosts_str.split(",") if h.strip()]
+        else:
+            server["allowed_hosts"] = []
 
     docker_cfg = data.setdefault("docker", {})
     if "socket_path" in form_data:

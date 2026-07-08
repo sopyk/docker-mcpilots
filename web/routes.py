@@ -441,11 +441,11 @@ def register_web_routes(
         settings_yaml = app_state.settings_yaml_path or str(Path("dev-config") / "settings.yaml")
 
         form_dict: dict[str, Any] = {}
-        for key in ["host", "port", "log_level", "socket_path", "timezone"]:
+        for key in ["host", "port", "log_level", "socket_path", "timezone", "allowed_hosts"]:
             val = form.get(key)
             if val is not None:
                 form_dict[key] = val
-        for key in ["container_management", "image_management", "system_diagnostics", "exec_enabled"]:
+        for key in ["container_management", "image_management", "system_diagnostics", "exec_enabled", "host_origin_protection"]:
             form_dict[key] = form.get(key, "off")
 
         result = update_settings_from_form(settings_yaml, form_dict, app_state=app_state)
@@ -465,13 +465,13 @@ def register_web_routes(
         return RedirectResponse("/ui/settings?error=" + quote(result.get("error", "保存失败")), status_code=303)
 
     # 静态文件
-    @mcp.custom_route("/ui/static/{filename}", methods=["GET"])
+    @mcp.custom_route("/ui/static/{path:path}", methods=["GET"])
     async def static_file(request):
-        filename = request.path_params["filename"]
-        f = STATIC_DIR / filename
-        if not f.exists():
+        path = request.path_params["path"]
+        f = STATIC_DIR / path
+        if not f.exists() or f.is_dir():
             return Response("Not Found", status_code=404)
         ext = f.suffix.lower()
-        media_map = {".css": "text/css", ".js": "application/javascript", ".svg": "image/svg+xml"}
+        media_map = {".css": "text/css", ".js": "application/javascript", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif", ".ico": "image/x-icon"}
         media = media_map.get(ext, "text/plain")
         return Response(f.read_bytes(), media_type=media)

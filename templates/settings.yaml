@@ -5,6 +5,8 @@ server:
   host: "0.0.0.0"
   port: 8900
   log_level: "info"  # debug / info / warning / error
+  host_origin_protection: true  # Host 头保护，反代时如遇 misdirected request 可关闭或添加白名单
+  allowed_hosts: []  # 允许的 Host 域名列表，如 ["example.com", "nas.local"]
 
 docker:
   socket_path: "/var/run/docker.sock"  # 通常不需要修改
