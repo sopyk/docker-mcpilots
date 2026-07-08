@@ -15,3 +15,5 @@ secrets/auth.yaml
 dev-config/
 dev-secrets/
 set-admin-pass.py
+.venv/
+venv/

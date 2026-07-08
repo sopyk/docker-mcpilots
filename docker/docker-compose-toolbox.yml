@@ -1,0 +1,27 @@
+# Docker-MCPilotS 工具容器示例
+# 用途：配合 exec 功能做排障的隔离沙箱，不直接操作业务容器
+# 使用方法：
+#   1. 启动本容器：docker compose -f docker-compose-toolbox.yml up -d
+#   2. 在 Docker-MCPilotS 的 settings.yaml 中开启 exec_enabled: true
+#   3. 给 API Key 配置 scope 限制仅允许对 mcp-toolbox 容器 exec
+#   4. 通过 MCP 工具 exec_container 在本容器内执行排障命令
+
+services:
+  mcp-toolbox:
+    image: docker:cli
+    container_name: mcp-toolbox
+    restart: unless-stopped
+    # 工具容器用 root，怎么折腾都可以
+    user: "0:0"
+    volumes:
+      # 挂载 docker.sock，容器内可直接使用 docker 命令操作宿主机 Docker
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # 可选：挂载 NAS 上的常用目录，方便排查文件问题
+      # - /volume1/docker:/data/docker:ro
+      # - /volume1/homes:/data/homes:ro
+    command: "sleep infinity"
+    environment:
+      - TZ=Asia/Shanghai
+    # 限制资源，避免误操作吃满
+    mem_limit: 256m
+    cpus: "0.5"

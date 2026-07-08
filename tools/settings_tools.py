@@ -77,6 +77,7 @@ def update_settings_from_form(settings_yaml: str, form_data: dict[str, Any], app
     features["container_management"] = form_data.get("container_management") in (True, "on", "1", "true")
     features["image_management"] = form_data.get("image_management") in (True, "on", "1", "true")
     features["system_diagnostics"] = form_data.get("system_diagnostics") in (True, "on", "1", "true")
+    features["exec_enabled"] = form_data.get("exec_enabled") in (True, "on", "1", "true")
 
     if "timezone" in form_data:
         tz = str(form_data["timezone"]).strip()

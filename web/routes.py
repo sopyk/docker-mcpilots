@@ -445,7 +445,7 @@ def register_web_routes(
             val = form.get(key)
             if val is not None:
                 form_dict[key] = val
-        for key in ["container_management", "image_management", "system_diagnostics"]:
+        for key in ["container_management", "image_management", "system_diagnostics", "exec_enabled"]:
             form_dict[key] = form.get(key, "off")
 
         result = update_settings_from_form(settings_yaml, form_dict, app_state=app_state)

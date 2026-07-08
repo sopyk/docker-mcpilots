@@ -98,7 +98,7 @@ def test_register_web_routes_registers_all():
         "/ui/containers/{container_id}/stop",
         "/ui/containers/{container_id}/restart",
         "/ui/containers/{container_id}",
-        "/ui/static/{filename}",
+        "/ui/static/{path:path}",
     }
     assert expected.issubset(paths), f"缺失路由: {expected - paths}"
 
@@ -210,6 +210,7 @@ def test_audit_template_with_data():
     html = env.get_template("audit.html").render(
         user="admin", logs=logs, csrf_token="tok",
         filter_source="", filter_actor="", filter_limit=100,
+        settings={"timezone": "Asia/Shanghai"},
     )
     assert "container.start" in html
     assert "list_containers" in html
@@ -224,6 +225,7 @@ def test_audit_template_empty():
     html = env.get_template("audit.html").render(
         user="admin", logs=[], csrf_token="tok",
         filter_source="", filter_actor="", filter_limit=100,
+        settings={"timezone": "Asia/Shanghai"},
     )
     assert "暂无记录" in html
 
@@ -233,6 +235,7 @@ def test_audit_template_filter_form():
     html = env.get_template("audit.html").render(
         user="admin", logs=[], csrf_token="tok",
         filter_source="mcp", filter_actor="ci-key", filter_limit=50,
+        settings={"timezone": "Asia/Shanghai"},
     )
     assert 'value="mcp"' in html or 'value="mcp"' in html
     assert 'value="ci-key"' in html

@@ -19,6 +19,7 @@ class Settings:
     container_management: bool = True
     image_management: bool = True
     system_diagnostics: bool = True
+    exec_enabled: bool = False
     timezone: str = "Asia/Shanghai"
     web: dict = None  # type: ignore # web 配置段，默认 None
 
@@ -47,6 +48,7 @@ class Settings:
             container_management=features.get("container_management", True),
             image_management=features.get("image_management", True),
             system_diagnostics=features.get("system_diagnostics", True),
+            exec_enabled=features.get("exec_enabled", False),
             timezone=data.get("timezone", cls.timezone),
             web=web
         )
@@ -65,7 +67,8 @@ class Settings:
             return {
                 "container_management": self.container_management,
                 "image_management": self.image_management,
-                "system_diagnostics": self.system_diagnostics
+                "system_diagnostics": self.system_diagnostics,
+                "exec_enabled": self.exec_enabled,
             }
         if key == "web":
             return self.web if self.web else {}

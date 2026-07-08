@@ -417,6 +417,61 @@ class DockerClient:
         except DockerAPIError as e:
             return {"success": False, "error": str(e)}
 
+    def exec_container(
+        self,
+        container_id: str,
+        command: str,
+        workdir: str | None = None,
+        environment: dict[str, str] | None = None,
+    ) -> dict:
+        """在容器内执行命令（需要 exec:run 权限）。
+
+        Args:
+            container_id: 容器 ID 或名称。
+            command: 要执行的命令字符串（如 "ls -la /"）。
+            workdir: 工作目录，不传则用容器默认工作目录。
+            environment: 环境变量字典。
+
+        Returns:
+            包含 exit_code、stdout、stderr 的结果字典。
+        """
+        if not self._ensure_connected():
+            return {"success": False, "error": "Docker daemon is not available"}
+        try:
+            container = self._client.containers.get(container_id)
+            if container.status != "running":
+                return {
+                    "success": False,
+                    "error": f"Container '{container_id}' is not running (status: {container.status})",
+                }
+            exec_kwargs: dict = {
+                "cmd": command,
+                "stdout": True,
+                "stderr": True,
+                "demux": True,
+            }
+            if workdir:
+                exec_kwargs["workdir"] = workdir
+            if environment:
+                exec_kwargs["environment"] = environment
+            exec_id = container.client.api.exec_create(container.id, **exec_kwargs)
+            result = container.client.api.exec_start(exec_id, demux=True)
+            stdout, stderr = result if isinstance(result, tuple) else (result, b"")
+            inspect = container.client.api.exec_inspect(exec_id)
+            return {
+                "success": True,
+                "container_id": container_id,
+                "container_name": container.name,
+                "command": command,
+                "exit_code": inspect.get("ExitCode", -1),
+                "stdout": stdout.decode("utf-8", errors="replace") if isinstance(stdout, bytes) else str(stdout or ""),
+                "stderr": stderr.decode("utf-8", errors="replace") if isinstance(stderr, bytes) else str(stderr or ""),
+            }
+        except DockerNotFound:
+            return {"success": False, "error": f"Container '{container_id}' not found"}
+        except DockerAPIError as e:
+            return {"success": False, "error": str(e)}
+
     # ── 网络管理 ──
 
     def list_networks(self) -> list[dict]:

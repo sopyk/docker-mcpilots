@@ -146,6 +146,22 @@
                         </label>
                     </div>
                 </div>
+                <div class="setting-row">
+                    <div class="setting-info">
+                        <span class="setting-name">容器执行命令</span>
+                        <span class="setting-desc">高风险：启用 exec_container 工具，允许在容器内执行命令。仅 admin 可用，建议配合 scope 限制在特定工具容器</span>
+                    </div>
+                    <div class="setting-control">
+                        <label class="toggle">
+                            {% if settings.exec_enabled %}
+                            <input type="checkbox" name="exec_enabled" checked>
+                            {% else %}
+                            <input type="checkbox" name="exec_enabled">
+                            {% endif %}
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
             </div>
 
             <div class="settings-actions">

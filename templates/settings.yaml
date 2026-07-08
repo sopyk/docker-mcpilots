@@ -13,6 +13,7 @@ features:
   container_management: true
   image_management: true
   system_diagnostics: true
+  exec_enabled: false  # 容器内执行命令（高风险，仅 admin 可用，建议配合 scope 限制特定容器）
 
 web:
   csrf_secret: "change-me-please"
