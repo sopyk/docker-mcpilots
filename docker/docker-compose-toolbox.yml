@@ -41,4 +41,4 @@ services:
       # - /volume1/homes:/data/homes:ro
     # 限制资源，避免误操作吃满
     mem_limit: 256m
-    cpus: "0.5"
+    cpu_shares: 512
