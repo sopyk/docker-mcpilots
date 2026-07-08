@@ -21,8 +21,6 @@ class Settings:
     system_diagnostics: bool = True
     exec_enabled: bool = False
     timezone: str = "Asia/Shanghai"
-    host_origin_protection: bool = False
-    allowed_hosts: list = field(default_factory=list)
     web: dict = None  # type: ignore # web 配置段，默认 None
 
     @classmethod
@@ -52,8 +50,6 @@ class Settings:
             system_diagnostics=features.get("system_diagnostics", True),
             exec_enabled=features.get("exec_enabled", False),
             timezone=data.get("timezone", cls.timezone),
-            host_origin_protection=server.get("host_origin_protection", cls.host_origin_protection),
-            allowed_hosts=server.get("allowed_hosts", []),
             web=web
         )
 

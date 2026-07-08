@@ -81,31 +81,6 @@
                         </select>
                     </div>
                 </div>
-                <div class="setting-row">
-                    <div class="setting-info">
-                        <span class="setting-name">Host 头保护</span>
-                        <span class="setting-desc">开启后校验请求 Host 头，防止 Host 头攻击。使用反代时如出现 misdirected request 错误可关闭或添加白名单</span>
-                    </div>
-                    <div class="setting-control">
-                        <label class="toggle">
-                            {% if settings.host_origin_protection %}
-                            <input type="checkbox" name="host_origin_protection" checked>
-                            {% else %}
-                            <input type="checkbox" name="host_origin_protection">
-                            {% endif %}
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-                <div class="setting-row">
-                    <div class="setting-info">
-                        <span class="setting-name">允许的 Host 域名</span>
-                        <span class="setting-desc">Host 头白名单，多个域名用英文逗号分隔。留空则仅允许 localhost 和监听地址</span>
-                    </div>
-                    <div class="setting-control">
-                        <input type="text" name="allowed_hosts" value="{{ settings.allowed_hosts | join(', ') }}">
-                    </div>
-                </div>
             </div>
 
             <div class="settings-group">

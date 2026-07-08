@@ -551,11 +551,11 @@ def register_web_routes(
         settings_yaml = app_state.settings_yaml_path or str(Path("dev-config") / "settings.yaml")
 
         form_dict: dict[str, Any] = {}
-        for key in ["host", "port", "log_level", "socket_path", "timezone", "allowed_hosts"]:
+        for key in ["host", "port", "log_level", "socket_path", "timezone"]:
             val = form.get(key)
             if val is not None:
                 form_dict[key] = val
-        for key in ["container_management", "image_management", "system_diagnostics", "exec_enabled", "host_origin_protection"]:
+        for key in ["container_management", "image_management", "system_diagnostics", "exec_enabled"]:
             form_dict[key] = form.get(key, "off")
 
         result = update_settings_from_form(settings_yaml, form_dict, app_state=app_state)

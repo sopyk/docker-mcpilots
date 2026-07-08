@@ -338,12 +338,8 @@ def create_app() -> FastMCP:
 if __name__ == "__main__":
     mcp = create_app()
     settings = Settings.from_yaml(str(CONFIG_DIR / "settings.yaml"))
-    run_kwargs = {
-        "transport": "http",
-        "host": settings.host,
-        "port": settings.port,
-        "host_origin_protection": settings.host_origin_protection,
-    }
-    if settings.allowed_hosts:
-        run_kwargs["allowed_hosts"] = settings.allowed_hosts
-    mcp.run(**run_kwargs)
+    mcp.run(
+        transport="http",
+        host=settings.host,
+        port=settings.port,
+    )

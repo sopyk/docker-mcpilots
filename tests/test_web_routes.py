@@ -15,7 +15,7 @@ def test_containers_template_empty():
 def test_containers_template_with_data():
     """有容器渲染状态徽章和操作按钮"""
     containers = [
-        {"id": "abc123", "name": "web", "image": "nginx:latest", "status": "Up 2 hours"},
+        {"id": "abc123", "name": "web", "image": "nginx:latest", "status": "running"},
         {"id": "def456", "name": "db", "image": "postgres:15", "status": "Exited (0) 3 hours ago"},
     ]
     html = env.get_template("containers.html").render(
