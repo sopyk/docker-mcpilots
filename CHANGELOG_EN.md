@@ -6,6 +6,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.0.1] - 2026-07-08
+
+### Added
+
+- **Container Exec**: Secure `exec_container` MCP tool for executing commands inside containers
+  - Feature toggle control (disabled by default)
+  - Admin role only
+  - Supports container scope restriction, recommended for dedicated tool containers
+- **Toolbox Container Example**: Provides `docker/docker-compose-toolbox.yml` config for isolated exec operations
+- **Image Management Page**: New Web UI image list page (`/ui/images`) showing repository, tag, size, creation time
+- **Container Status Colors**: Color-coded status badges (Running green, Restarting/dead red, Exited/Created gray)
+
+### Changed
+
+- **Host Origin Protection Removed**: Removed `host_origin_protection` and `allowed_hosts` config items to prevent accidental blocking of reverse proxy access
+- **About Page Fixed**: Fixed navigation bar and 500 error issues
+- **Login Page Enhanced**: Added logo and slogan "Give AI Agent hands to manage Docker"
+- **Settings Page Enhanced**: Added feature toggle configuration and password change functionality
+
 ## [v2.0.0] - 2026-07-07
 
 ### Added

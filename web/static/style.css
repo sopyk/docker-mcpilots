@@ -79,6 +79,15 @@ body {
   color: var(--blue);
   border-bottom-color: var(--blue);
 }
+.nav-links .version-tag {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 2px 8px;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
 
 /* 内容区域 */
 .content {

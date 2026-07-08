@@ -45,6 +45,7 @@ Once I had the idea, I just went for it. This project was built through **Vibe C
 | 🌐 Network Topology | View all Docker networks and the containers connected to them |
 | 💾 Volume Inventory | View all volumes and their mount points |
 | 🖥️ System Diagnostics | Host CPU, memory, disk, network info |
+| 📦 **Container Exec** | Secure `docker exec` tool, admin-only, supports container scope restriction |
 | 🔐 Access Control | Three roles: admin, operator, observer; permissions can be set per container |
 
 ### ❌ What It Cannot Do
@@ -54,7 +55,7 @@ Once I had the idea, I just went for it. This project was built through **Vibe C
 | 🚫 **Compose project management** (`docker compose up/down`) | Docker SDK does not support Compose operations; only individual containers can be managed |
 | 🚫 **Edit Compose files** | The container cannot access compose files on the host |
 | 🚫 **Build images** | `docker build` capability is not exposed for security reasons |
-| 🚫 **Execute arbitrary commands** | `docker exec` is not provided to avoid command injection risks |
+| 🚫 **Execute arbitrary commands** | `docker exec` disabled by default, must be enabled in settings with container scope restrictions |
 | 🚫 **Modify Docker network configuration** | Read-only view; cannot create/delete/modify networks |
 
 ## 📖 Usage
