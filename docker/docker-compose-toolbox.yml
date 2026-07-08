@@ -1,27 +1,44 @@
-# Docker-MCPilotS 工具容器示例
-# 用途：配合 exec 功能做排障的隔离沙箱，不直接操作业务容器
+# Docker-MCPilotS 工具容器
+# 配合 exec 功能做排障的隔离沙箱，不直接操作业务容器
+#
 # 使用方法：
 #   1. 启动本容器：docker compose -f docker-compose-toolbox.yml up -d
-#   2. 在 Docker-MCPilotS 的 settings.yaml 中开启 exec_enabled: true
+#   2. 在 Docker-MCPilotS 的设置中开启「容器执行命令」
 #   3. 给 API Key 配置 scope 限制仅允许对 mcp-toolbox 容器 exec
 #   4. 通过 MCP 工具 exec_container 在本容器内执行排障命令
+#
+# 说明：首次启动会自动安装常用排障工具（docker CLI、curl、dig、ping 等），
+#      大约需要 30 秒~1 分钟，之后容器就一直保持运行状态。
+#      工具安装在容器内，容器删了就得重新装。
 
 services:
   mcp-toolbox:
-    image: docker:cli
+    image: alpine:3.20
     container_name: mcp-toolbox
     restart: unless-stopped
-    # 工具容器用 root，怎么折腾都可以
     user: "0:0"
-    volumes:
-      # 挂载 docker.sock，容器内可直接使用 docker 命令操作宿主机 Docker
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      # 可选：挂载 NAS 上的常用目录，方便排查文件问题
-      # - /volume1/docker:/data/docker:ro
-      # - /volume1/homes:/data/homes:ro
-    command: "sleep infinity"
     environment:
       - TZ=Asia/Shanghai
+    command: >
+      sh -c "
+        echo 'Installing tools...' &&
+        apk add --no-cache
+          docker-cli
+          curl wget
+          bind-tools iputils iproute2
+          netcat-openbsd
+          jq vim tree
+          bash git htop tzdata
+          &&
+        echo 'Toolbox ready!' &&
+        sleep infinity
+      "
+    volumes:
+      # 挂载 docker.sock（只读），容器内可直接使用 docker 命令操作宿主机 Docker
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # 可选：挂载 NAS 上的常用目录，方便排查文件问题（只读）
+      # - /volume1/docker:/data/docker:ro
+      # - /volume1/homes:/data/homes:ro
     # 限制资源，避免误操作吃满
     mem_limit: 256m
     cpus: "0.5"
