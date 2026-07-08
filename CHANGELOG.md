@@ -6,6 +6,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.0.1] - 2026-07-08
+
+### 新增
+
+- **容器执行命令**：安全的 `exec_container` MCP 工具，支持在容器内执行命令
+  - 功能开关控制（默认关闭）
+  - 仅 admin 角色可用
+  - 支持容器 scope 限制，建议配合专用工具容器使用
+- **工具容器示例**：提供 `docker/docker-compose-toolbox.yml` 配置，创建隔离的工具容器用于 exec 操作
+- **镜像管理页面**：Web UI 新增镜像列表页（`/ui/images`），查看镜像仓库、标签、大小、创建时间
+- **容器状态颜色**：Web UI 容器列表状态徽章颜色区分（Running 绿色、Restarting/dead 红色、Exited/Created 灰色）
+
+### 改进
+
+- **Host 头保护移除**：移除 `host_origin_protection` 和 `allowed_hosts` 配置项，避免误操作导致反代访问被阻断
+- **关于页修复**：修复导航栏和 500 错误问题
+- **登录页优化**：添加 logo 和标语"给 Agent 一双管理 Docker 的手"
+- **设置页面优化**：添加功能开关配置、密码修改功能
+
 ## [v2.0.0] - 2026-07-07
 
 ### 新增

@@ -45,6 +45,7 @@ Once I had the idea, I just went for it. This project was built through **Vibe C
 | 🌐 Network Topology | View all Docker networks and the containers connected to them |
 | 💾 Volume Inventory | View all volumes and their mount points |
 | 🖥️ System Diagnostics | Host CPU, memory, disk, network info |
+| 📦 **Container Exec** | Secure `docker exec` tool, admin-only, supports container scope restriction |
 | 🔐 Access Control | Three roles: admin, operator, observer; permissions can be set per container |
 
 ### ❌ What It Cannot Do
@@ -54,7 +55,7 @@ Once I had the idea, I just went for it. This project was built through **Vibe C
 | 🚫 **Compose project management** (`docker compose up/down`) | Docker SDK does not support Compose operations; only individual containers can be managed |
 | 🚫 **Edit Compose files** | The container cannot access compose files on the host |
 | 🚫 **Build images** | `docker build` capability is not exposed for security reasons |
-| 🚫 **Execute arbitrary commands** | `docker exec` is not provided to avoid command injection risks |
+| 🚫 **Execute arbitrary commands** | `docker exec` disabled by default, must be enabled in settings with container scope restrictions |
 | 🚫 **Modify Docker network configuration** | Read-only view; cannot create/delete/modify networks |
 
 ## 📖 Usage
@@ -83,6 +84,49 @@ The Agent will automatically call `inspect_container` to view details and `get_c
 
 **Diagnose network issues:**
 > "Help me check the network configuration of the jellyfin container, what are the port mappings?"
+
+### 🧰 Toolbox Container (Recommended for exec usage)
+
+If you want to use the `exec_container` tool to run commands inside containers, **we strongly recommend using a dedicated toolbox container** instead of executing commands directly in your production containers.
+
+**Why use a toolbox container?**
+
+- 🛡️ **Safe isolation**: exec operations only happen inside the toolbox, never touching your business containers
+- 🧪 **Worry-free testing**: The toolbox is built for troubleshooting — experiment freely without risk
+- 🔧 **Built-in tools**: Install all kinds of diagnostic tools (curl, dig, nc, docker CLI, etc.) in the toolbox
+- 📁 **Mount for inspection**: Mount Docker socket and common directories to inspect the host Docker environment and files from inside the container
+
+**What can the toolbox container do?**
+
+- Use `docker` commands to check status, logs, and config of all containers on the host
+- Use `curl` / `wget` to test network connectivity between containers
+- Use `ping` / `traceroute` to diagnose network issues
+- Inspect mounted directories to check file permissions and configurations
+- Install temporary tools for deep troubleshooting
+
+**Usage steps:**
+
+1. Start the toolbox container (example config in `docker/docker-compose-toolbox.yml`):
+   ```bash
+   docker compose -f docker-compose-toolbox.yml up -d
+   ```
+
+2. Enable "Container Exec" feature in Docker-MCPilotS Web UI settings
+
+3. Configure scope restrictions for API Keys that need exec access, **only allowing exec on the `mcp-toolbox` container**:
+   ```yaml
+   # scope config for the corresponding key in secrets/auth.yaml
+   scope:
+     exec:
+       include:
+         - mcp-toolbox
+   ```
+
+4. Then let the Agent troubleshoot inside the toolbox via `exec_container`, for example:
+   > "Use the toolbox container to check the status of all containers"
+   > "Use curl to test if port 80 on the nginx container is reachable"
+
+> 💡 **Tip**: The toolbox container mounts the Docker socket (read-only) by default, so you can use `docker` commands inside the container to manage the host's Docker environment. Remove this mount if you don't need it.
 
 ## 🚀 Deployment
 
