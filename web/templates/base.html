@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>{% block title %}Docker-MCPilotS{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/ui/static/tokens.css?v=2">
-    <link rel="stylesheet" href="/ui/static/style.css?v=2">
+    <link rel="stylesheet" href="/ui/static/tokens.css?v=5">
+    <link rel="stylesheet" href="/ui/static/style.css?v=5">
 </head>
 <body>
 {% block navbar %}
@@ -19,6 +19,7 @@
         {% if user %}
             <a href="/ui/">仪表盘</a>
             <a href="/ui/containers">容器</a>
+            <a href="/ui/images">镜像</a>
             <a href="/ui/users">用户</a>
             <a href="/ui/audit">审计</a>
             <a href="/ui/settings">设置</a>

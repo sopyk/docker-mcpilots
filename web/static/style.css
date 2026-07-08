@@ -14,7 +14,8 @@ body {
 }
 .banner-img {
   width: 100%;
-  height: 140px;
+  max-height: 180px;
+  height: auto;
   border-radius: var(--radius-card);
   object-fit: cover;
   display: block;
@@ -22,12 +23,12 @@ body {
 
 @media (max-width: 768px) {
   .banner-img {
-    height: 100px;
+    max-height: 140px;
   }
 }
 @media (max-width: 480px) {
   .banner-img {
-    height: 80px;
+    max-height: 100px;
   }
 }
 .navbar {
@@ -49,7 +50,7 @@ body {
   gap: var(--space-2);
 }
 .navbar .brand .logo {
-  height: 36px;
+  height: 40px;
   width: auto;
   border-radius: 6px;
 }
@@ -227,7 +228,7 @@ body {
   border-radius: var(--radius-card);
 }
 .login-card .login-logo {
-  width: 100px;
+  width: 120px;
   height: auto;
   border-radius: 16px;
   margin: 0 auto 16px auto;
@@ -235,7 +236,7 @@ body {
 }
 @media (max-width: 480px) {
   .login-card .login-logo {
-    width: 80px;
+    width: 100px;
   }
 }
 .login-card h1 {
@@ -411,6 +412,7 @@ body {
 .link { color: var(--blue); text-decoration: none; }
 .link:hover { text-decoration: underline; }
 .text-muted { color: var(--text-muted); font-size: 12px; }
+.mono { font-family: "SF Mono", "Menlo", "Consolas", monospace; font-size: 13px; }
 .empty-row { text-align: center; color: var(--text-dim); }
 
 /* 状态徽章 */
