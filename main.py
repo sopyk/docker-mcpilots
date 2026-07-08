@@ -230,7 +230,6 @@ def _init_config_files() -> None:
         logger.info(f"Set admin password from environment: {admin_file}")
     else:
         # 如果没有密码（无论是新文件还是旧文件密码为空），都检查一下
-        # 优先从环境变量读取，没有的话生成随机密码
         if current_config and not current_config.password_hash:
             # 密码为空，生成随机密码并警告
             import secrets
@@ -345,4 +344,5 @@ if __name__ == "__main__":
         transport="http",
         host=settings.host,
         port=settings.port,
+        host_origin_protection=False,
     )
