@@ -1,10 +1,9 @@
-FROM python:3.11-slim
+FROM python:3.11-alpine
 
 WORKDIR /app
 
-# 安装系统依赖（gosu 用于降权运行）
-RUN apt-get update && apt-get install -y --no-install-recommends gosu \
-    && rm -rf /var/lib/apt/lists/*
+# 安装系统依赖（su-exec 用于降权运行，比 gosu 更轻量）
+RUN apk add --no-cache su-exec build-base libffi-dev openssl-dev
 
 # 安装 Python 依赖
 COPY requirements.txt .
@@ -24,7 +23,7 @@ COPY docker/entrypoint.sh /app/entrypoint.sh
 RUN mkdir -p /app/config /app/secrets
 
 # 创建 mcpuser 用户（默认 UID/GID 会在 entrypoint 中按需调整）
-RUN groupadd -r mcpuser && useradd -r -g mcpuser -d /app mcpuser
+RUN addgroup -S mcpuser && adduser -S mcpuser -G mcpuser -h /app
 
 # entrypoint 需要可执行权限
 RUN chmod +x /app/entrypoint.sh

@@ -228,12 +228,15 @@ def _init_config_files() -> None:
         # 如果密码不为空，设置/更新密码
         admin_auth.set_password(admin_username, admin_password.strip())
         logger.info(f"Set admin password from environment: {admin_file}")
-    elif current_config and not current_config.password_hash:
-        # 密码为空，生成随机密码并警告
-        import secrets
-        random_password = secrets.token_urlsafe(16)
-        admin_auth.set_password(admin_username, random_password)
-        logger.warning(f"Generated random admin password: '{random_password}'. Please change this immediately!")
+    else:
+        # 如果没有密码（无论是新文件还是旧文件密码为空），都检查一下
+        # 优先从环境变量读取，没有的话生成随机密码
+        if current_config and not current_config.password_hash:
+            # 密码为空，生成随机密码并警告
+            import secrets
+            random_password = secrets.token_urlsafe(16)
+            admin_auth.set_password(admin_username, random_password)
+            logger.warning(f"Generated random admin password: '{random_password}'. Please change this immediately!")
 
     # 确保 secrets 目录下所有文件权限为 600
     try:
