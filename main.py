@@ -342,5 +342,4 @@ if __name__ == "__main__":
         transport="http",
         host=settings.host,
         port=settings.port,
-        host_origin_protection=False,
     )
