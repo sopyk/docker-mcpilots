@@ -92,7 +92,6 @@ def update_settings_from_form(settings_yaml: str, form_data: dict[str, Any], app
         if level not in VALID_LOG_LEVELS:
             return {"success": False, "error": f"无效的日志级别: {level}"}
         server["log_level"] = level
-
     docker_cfg = data.setdefault("docker", {})
     if "socket_path" in form_data:
         docker_cfg["socket_path"] = str(form_data["socket_path"]).strip() or "/var/run/docker.sock"
@@ -101,6 +100,7 @@ def update_settings_from_form(settings_yaml: str, form_data: dict[str, Any], app
     features["container_management"] = form_data.get("container_management") in (True, "on", "1", "true")
     features["image_management"] = form_data.get("image_management") in (True, "on", "1", "true")
     features["system_diagnostics"] = form_data.get("system_diagnostics") in (True, "on", "1", "true")
+    features["exec_enabled"] = form_data.get("exec_enabled") in (True, "on", "1", "true")
 
     if "timezone" in form_data:
         tz = str(form_data["timezone"]).strip()

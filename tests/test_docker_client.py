@@ -153,3 +153,69 @@ class TestImageOperations:
 
         mock_docker_sdk.images.pull.assert_called_with("nginx", tag="latest")
         assert result["success"] is True
+
+
+class TestExecContainer:
+    def test_exec_success(self, mock_docker_sdk):
+        """在容器内执行命令成功"""
+        mock_container = MagicMock()
+        mock_container.status = "running"
+        mock_container.id = "abc123"
+        mock_container.name = "toolbox"
+        mock_container.client = mock_docker_sdk
+        mock_docker_sdk.containers.get.return_value = mock_container
+        mock_docker_sdk.api.exec_create.return_value = "exec-id-123"
+        mock_docker_sdk.api.exec_start.return_value = (b"hello world\n", b"")
+        mock_docker_sdk.api.exec_inspect.return_value = {"ExitCode": 0}
+
+        client = DockerClient()
+        result = client.exec_container("toolbox", "echo hello")
+
+        assert result["success"] is True
+        assert result["exit_code"] == 0
+        assert result["stdout"] == "hello world\n"
+        assert result["stderr"] == ""
+        assert result["container_name"] == "toolbox"
+
+    def test_exec_container_not_running(self, mock_docker_sdk):
+        """容器未运行时拒绝执行"""
+        mock_container = MagicMock()
+        mock_container.status = "exited"
+        mock_docker_sdk.containers.get.return_value = mock_container
+
+        client = DockerClient()
+        result = client.exec_container("stopped", "echo hi")
+
+        assert result["success"] is False
+        assert "not running" in result["error"].lower()
+
+    def test_exec_container_not_found(self, mock_docker_sdk):
+        """容器不存在时返回错误"""
+        from core.docker_client import DockerNotFound
+        mock_docker_sdk.containers.get.side_effect = DockerNotFound("not found")
+
+        client = DockerClient()
+        result = client.exec_container("nonexistent", "echo hi")
+
+        assert result["success"] is False
+        assert "not found" in result["error"].lower()
+
+    def test_exec_with_workdir(self, mock_docker_sdk):
+        """执行命令时指定工作目录"""
+        mock_container = MagicMock()
+        mock_container.status = "running"
+        mock_container.id = "abc123"
+        mock_container.name = "toolbox"
+        mock_container.client = mock_docker_sdk
+        mock_docker_sdk.containers.get.return_value = mock_container
+        mock_docker_sdk.api.exec_create.return_value = "exec-id-456"
+        mock_docker_sdk.api.exec_start.return_value = (b"/tmp\n", b"")
+        mock_docker_sdk.api.exec_inspect.return_value = {"ExitCode": 0}
+
+        client = DockerClient()
+        result = client.exec_container("toolbox", "pwd", workdir="/tmp")
+
+        mock_docker_sdk.api.exec_create.assert_called_once()
+        call_kwargs = mock_docker_sdk.api.exec_create.call_args
+        assert call_kwargs[1]["workdir"] == "/tmp"
+        assert result["success"] is True

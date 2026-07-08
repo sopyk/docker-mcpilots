@@ -20,8 +20,14 @@
             <td><a href="/ui/containers/{{ c.id }}" class="link">{{ c.name }}</a></td>
             <td>{{ c.image }}</td>
             <td>
-                {% set is_running = c.status.startswith("Up") %}
-                <span class="badge badge-{{ 'green' if is_running else 'gray' }}">
+                {% if c.status == "running" %}
+                {% set status_class = "green" %}
+                {% elif c.status == "restarting" or c.status == "dead" %}
+                {% set status_class = "red" %}
+                {% else %}
+                {% set status_class = "gray" %}
+                {% endif %}
+                <span class="badge badge-{{ status_class }}">
                     <span class="badge-dot"></span>{{ c.status }}
                 </span>
             </td>

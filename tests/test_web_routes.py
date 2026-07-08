@@ -15,7 +15,7 @@ def test_containers_template_empty():
 def test_containers_template_with_data():
     """有容器渲染状态徽章和操作按钮"""
     containers = [
-        {"id": "abc123", "name": "web", "image": "nginx:latest", "status": "Up 2 hours"},
+        {"id": "abc123", "name": "web", "image": "nginx:latest", "status": "running"},
         {"id": "def456", "name": "db", "image": "postgres:15", "status": "Exited (0) 3 hours ago"},
     ]
     html = env.get_template("containers.html").render(
@@ -98,7 +98,7 @@ def test_register_web_routes_registers_all():
         "/ui/containers/{container_id}/stop",
         "/ui/containers/{container_id}/restart",
         "/ui/containers/{container_id}",
-        "/ui/static/{filename}",
+        "/ui/static/{path:path}",
     }
     assert expected.issubset(paths), f"缺失路由: {expected - paths}"
 
@@ -210,6 +210,7 @@ def test_audit_template_with_data():
     html = env.get_template("audit.html").render(
         user="admin", logs=logs, csrf_token="tok",
         filter_source="", filter_actor="", filter_limit=100,
+        settings={"timezone": "Asia/Shanghai"},
     )
     assert "container.start" in html
     assert "list_containers" in html
@@ -224,6 +225,7 @@ def test_audit_template_empty():
     html = env.get_template("audit.html").render(
         user="admin", logs=[], csrf_token="tok",
         filter_source="", filter_actor="", filter_limit=100,
+        settings={"timezone": "Asia/Shanghai"},
     )
     assert "暂无记录" in html
 
@@ -233,6 +235,7 @@ def test_audit_template_filter_form():
     html = env.get_template("audit.html").render(
         user="admin", logs=[], csrf_token="tok",
         filter_source="mcp", filter_actor="ci-key", filter_limit=50,
+        settings={"timezone": "Asia/Shanghai"},
     )
     assert 'value="mcp"' in html or 'value="mcp"' in html
     assert 'value="ci-key"' in html

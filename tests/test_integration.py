@@ -179,7 +179,7 @@ class TestCreateApp:
                 "/ui/containers/{container_id}",
                 "/ui/users", "/ui/users/reload",
                 "/ui/audit", "/ui/settings", "/ui/settings/reload",
-                "/ui/static/{filename}",
+                "/ui/static/{path:path}",
             ]
             for path in expected_web_routes:
                 assert path in registered_paths, f"Web 路由未注册: {path}"

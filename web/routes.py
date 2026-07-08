@@ -47,6 +47,45 @@ def _convert_to_tz(utc_str: str, timezone_str: str = "Asia/Shanghai") -> str:
         return utc_str
 
 
+def _human_size(size_bytes: int) -> str:
+    if size_bytes < 1024:
+        return f"{size_bytes} B"
+    elif size_bytes < 1024 * 1024:
+        return f"{size_bytes / 1024:.1f} KB"
+    elif size_bytes < 1024 * 1024 * 1024:
+        return f"{size_bytes / (1024 * 1024):.1f} MB"
+    else:
+        return f"{size_bytes / (1024 * 1024 * 1024):.2f} GB"
+
+
+def _format_images_for_web(images: list[dict]) -> list[dict]:
+    result = []
+    for img in images:
+        tags = img.get("tags") or []
+        if not tags:
+            result.append({
+                "repository": "<none>",
+                "tag": "<none>",
+                "size_human": _human_size(img.get("size", 0)),
+                "created_human": img.get("created", "")[:10] if img.get("created") else "",
+                "id": img.get("id", ""),
+            })
+        else:
+            for tag in tags:
+                if ":" in tag:
+                    repo, tag_name = tag.rsplit(":", 1)
+                else:
+                    repo, tag_name = tag, "latest"
+                result.append({
+                    "repository": repo,
+                    "tag": tag_name,
+                    "size_human": _human_size(img.get("size", 0)),
+                    "created_human": img.get("created", "")[:10] if img.get("created") else "",
+                    "id": img.get("id", ""),
+                })
+    return result
+
+
 def register_web_routes(
     mcp: FastMCP,
     app_state: AppState,
@@ -159,7 +198,9 @@ def register_web_routes(
     # 关于页面（无需登录）
     @mcp.custom_route("/ui/about", methods=["GET"])
     async def about_page(request):
-        html = env.get_template("about.html").render(user=None)
+        token = request.cookies.get("session")
+        user = session_mgr.validate_token(token) if token else None
+        html = env.get_template("about.html").render(user=user)
         return Response(html, media_type="text/html")
 
     # ── 容器管理页面 ──
@@ -233,6 +274,24 @@ def register_web_routes(
         html = env.get_template("container_detail.html").render(
             user=user, container_id=container_id, detail=detail,
             logs=logs_text, csrf_token=token,
+        )
+        resp = Response(html, media_type="text/html")
+        resp.set_cookie("csrf_token", token, httponly=True, samesite="strict")
+        return resp
+
+    # ── 镜像管理页面 ──
+
+    @mcp.custom_route("/ui/images", methods=["GET"])
+    async def images_page(request):
+        user = require_login(request)
+        if not user:
+            return RedirectResponse("/ui/login", status_code=303)
+        docker = app_state.docker_client
+        images_raw = docker.list_images() if docker else []
+        images = _format_images_for_web(images_raw)
+        token = csrf.generate_token()
+        html = env.get_template("images.html").render(
+            user=user, images=images, csrf_token=token, error=""
         )
         resp = Response(html, media_type="text/html")
         resp.set_cookie("csrf_token", token, httponly=True, samesite="strict")
@@ -496,7 +555,7 @@ def register_web_routes(
             val = form.get(key)
             if val is not None:
                 form_dict[key] = val
-        for key in ["container_management", "image_management", "system_diagnostics"]:
+        for key in ["container_management", "image_management", "system_diagnostics", "exec_enabled"]:
             form_dict[key] = form.get(key, "off")
 
         result = update_settings_from_form(settings_yaml, form_dict, app_state=app_state)
@@ -568,14 +627,15 @@ def register_web_routes(
             return Response("Not Found", status_code=404)
         ext = f.suffix.lower()
         media_map = {
-            ".css": "text/css", 
-            ".js": "application/javascript", 
-            ".svg": "image/svg+xml", 
-            ".jpg": "image/jpeg", 
-            ".jpeg": "image/jpeg", 
+            ".css": "text/css",
+            ".js": "application/javascript",
+            ".svg": "image/svg+xml",
+            ".jpg": "image/jpeg",
+            ".jpeg": "image/jpeg",
             ".png": "image/png",
             ".gif": "image/gif",
             ".ico": "image/x-icon",
         }
         media = media_map.get(ext, "text/plain")
-        return Response(f.read_bytes(), media_type=media)
+        headers = {"Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache", "Expires": "0"}
+        return Response(f.read_bytes(), media_type=media, headers=headers)

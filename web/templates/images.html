@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}镜像管理 - Docker-MCPilotS{% endblock %}
+
+{% block body %}
+<main class="content">
+    <h1>镜像管理</h1>
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>镜像</th>
+                <th>标签</th>
+                <th>大小</th>
+                <th>创建时间</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for img in images %}
+        <tr>
+            <td><span class="mono">{{ img.repository or "<none>" }}</span></td>
+            <td>{{ img.tag }}</td>
+            <td>{{ img.size_human }}</td>
+            <td class="text-muted">{{ img.created_human }}</td>
+        </tr>
+        {% endfor %}
+        {% if not images %}
+        <tr><td colspan="4" class="empty-row">暂无镜像</td></tr>
+        {% endif %}
+        </tbody>
+    </table>
+</main>
+{% endblock %}

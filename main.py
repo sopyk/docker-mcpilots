@@ -22,6 +22,7 @@ from tools.container_tools import register_container_tools
 from tools.image_tools import register_image_tools
 from tools.diag_tools import register_diag_tools
 from tools.docker_diag_tools import register_docker_diag_tools
+from tools.exec_tools import register_exec_tools
 
 logger = logging.getLogger("docker-mcpilots")
 
@@ -299,6 +300,11 @@ def create_app() -> FastMCP:
     # Docker 资源诊断（网络/卷）始终注册，用于排查容器问题
     register_docker_diag_tools(mcp, docker_client)
 
+    # exec 工具（高风险，默认关闭，需 exec_enabled=true 且有 exec:run 权限）
+    if settings.exec_enabled:
+        register_exec_tools(mcp, docker_client, app_state)
+        logger.info("Exec tools enabled (high risk — use with scope restrictions)")
+
     # 健康检查端点
     @mcp.custom_route("/health", methods=["GET"])
     async def health_check(request):
@@ -332,4 +338,8 @@ def create_app() -> FastMCP:
 if __name__ == "__main__":
     mcp = create_app()
     settings = Settings.from_yaml(str(CONFIG_DIR / "settings.yaml"))
-    mcp.run(transport="http", host=settings.host, port=settings.port)
+    mcp.run(
+        transport="http",
+        host=settings.host,
+        port=settings.port,
+    )
