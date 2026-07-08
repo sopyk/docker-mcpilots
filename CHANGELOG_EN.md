@@ -6,6 +6,33 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.0.0] - 2026-07-07
+
+### Added
+
+- **Web UI Interface**: Complete graphical management interface (`/ui/`)
+  - Dashboard: CPU/memory usage ring charts, container/image counts, recent audit logs
+  - Container List: View all containers, start/stop/delete/inspect
+  - User Management: Create/edit/delete API Keys, support updating key name, role, permissions and scope
+  - Audit Log: View all operation records (filter supported)
+  - System Settings: Edit system settings (port, timezone, feature toggles), change admin password
+  - About Page: Project introduction, Agent configuration example, version info
+- **Admin Auth System**: Web UI username/password login (bcrypt encrypted storage)
+- **CSRF Protection**: All POST requests require CSRF Token
+- **Audit Log**: Logs all MCP and Web UI operations
+- **Timezone Support**: Timezone configuration option, displays local time
+- **Static Assets**: Supports subdirectories (`/static/assets`), correct image mime types
+
+### Changed
+
+- Template security optimization: Use conditional blocks instead of unquoted Jinja2 expressions
+- Complete unit/integration/e2e test suite (130+ tests, 100% coverage on core modules)
+
+### Fixed
+
+- Fixed static file routing not supporting subdirectories
+- Fixed semgrep-reported security issues (subprocess shell only for tests, template security hardening)
+
 ## [1.0.0] - 2026-07-04
 
 First official release.

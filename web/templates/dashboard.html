@@ -20,6 +20,9 @@
 
 {% block body %}
 <main class="content">
+    <div class="banner">
+        <img src="/ui/static/assets/banner.jpg" alt="Docker-MCPilotS Banner" class="banner-img">
+    </div>
     <h1>欢迎，{{ user }}</h1>
 
     <div class="stats-rings">
@@ -61,7 +64,7 @@
             <tbody>
             {% for log in recent_logs %}
             <tr>
-                <td>{{ log.timestamp }}</td>
+                <td>{{ log.timestamp|tz(settings.timezone) }}</td>
                 <td>{{ log.source }}</td>
                 <td>{{ log.actor }}</td>
                 <td>{{ log.action }}</td>

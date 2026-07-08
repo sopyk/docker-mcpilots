@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}关于 - Docker-MCPilotS{% endblock %}
+
+{% block body %}
+<main class="content">
+    <div class="banner" style="margin-bottom: 24px;">
+        <img src="/ui/static/assets/banner.jpg" alt="Docker-MCPilotS Banner" style="width:100%; max-height:280px; height:auto; border-radius:var(--radius-card); object-fit:cover; display:block;">
+    </div>
+    <h1>关于 Docker-MCPilotS</h1>
+
+    <div class="section">
+        <h2>🤔 为什么做这个？</h2>
+        <p>
+            日常使用群晖 NAS，上面跑了几十个 Docker 容器：PT 下载、媒体服务、照片备份、代码仓库……部署新服务的时候、升级更新的时候、甚至正常跑着用着，总会遇到各种问题。
+        </p>
+        <p>
+            现在 AI Agent 很发达，让 AI 来帮我们管容器是最好的选择，但又不能真的把 SSH 权限交给 Agent，NAS 系统太特殊了，万一出岔子代价太大。所以就想到了 MCP——把 Docker 的管理能力通过 MCP 接口暴露出去，Agent 只能做我们允许的操作。
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>✨ 功能一览</h2>
+        <div class="grid-2">
+            <div class="stat-card">
+                <h3>能做什么</h3>
+                <ul style="margin-left: 24px; line-height: 1.8;">
+                    <li>📦 容器管理（查看列表、详情、启停、删除）</li>
+                    <li>📜 容器日志查看（支持时间段筛选）</li>
+                    <li>📊 容器资源占用</li>
+                    <li>🔍 容器诊断（进程、健康、网络、挂载）</li>
+                    <li>🌐 网络拓扑查看</li>
+                    <li>💾 数据卷清单</li>
+                    <li>🖥️ 系统诊断（CPU/内存/磁盘）</li>
+                    <li>🔐 权限控制（三种角色）</li>
+                </ul>
+            </div>
+            <div class="stat-card">
+                <h3>限制说明</h3>
+                <ul style="margin-left: 24px; line-height: 1.8;">
+                    <li>🚫 不支持 Compose 项目管理</li>
+                    <li>🚫 不支持构建镜像</li>
+                    <li>🚫 不提供 exec 能力</li>
+                    <li>🚫 不支持修改网络配置</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🚀 如何在 Agent APP 里配置 MCP</h2>
+        <p>在你的 AI 客户端（Trae、Cursor、Claude Code、OpenClaw 等）的 MCP 配置里添加下面这段代码即可：</p>
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-top: 12px;">
+            <pre style="margin: 0; color: var(--text); font-family: monospace; font-size: 13px; overflow-x: auto;">
+{
+  "mcpServers": {
+    "docker-mcpilots": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/transport-http",
+        "http://localhost:8900/mcp",
+        "--header",
+        "Authorization: sk-dm-你的APIKey"
+      ]
+    }
+  }
+}
+            </pre>
+        </div>
+        <p style="margin-top: 12px;">
+            💡 提示：记得把 <code style="background-color: var(--bg-card); padding: 2px 6px; border-radius: 4px; border:1px solid var(--border);">http://localhost:8900</code> 和 <code style="background-color: var(--bg-card); padding: 2px 6px; border-radius: 4px; border:1px solid var(--border);">sk-dm-你的APIKey</code> 换成你实际的地址和 API Key！
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>🔗 链接</h2>
+        <div class="links">
+            <p><strong>GitHub 项目地址：</strong> <a href="https://github.com/sopyk/docker-mcpilots" target="_blank" rel="noopener">https://github.com/sopyk/docker-mcpilots</a></p>
+            <p><strong>问题反馈：</strong> <a href="https://github.com/sopyk/docker-mcpilots/issues" target="_blank" rel="noopener">Issues</a></p>
+            <p><strong>作者邮箱：</strong> <a href="mailto:sopykapp@qq.com">sopykapp@qq.com</a></p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📄 版本与协议</h2>
+        <div style="color: var(--text-muted); font-family: monospace;">
+            <p><strong>版本：</strong> v2.0.0</p>
+            <p><strong>作者：</strong> SopyK</p>
+            <p><strong>协议：</strong> MIT License</p>
+        </div>
+    </div>
+
+    <style>
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        .links a {
+            color: var(--blue);
+            text-decoration: underline;
+        }
+    </style>
+</main>
+{% endblock %}

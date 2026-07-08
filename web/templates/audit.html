@@ -40,7 +40,7 @@
         <tbody>
         {% for log in logs %}
         <tr>
-            <td class="text-muted">{{ log.timestamp }}</td>
+            <td class="text-muted">{{ log.timestamp|tz(settings.timezone) }}</td>
             <td><span class="badge badge-{{ 'blue' if log.source == 'mcp' else 'purple' }}">{{ log.source }}</span></td>
             <td>{{ log.actor }}</td>
             <td>{{ log.action }}</td>

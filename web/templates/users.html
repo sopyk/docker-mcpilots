@@ -31,7 +31,7 @@
             <tr>
                 <form method="post" action="/ui/users/{{ k.name | urlencode }}/update">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                    <td><input type="text" name="name" value="{{ k.name }}" readonly class="input-plain"></td>
+                    <td><input type="text" name="name" value="{{ k.name }}" class="input-plain"></td>
                     <td>
                         <select name="role">
                             {% for r in roles %}
