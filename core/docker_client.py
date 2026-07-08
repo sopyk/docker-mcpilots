@@ -98,6 +98,12 @@ class DockerClient:
         self._client = None
         self._available = None
 
+    def is_available(self) -> bool:
+        """检查 Docker daemon 是否可用（不触发连接）"""
+        if self._available is not None:
+            return self._available
+        return False
+
     def _ensure_connected(self) -> bool:
         """延迟连接 Docker daemon，仅首次调用时建立连接
         返回值：连接成功返回 True，失败返回 False
@@ -109,9 +115,14 @@ class DockerClient:
             self._client.ping()
             self._available = True
             return True
-        except (DockerAPIError, DockerException, FileNotFoundError, OSError):
+        except (DockerAPIError, DockerException, FileNotFoundError, OSError) as e:
             self._available = False
+            self._last_error = str(e)
             return False
+
+    def get_last_error(self) -> str | None:
+        """获取最后一次连接错误信息"""
+        return getattr(self, "_last_error", None)
 
     # ── 容器操作 ──
 
