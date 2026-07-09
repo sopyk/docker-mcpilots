@@ -9,6 +9,8 @@ roles:
     permissions:
       - "container:*"
       - "image:*"
+      - "network:*"
+      - "volume:*"
       - "system:*"
       - "exec:*"
   operator:
@@ -23,6 +25,8 @@ roles:
       - "container:stats"
       - "image:list"
       - "image:pull"
+      - "network:list"
+      - "volume:list"
       - "system:*"
   observer:
     description: "只读权限"
@@ -32,6 +36,8 @@ roles:
       - "container:logs"
       - "container:stats"
       - "image:list"
+      - "network:list"
+      - "volume:list"
       - "system:*"
 
 # --- API Key 绑定 ---

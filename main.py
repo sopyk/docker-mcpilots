@@ -65,7 +65,7 @@ class AuthMiddleware(Middleware):
 
                 api_key = auth_header[7:]
                 key_config = self._app_state.permission_checker.authenticate(api_key)
-                await ctx.set_state("auth_key_config", key_config, serializable=True)
+                await ctx.set_state("auth_key_config", key_config)
 
             except AuthenticationError as e:
                 if self._app_state.audit_logger:
@@ -93,7 +93,10 @@ class AuthMiddleware(Middleware):
         if ctx and ctx.request_context:
             key_config = await ctx.get_state("auth_key_config")
             if key_config is not None:
-                actor = getattr(key_config, "name", str(key_config))
+                if isinstance(key_config, dict):
+                    actor = key_config.get("name", str(key_config))
+                else:
+                    actor = getattr(key_config, "name", str(key_config))
         success = True
         try:
             return await call_next(context)
@@ -258,6 +261,12 @@ def create_app() -> FastMCP:
     settings = Settings.from_yaml(str(CONFIG_DIR / "settings.yaml"))
     auth_config = AuthConfig.from_yaml(str(SECRETS_DIR / "auth.yaml"))
     admin_yaml = SECRETS_DIR / "admin.yaml"
+    
+    # --- 自动确保标准角色权限完整，自动补充缺失权限 ---
+    updated = auth_config.ensure_standard_roles()
+    if updated:
+        auth_config.to_yaml(str(SECRETS_DIR / "auth.yaml"))
+        logger.info("Updated auth.yaml: added missing permissions to standard roles")
 
     # 创建 AppState 作为全局状态容器，支持热加载
     docker_client = DockerClient(socket_path=settings.socket_path)
@@ -286,7 +295,7 @@ def create_app() -> FastMCP:
     mcp = FastMCP(
         name="Docker-MCPilotS",
         instructions="Docker container and image management server with system diagnostics for Synology NAS.",
-        version="2.0.1",
+        version="2.0.2",
     )
 
     # 注册认证中间件
@@ -294,13 +303,13 @@ def create_app() -> FastMCP:
 
     # 注册 MCP Tools
     if settings.container_management:
-        register_container_tools(mcp, docker_client)
+        register_container_tools(mcp, docker_client, app_state)
     if settings.image_management:
-        register_image_tools(mcp, docker_client)
+        register_image_tools(mcp, docker_client, app_state)
     if settings.system_diagnostics:
-        register_diag_tools(mcp, system_diag)
-    # Docker 资源诊断（网络/卷）始终注册，用于排查容器问题
-    register_docker_diag_tools(mcp, docker_client)
+        register_diag_tools(mcp, system_diag, app_state)
+    # Docker 资源诊断（网络、卷等）始终注册，用于排查容器问题
+    register_docker_diag_tools(mcp, docker_client, app_state)
 
     # exec 工具（高风险，默认关闭，需 exec_enabled=true 且有 exec:run 权限）
     if settings.exec_enabled:
@@ -311,7 +320,7 @@ def create_app() -> FastMCP:
     @mcp.custom_route("/health", methods=["GET"])
     async def health_check(request):
         from starlette.responses import JSONResponse
-        return JSONResponse({"status": "ok", "version": "2.0.1"})
+        return JSONResponse({"status": "ok", "version": "2.0.2"})
 
     # Web UI 初始化
     admin_yaml = SECRETS_DIR / "admin.yaml"
