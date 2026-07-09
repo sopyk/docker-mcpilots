@@ -261,6 +261,12 @@ def create_app() -> FastMCP:
     settings = Settings.from_yaml(str(CONFIG_DIR / "settings.yaml"))
     auth_config = AuthConfig.from_yaml(str(SECRETS_DIR / "auth.yaml"))
     admin_yaml = SECRETS_DIR / "admin.yaml"
+    
+    # --- 自动确保标准角色权限完整，自动补充缺失权限 ---
+    updated = auth_config.ensure_standard_roles()
+    if updated:
+        auth_config.to_yaml(str(SECRETS_DIR / "auth.yaml"))
+        logger.info("Updated auth.yaml: added missing permissions to standard roles")
 
     # 创建 AppState 作为全局状态容器，支持热加载
     docker_client = DockerClient(socket_path=settings.socket_path)

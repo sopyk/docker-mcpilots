@@ -137,6 +137,114 @@ class AuthConfig:
     keys: list[KeyConfig] = field(default_factory=list)
     _key_lookup: dict[str, KeyConfig] = field(default_factory=dict, repr=False)
 
+    # --- 标准角色的默认权限模板 ---
+    STANDARD_ROLES: dict[str, dict] = field(
+        default_factory=lambda: {
+            "admin": {
+                "description": "完全控制权限",
+                "permissions": [
+                    "container:*",
+                    "image:*",
+                    "network:*",
+                    "volume:*",
+                    "system:*",
+                    "exec:*",
+                ],
+            },
+            "operator": {
+                "description": "标准管理权限",
+                "permissions": [
+                    "container:list",
+                    "container:inspect",
+                    "container:start",
+                    "container:stop",
+                    "container:restart",
+                    "container:logs",
+                    "container:stats",
+                    "image:list",
+                    "image:pull",
+                    "network:list",
+                    "volume:list",
+                    "system:*",
+                ],
+            },
+            "observer": {
+                "description": "只读权限",
+                "permissions": [
+                    "container:list",
+                    "container:inspect",
+                    "container:logs",
+                    "container:stats",
+                    "image:list",
+                    "network:list",
+                    "volume:list",
+                    "system:*",
+                ],
+            },
+        },
+        repr=False,
+    )
+
+    def ensure_standard_roles(self) -> bool:
+        """
+        确保三个标准角色（admin/operator/observer）存在并具有完整权限。
+        对于已存在的角色，会补充缺失的权限，不会覆盖用户已添加的权限。
+        
+        返回：如果有更新返回 True，否则 False
+        """
+        updated = False
+        for role_name, standard in self.STANDARD_ROLES.items():
+            # 如果角色不存在，创建它
+            if role_name not in self.roles:
+                self.roles[role_name] = RoleConfig(
+                    description=standard["description"],
+                    permissions=list(standard["permissions"]),
+                )
+                updated = True
+            else:
+                # 如果角色已存在，补充缺失的权限（不去重，只添加不存在的）
+                role = self.roles[role_name]
+                for perm in standard["permissions"]:
+                    if perm not in role.permissions:
+                        role.permissions.append(perm)
+                        updated = True
+        return updated
+
+    def to_yaml(self, path: str):
+        """保存权限配置到 YAML 文件"""
+        data = {
+            "roles": {
+                name: {
+                    "description": role.description,
+                    "permissions": role.permissions,
+                }
+                for name, role in self.roles.items()
+            },
+            "keys": [
+                {
+                    "key": k.key,
+                    "name": k.name,
+                    "role": k.role,
+                    "scope": {
+                        "containers": {
+                            "include": k.scope.containers_include,
+                            "exclude": k.scope.containers_exclude,
+                        },
+                    }
+                    if k.scope
+                    else None,
+                }
+                for k in self.keys
+            ],
+        }
+        # 过滤掉 scope 为 None 的项
+        for key_dict in data["keys"]:
+            if key_dict["scope"] is None:
+                del key_dict["scope"]
+
+        with open(path, "w", encoding="utf-8") as f:
+            yaml.dump(data, f, allow_unicode=True, sort_keys=False)
+
     @classmethod
     def from_yaml(cls, path: str) -> AuthConfig:
         """从 YAML 文件加载权限配置"""
