@@ -249,7 +249,7 @@ def register_web_routes(
             try:
                 container_info = docker.get_container(container_id)
                 if container_info.get("success"):
-                    container_name = container_info.get("name", container_id)
+                    container_name = container_info.get("container", {}).get("name", container_id)
             except Exception:
                 pass
             result = getattr(docker, docker_method)(container_id)
