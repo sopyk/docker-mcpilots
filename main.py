@@ -216,7 +216,7 @@ def _init_config_files() -> None:
     # 从环境变量设置管理员用户名和密码
     admin_username = os.environ.get("ADMIN_USERNAME", "admin")
     admin_password = os.environ.get("ADMIN_PASSWORD", "")
-    from core.admin_auth import AdminAuth
+    from core.admin_auth import AdminAuth, AdminConfig
     admin_auth = AdminAuth(str(admin_file), session_secret="temp-secret-just-for-init")
     # 读取当前 config
     try:
@@ -340,10 +340,11 @@ def create_app() -> FastMCP:
 if __name__ == "__main__":
     mcp = create_app()
     settings = Settings.from_yaml(str(CONFIG_DIR / "settings.yaml"))
-    # 禁用 host origin 保护，允许从任意地址访问（NAS场景安全）
+    # 禁用 FastMCP 的 host origin guard，允许从任意地址访问（NAS场景安全）
     mcp.run(
         transport="http",
         host=settings.host,
         port=settings.port,
+        host_origin_protection=False,
         uvicorn_config={"forwarded_allow_ips": "*", "proxy_headers": False},
     )
