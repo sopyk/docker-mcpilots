@@ -289,7 +289,7 @@ def create_app() -> FastMCP:
     mcp = FastMCP(
         name="Docker-MCPilotS",
         instructions="Docker container and image management server with system diagnostics for Synology NAS.",
-        version="2.0.1",
+        version="2.0.2",
     )
 
     # 注册认证中间件
@@ -314,7 +314,7 @@ def create_app() -> FastMCP:
     @mcp.custom_route("/health", methods=["GET"])
     async def health_check(request):
         from starlette.responses import JSONResponse
-        return JSONResponse({"status": "ok", "version": "2.0.1"})
+        return JSONResponse({"status": "ok", "version": "2.0.2"})
 
     # Web UI 初始化
     admin_yaml = SECRETS_DIR / "admin.yaml"
