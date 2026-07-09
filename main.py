@@ -65,7 +65,7 @@ class AuthMiddleware(Middleware):
 
                 api_key = auth_header[7:]
                 key_config = self._app_state.permission_checker.authenticate(api_key)
-                await ctx.set_state("auth_key_config", key_config, serializable=True)
+                await ctx.set_state("auth_key_config", key_config)
 
             except AuthenticationError as e:
                 if self._app_state.audit_logger:
@@ -294,13 +294,13 @@ def create_app() -> FastMCP:
 
     # 注册 MCP Tools
     if settings.container_management:
-        register_container_tools(mcp, docker_client)
+        register_container_tools(mcp, docker_client, app_state)
     if settings.image_management:
-        register_image_tools(mcp, docker_client)
+        register_image_tools(mcp, docker_client, app_state)
     if settings.system_diagnostics:
-        register_diag_tools(mcp, system_diag)
-    # Docker 资源诊断（网络/卷）始终注册，用于排查容器问题
-    register_docker_diag_tools(mcp, docker_client)
+        register_diag_tools(mcp, system_diag, app_state)
+    # Docker 资源诊断（网络、卷等）始终注册，用于排查容器问题
+    register_docker_diag_tools(mcp, docker_client, app_state)
 
     # exec 工具（高风险，默认关闭，需 exec_enabled=true 且有 exec:run 权限）
     if settings.exec_enabled:

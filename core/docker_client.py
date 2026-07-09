@@ -522,7 +522,7 @@ class DockerClient:
                     "driver": v.attrs.get("Driver", ""),
                     "mountpoint": v.attrs.get("Mountpoint", ""),
                     "created": v.attrs.get("CreatedAt", ""),
-                    "size": v.attrs.get("Options", {}).get("size", ""),
+                    "size": (v.attrs.get("Options") or {}).get("size", ""),
                     "in_use": v.attrs.get("InUse", False),
                 }
                 for v in volumes
