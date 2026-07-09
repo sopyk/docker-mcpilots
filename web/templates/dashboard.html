@@ -54,16 +54,16 @@
     </div>
 
     <div class="stats-counts">
-        <div class="stat-card">
+        <a href="/ui/containers" class="stat-card" style="text-decoration: none; display: block;">
             <h3>容器</h3>
             <p class="stat-value">{{ container_running }} / {{ container_total }}</p>
             <p class="stat-label">运行中 / 总数</p>
-        </div>
-        <div class="stat-card">
+        </a>
+        <a href="/ui/images" class="stat-card" style="text-decoration: none; display: block;">
             <h3>镜像</h3>
             <p class="stat-value">{{ image_count }}</p>
             <p class="stat-label">总数</p>
-        </div>
+        </a>
     </div>
 
     <div class="section">
