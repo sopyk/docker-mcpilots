@@ -3,7 +3,10 @@
 
 {% block body %}
 <main class="content">
-    <h1>容器详情</h1>
+    <div class="section-header">
+        <h1>容器详情</h1>
+        <a href="/ui/containers" class="btn">返回列表</a>
+    </div>
     {% if detail.success %}
     <div class="detail-header">
         <div>
@@ -89,6 +92,9 @@
     <div class="error">{{ detail.error }}</div>
     {% endif %}
 
-    <a href="/ui/containers" class="btn">返回列表</a>
+    <div class="section-header">
+        <h2></h2>
+        <a href="/ui/containers" class="btn">返回列表</a>
+    </div>
 </main>
 {% endblock %}

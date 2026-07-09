@@ -6,6 +6,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.0.2] - 2026-07-09
+
+### 新增
+- **自动权限迁移**：首次启动时自动为三个标准角色补充缺失的权限（network:list / volume:list 等）
+- **favicon显示**：使用专用 favicon 图标，浏览器标签页显示项目 logo
+- **返回按钮统一位置**：容器详情页顶部和底部返回按钮均靠右对齐，保持一致
+
+### 修复
+- **RBAC权限完全失效**：所有 MCP 工具均添加权限检查（此前仅有 exec_container 有）
+- **exec_container 崩溃**：兼容 KeyConfig 被序列化为 dict 的情况（兼容 fastmcp 行为）
+- **list_volumes NoneType**：修复 Volume Options 为 None 时的访问错误
+- **导航栏固定**：改成 position: fixed，完全固定在页面顶部
+- **热加载后URL参数问题**：自动去除 ?success/error 参数，避免刷新问题
+- **设置页面按钮改名**：“保存设置” → “应用设置”
+- **设置页面移除原始内容**：不再显示 settings.yaml 原始内容
+- **仪表盘卡片可点击**：点击容器卡片跳转到容器页，点击镜像卡片跳转到镜像页
+- **favicon问题**：使用独立的 favicon.jpg，不影响页面 logo
+
 ## [v2.0.1] - 2026-07-08
 
 ### 新增

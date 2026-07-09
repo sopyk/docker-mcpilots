@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/ui/static/tokens.css?v=5">
     <link rel="stylesheet" href="/ui/static/style.css?v=5">
-    <link rel="icon" type="image/svg+xml" href="/ui/static/logo.svg">
+    <link rel="icon" type="image/jpeg" href="/ui/static/assets/favicon.jpg">
 </head>
 <body>
 {% block navbar %}
@@ -29,10 +29,20 @@
             <a href="/ui/login">登录</a>
         {% endif %}
         <a href="/ui/about">关于</a>
-        <span class="version-tag">v2.0.1</span>
+        <span class="version-tag">v2.0.2</span>
     </div>
 </nav>
 {% endblock %}
 {% block body %}{% endblock %}
+<script>
+// 移除URL中的查询参数（success/error）
+(function() {
+    if (window.location.search) {
+        const url = new URL(window.location.href);
+        url.search = '';
+        window.history.replaceState({}, document.title, url.toString());
+    }
+})();
+</script>
 </body>
 </html>
