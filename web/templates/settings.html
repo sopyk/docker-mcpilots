@@ -19,10 +19,6 @@
     <div class="section">
         <div class="section-header">
             <h2>功能开关</h2>
-            <form method="post" action="/ui/settings/reload" class="inline-form">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                <button type="submit" class="btn btn-sm btn-blue">热加载 settings.yaml</button>
-            </form>
         </div>
         <form method="post" action="/ui/settings/save" class="settings-form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">

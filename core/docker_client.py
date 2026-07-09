@@ -145,7 +145,10 @@ class DockerClient:
             return {"success": False, "error": "Docker daemon is not available"}
         try:
             container = self._client.containers.get(container_id)
-            return self._format_container_detail(container)
+            return {
+                "success": True,
+                "container": self._format_container_detail(container)
+            }
         except DockerNotFound:
             return {"success": False, "error": f"Container '{container_id}' not found"}
         except DockerAPIError as e:

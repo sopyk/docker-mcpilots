@@ -35,7 +35,7 @@
         <tbody>
         {% for c in containers %}
         <tr>
-            <td><a href="/ui/containers/{{ c.id }}" class="link">{{ c.name }}</a></td>
+            <td>{{ c.name }}</td>
             <td>{{ c.image }}</td>
             <td>
                 {% if c.status == "running" %}
