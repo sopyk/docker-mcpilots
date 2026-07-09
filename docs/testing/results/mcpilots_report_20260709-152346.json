@@ -1,0 +1,4403 @@
+[
+  {
+    "id": "TC-A11-01",
+    "cat": "A",
+    "desc": "list all",
+    "tok": "admin",
+    "tool": "list_containers",
+    "args": {
+      "all": true,
+      "status": "all"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "[{\"id\": \"f9259afe6e9b\", \"name\": \"docker-mcpilots\", \"status\": \"running\", \"image\": \"ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc10\"}, {\"id\": \"872a4907c8ea\", ",
+    "dt_ms": 613,
+    "verdict": "PASS",
+    "inner": [
+      {
+        "id": "f9259afe6e9b",
+        "name": "docker-mcpilots",
+        "status": "running",
+        "image": "ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc10"
+      },
+      {
+        "id": "872a4907c8ea",
+        "name": "mcpilots-test-readonly",
+        "status": "running",
+        "image": "nginx:alpine"
+      },
+      {
+        "id": "5412e310adbf",
+        "name": "mcpilots-test-lifecycle",
+        "status": "running",
+        "image": "nginx:alpine"
+      },
+      {
+        "id": "6631a8b46f9c",
+        "name": "mcp-toolbox",
+        "status": "exited",
+        "image": "alpine:3.20"
+      },
+      {
+        "id": "9d9f690f4540",
+        "name": "qbittorrent",
+        "status": "running",
+        "image": "linuxserver/qbittorrent:latest"
+      },
+      {
+        "id": "efa4f07e1e0c",
+        "name": "ariang",
+        "status": "running",
+        "image": "p3terx/ariang:latest"
+      },
+      {
+        "id": "89ee4b965a5c",
+        "name": "calibre",
+        "status": "running",
+        "image": "linuxserver/calibre:latest"
+      },
+      {
+        "id": "46f466b62666",
+        "name": "calibre-web",
+        "status": "running",
+        "image": "lscr.io/linuxserver/calibre-web:latest"
+      },
+      {
+        "id": "cee3c35bd10f",
+        "name": "cloud-saver",
+        "status": "running",
+        "image": "jiangrui1994/cloudsaver:latest"
+      },
+      {
+        "id": "20f71f644f06",
+        "name": "decotv-core",
+        "status": "running",
+        "image": "ghcr.io/decohererk/decotv:latest"
+      },
+      {
+        "id": "1f665b848ea9",
+        "name": "deeptutor",
+        "status": "running",
+        "image": "ghcr.io/hkuds/deeptutor:latest"
+      },
+      {
+        "id": "f134b8bc1f37",
+        "name": "gitea-db",
+        "status": "running",
+        "image": "postgres:14"
+      },
+      {
+        "id": "8b3fa63b4e43",
+        "name": "multica-backend",
+        "status": "running",
+        "image": "ghcr.io/multica-ai/multica-backend:latest"
+      },
+      {
+        "id": "b3a78ba7ff53",
+        "name": "multica-web",
+        "status": "running",
+        "image": "ghcr.io/multica-ai/multica-web:latest"
+      },
+      {
+        "id": "39910ba74b17",
+        "name": "caddy-proxy",
+        "status": "running",
+        "image": "caddy:2-alpine"
+      },
+      {
+        "id": "fc4aafa9c3f6",
+        "name": "caddy-dash",
+        "status": "running",
+        "image": "wjqserver/caddydash:latest"
+      },
+      {
+        "id": "25bcd61c5ec8",
+        "name": "watchtower",
+        "status": "running",
+        "image": "ghcr.io/nicholas-fedor/watchtower:latest"
+      },
+      {
+        "id": "f90c84994dc3",
+        "name": "openlist",
+        "status": "running",
+        "image": "openlistteam/openlist:latest"
+      },
+      {
+        "id": "0f866942628b",
+        "name": "multica-db",
+        "status": "running",
+        "image": "pgvector/pgvector:pg17"
+      },
+      {
+        "id": "a104b11f7036",
+        "name": "immich_server",
+        "status": "running",
+        "image": "ghcr.io/immich-app/immich-server:release"
+      },
+      {
+        "id": "033d13938bd3",
+        "name": "immich_machine_learning",
+        "status": "running",
+        "image": "ghcr.io/immich-app/immich-machine-learning:release"
+      },
+      {
+        "id": "c94b131d1aab",
+        "name": "immich_postgres",
+        "status": "running",
+        "image": "sha256:17871"
+      },
+      {
+        "id": "c95918fcbaab",
+        "name": "immich_redis",
+        "status": "running",
+        "image": "sha256:b31e0"
+      },
+      {
+        "id": "ec9e6c980885",
+        "name": "webssh2",
+        "status": "running",
+        "image": "ghcr.io/billchurch/webssh2:latest"
+      },
+      {
+        "id": "508710122aeb",
+        "name": "wud",
+        "status": "running",
+        "image": "getwud/wud:latest"
+      },
+      {
+        "id": "b4f24a16df15",
+        "name": "open-webui",
+        "status": "running",
+        "image": "ghcr.io/open-webui/open-webui:main"
+      },
+      {
+        "id": "f17ea04239e7",
+        "name": "openmaic-built",
+        "status": "running",
+        "image": "openmaic:v0.3.0"
+      },
+      {
+        "id": "3ecd1d40b2ea",
+        "name": "portainer-ce",
+        "status": "running",
+        "image": "portainer/portainer-ce:latest"
+      },
+      {
+        "id": "411f4e20447b",
+        "name": "dockhand",
+        "status": "running",
+        "image": "fnsys/dockhand:latest"
+      },
+      {
+        "id": "2b2971e882cb",
+        "name": "gitea-core",
+        "status": "running",
+        "image": "docker.gitea.com/gitea:latest"
+      },
+      {
+        "id": "f9d0528f3209",
+        "name": "decotv-redis",
+        "status": "running",
+        "image": "redis:alpine"
+      },
+      {
+        "id": "59847132d6a0",
+        "name": "cloudflared",
+        "status": "running",
+        "image": "cloudflare/cloudflared:latest"
+      },
+      {
+        "id": "95577100e35d",
+        "name": "jellyfin",
+        "status": "running",
+        "image": "jellyfin/jellyfin:latest"
+      },
+      {
+        "id": "880d905b4924",
+        "name": "xiaomusic",
+        "status": "running",
+        "image": "docker.hanxi.cc/hanxi/xiaomusic:latest"
+      },
+      {
+        "id": "3d1b407e19aa",
+        "name": "nowen-video",
+        "status": "running",
+        "image": "cropflre/nowen-video:latest"
+      },
+      {
+        "id": "6fe373c6b3f2",
+        "name": "photoprism-server",
+        "status": "running",
+        "image": "photoprism/photoprism:latest"
+      },
+      {
+        "id": "05c2661f2c96",
+        "name": "aria2-pro",
+        "status": "running",
+        "image": "p3terx/aria2-pro:latest"
+      },
+      {
+        "id": "f81d98fd63dc",
+        "name": "kosync",
+        "status": "running",
+        "image": "koreader/kosync:latest"
+      },
+      {
+        "id": "9c74db222069",
+        "name": "stirling-pdf",
+        "status": "exited",
+        "image": "frooodle/s-pdf:latest"
+      },
+      {
+        "id": "ec50b5565dab",
+        "name": "waoowaoo-redis",
+        "status": "running",
+        "image": "redis:7-alpine"
+      },
+      {
+        "id": "b416e6d6f4c5",
+        "name": "wikijs",
+        "status": "exited",
+        "image": "linuxserver/wikijs:latest"
+      },
+      {
+        "id": "88869e06ac0e",
+        "name": "n8n-app",
+        "status": "exited",
+        "image": "n8nio/n8n:latest"
+      },
+      {
+        "id": "aeaa3b542463",
+        "name": "firefox-selkies",
+        "status": "exited",
+        "image": "lscr.io/linuxserver/firefox:latest"
+      },
+      {
+        "id": "5a0c0421ec28",
+        "name": "synology_docviewer_2",
+        "status": "exited",
+        "image": "synology/docviewer:1.3.0.0126"
+      },
+      {
+        "id": "a7d2e43baddb",
+        "name": "synology_docviewer_1",
+        "status": "exited",
+        "image": "synology/docviewer:1.3.0.0126"
+      },
+      {
+        "id": "6b6c940c9614",
+        "name": "waoowaoo-mysql",
+        "status": "running",
+        "image": "mysql:8.0"
+      },
+      {
+        "id": "a1498056b10f",
+        "name": "waoowaoo-app",
+        "status": "running",
+        "image": "ghcr.io/saturndec/waoowaoo:latest"
+      },
+      {
+        "id": "a2b269792328",
+        "name": "waoowaoo-minio",
+        "status": "running",
+        "image": "minio/minio:RELEASE.2025-02-28T09-55-16Z"
+      },
+      {
+        "id": "2ab8daf78bb0",
+        "name": "zashboard",
+        "status": "exited",
+        "image": "ghcr.io/zephyruso/zashboard:latest"
+      },
+      {
+        "id": "69a934bd1e4a",
+        "name": "n8n-db",
+        "status": "exited",
+        "image": "postgres:16-alpine"
+      },
+      {
+        "id": "fc8a16079230",
+        "name": "mihomo",
+        "status": "running",
+        "image": "metacubex/mihomo:latest"
+      },
+      {
+        "id": "c142daeb5271",
+        "name": "wechat-md",
+        "status": "exited",
+        "image": "doocs/md:latest"
+      },
+      {
+        "id": "35eb62ef01e9",
+        "name": "sun-panel",
+        "status": "running",
+        "image": "hslr/sun-panel:latest"
+      },
+      {
+        "id": "ca8f90868221",
+        "name": "taosync",
+        "status": "running",
+        "image": "dr34m/tao-sync:latest"
+      },
+      {
+        "id": "e3ed0dd93756",
+        "name": "dockports",
+        "status": "running",
+        "image": "ghcr.io/coracoo/dockports:latest"
+      },
+      {
+        "id": "b0c52d3558d0",
+        "name": "zerotier-one",
+        "status": "running",
+        "image": "zerotier/zerotier-synology:latest"
+      }
+    ]
+  },
+  {
+    "id": "TC-A11-02",
+    "cat": "A",
+    "desc": "list running only",
+    "tok": "admin",
+    "tool": "list_containers",
+    "args": {
+      "all": false,
+      "status": "running"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "[{\"id\": \"f9259afe6e9b\", \"name\": \"docker-mcpilots\", \"status\": \"running\", \"image\": \"ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc10\"}, {\"id\": \"872a4907c8ea\", ",
+    "dt_ms": 1130,
+    "verdict": "PASS",
+    "inner": [
+      {
+        "id": "f9259afe6e9b",
+        "name": "docker-mcpilots",
+        "status": "running",
+        "image": "ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc10"
+      },
+      {
+        "id": "872a4907c8ea",
+        "name": "mcpilots-test-readonly",
+        "status": "running",
+        "image": "nginx:alpine"
+      },
+      {
+        "id": "5412e310adbf",
+        "name": "mcpilots-test-lifecycle",
+        "status": "running",
+        "image": "nginx:alpine"
+      },
+      {
+        "id": "9d9f690f4540",
+        "name": "qbittorrent",
+        "status": "running",
+        "image": "linuxserver/qbittorrent:latest"
+      },
+      {
+        "id": "efa4f07e1e0c",
+        "name": "ariang",
+        "status": "running",
+        "image": "p3terx/ariang:latest"
+      },
+      {
+        "id": "89ee4b965a5c",
+        "name": "calibre",
+        "status": "running",
+        "image": "linuxserver/calibre:latest"
+      },
+      {
+        "id": "46f466b62666",
+        "name": "calibre-web",
+        "status": "running",
+        "image": "lscr.io/linuxserver/calibre-web:latest"
+      },
+      {
+        "id": "cee3c35bd10f",
+        "name": "cloud-saver",
+        "status": "running",
+        "image": "jiangrui1994/cloudsaver:latest"
+      },
+      {
+        "id": "20f71f644f06",
+        "name": "decotv-core",
+        "status": "running",
+        "image": "ghcr.io/decohererk/decotv:latest"
+      },
+      {
+        "id": "1f665b848ea9",
+        "name": "deeptutor",
+        "status": "running",
+        "image": "ghcr.io/hkuds/deeptutor:latest"
+      },
+      {
+        "id": "f134b8bc1f37",
+        "name": "gitea-db",
+        "status": "running",
+        "image": "postgres:14"
+      },
+      {
+        "id": "8b3fa63b4e43",
+        "name": "multica-backend",
+        "status": "running",
+        "image": "ghcr.io/multica-ai/multica-backend:latest"
+      },
+      {
+        "id": "b3a78ba7ff53",
+        "name": "multica-web",
+        "status": "running",
+        "image": "ghcr.io/multica-ai/multica-web:latest"
+      },
+      {
+        "id": "39910ba74b17",
+        "name": "caddy-proxy",
+        "status": "running",
+        "image": "caddy:2-alpine"
+      },
+      {
+        "id": "fc4aafa9c3f6",
+        "name": "caddy-dash",
+        "status": "running",
+        "image": "wjqserver/caddydash:latest"
+      },
+      {
+        "id": "25bcd61c5ec8",
+        "name": "watchtower",
+        "status": "running",
+        "image": "ghcr.io/nicholas-fedor/watchtower:latest"
+      },
+      {
+        "id": "f90c84994dc3",
+        "name": "openlist",
+        "status": "running",
+        "image": "openlistteam/openlist:latest"
+      },
+      {
+        "id": "0f866942628b",
+        "name": "multica-db",
+        "status": "running",
+        "image": "pgvector/pgvector:pg17"
+      },
+      {
+        "id": "a104b11f7036",
+        "name": "immich_server",
+        "status": "running",
+        "image": "ghcr.io/immich-app/immich-server:release"
+      },
+      {
+        "id": "033d13938bd3",
+        "name": "immich_machine_learning",
+        "status": "running",
+        "image": "ghcr.io/immich-app/immich-machine-learning:release"
+      },
+      {
+        "id": "c94b131d1aab",
+        "name": "immich_postgres",
+        "status": "running",
+        "image": "sha256:17871"
+      },
+      {
+        "id": "c95918fcbaab",
+        "name": "immich_redis",
+        "status": "running",
+        "image": "sha256:b31e0"
+      },
+      {
+        "id": "ec9e6c980885",
+        "name": "webssh2",
+        "status": "running",
+        "image": "ghcr.io/billchurch/webssh2:latest"
+      },
+      {
+        "id": "508710122aeb",
+        "name": "wud",
+        "status": "running",
+        "image": "getwud/wud:latest"
+      },
+      {
+        "id": "b4f24a16df15",
+        "name": "open-webui",
+        "status": "running",
+        "image": "ghcr.io/open-webui/open-webui:main"
+      },
+      {
+        "id": "f17ea04239e7",
+        "name": "openmaic-built",
+        "status": "running",
+        "image": "openmaic:v0.3.0"
+      },
+      {
+        "id": "3ecd1d40b2ea",
+        "name": "portainer-ce",
+        "status": "running",
+        "image": "portainer/portainer-ce:latest"
+      },
+      {
+        "id": "411f4e20447b",
+        "name": "dockhand",
+        "status": "running",
+        "image": "fnsys/dockhand:latest"
+      },
+      {
+        "id": "2b2971e882cb",
+        "name": "gitea-core",
+        "status": "running",
+        "image": "docker.gitea.com/gitea:latest"
+      },
+      {
+        "id": "f9d0528f3209",
+        "name": "decotv-redis",
+        "status": "running",
+        "image": "redis:alpine"
+      },
+      {
+        "id": "59847132d6a0",
+        "name": "cloudflared",
+        "status": "running",
+        "image": "cloudflare/cloudflared:latest"
+      },
+      {
+        "id": "95577100e35d",
+        "name": "jellyfin",
+        "status": "running",
+        "image": "jellyfin/jellyfin:latest"
+      },
+      {
+        "id": "880d905b4924",
+        "name": "xiaomusic",
+        "status": "running",
+        "image": "docker.hanxi.cc/hanxi/xiaomusic:latest"
+      },
+      {
+        "id": "3d1b407e19aa",
+        "name": "nowen-video",
+        "status": "running",
+        "image": "cropflre/nowen-video:latest"
+      },
+      {
+        "id": "6fe373c6b3f2",
+        "name": "photoprism-server",
+        "status": "running",
+        "image": "photoprism/photoprism:latest"
+      },
+      {
+        "id": "05c2661f2c96",
+        "name": "aria2-pro",
+        "status": "running",
+        "image": "p3terx/aria2-pro:latest"
+      },
+      {
+        "id": "f81d98fd63dc",
+        "name": "kosync",
+        "status": "running",
+        "image": "koreader/kosync:latest"
+      },
+      {
+        "id": "ec50b5565dab",
+        "name": "waoowaoo-redis",
+        "status": "running",
+        "image": "redis:7-alpine"
+      },
+      {
+        "id": "6b6c940c9614",
+        "name": "waoowaoo-mysql",
+        "status": "running",
+        "image": "mysql:8.0"
+      },
+      {
+        "id": "a1498056b10f",
+        "name": "waoowaoo-app",
+        "status": "running",
+        "image": "ghcr.io/saturndec/waoowaoo:latest"
+      },
+      {
+        "id": "a2b269792328",
+        "name": "waoowaoo-minio",
+        "status": "running",
+        "image": "minio/minio:RELEASE.2025-02-28T09-55-16Z"
+      },
+      {
+        "id": "fc8a16079230",
+        "name": "mihomo",
+        "status": "running",
+        "image": "metacubex/mihomo:latest"
+      },
+      {
+        "id": "35eb62ef01e9",
+        "name": "sun-panel",
+        "status": "running",
+        "image": "hslr/sun-panel:latest"
+      },
+      {
+        "id": "ca8f90868221",
+        "name": "taosync",
+        "status": "running",
+        "image": "dr34m/tao-sync:latest"
+      },
+      {
+        "id": "e3ed0dd93756",
+        "name": "dockports",
+        "status": "running",
+        "image": "ghcr.io/coracoo/dockports:latest"
+      },
+      {
+        "id": "b0c52d3558d0",
+        "name": "zerotier-one",
+        "status": "running",
+        "image": "zerotier/zerotier-synology:latest"
+      }
+    ]
+  },
+  {
+    "id": "TC-A11-03",
+    "cat": "A",
+    "desc": "empty args",
+    "tok": "admin",
+    "tool": "list_containers",
+    "args": {},
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "[{\"id\": \"f9259afe6e9b\", \"name\": \"docker-mcpilots\", \"status\": \"running\", \"image\": \"ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc10\"}, {\"id\": \"872a4907c8ea\", ",
+    "dt_ms": 499,
+    "verdict": "PASS",
+    "inner": [
+      {
+        "id": "f9259afe6e9b",
+        "name": "docker-mcpilots",
+        "status": "running",
+        "image": "ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc10"
+      },
+      {
+        "id": "872a4907c8ea",
+        "name": "mcpilots-test-readonly",
+        "status": "running",
+        "image": "nginx:alpine"
+      },
+      {
+        "id": "5412e310adbf",
+        "name": "mcpilots-test-lifecycle",
+        "status": "running",
+        "image": "nginx:alpine"
+      },
+      {
+        "id": "9d9f690f4540",
+        "name": "qbittorrent",
+        "status": "running",
+        "image": "linuxserver/qbittorrent:latest"
+      },
+      {
+        "id": "efa4f07e1e0c",
+        "name": "ariang",
+        "status": "running",
+        "image": "p3terx/ariang:latest"
+      },
+      {
+        "id": "89ee4b965a5c",
+        "name": "calibre",
+        "status": "running",
+        "image": "linuxserver/calibre:latest"
+      },
+      {
+        "id": "46f466b62666",
+        "name": "calibre-web",
+        "status": "running",
+        "image": "lscr.io/linuxserver/calibre-web:latest"
+      },
+      {
+        "id": "cee3c35bd10f",
+        "name": "cloud-saver",
+        "status": "running",
+        "image": "jiangrui1994/cloudsaver:latest"
+      },
+      {
+        "id": "20f71f644f06",
+        "name": "decotv-core",
+        "status": "running",
+        "image": "ghcr.io/decohererk/decotv:latest"
+      },
+      {
+        "id": "1f665b848ea9",
+        "name": "deeptutor",
+        "status": "running",
+        "image": "ghcr.io/hkuds/deeptutor:latest"
+      },
+      {
+        "id": "f134b8bc1f37",
+        "name": "gitea-db",
+        "status": "running",
+        "image": "postgres:14"
+      },
+      {
+        "id": "8b3fa63b4e43",
+        "name": "multica-backend",
+        "status": "running",
+        "image": "ghcr.io/multica-ai/multica-backend:latest"
+      },
+      {
+        "id": "b3a78ba7ff53",
+        "name": "multica-web",
+        "status": "running",
+        "image": "ghcr.io/multica-ai/multica-web:latest"
+      },
+      {
+        "id": "39910ba74b17",
+        "name": "caddy-proxy",
+        "status": "running",
+        "image": "caddy:2-alpine"
+      },
+      {
+        "id": "fc4aafa9c3f6",
+        "name": "caddy-dash",
+        "status": "running",
+        "image": "wjqserver/caddydash:latest"
+      },
+      {
+        "id": "25bcd61c5ec8",
+        "name": "watchtower",
+        "status": "running",
+        "image": "ghcr.io/nicholas-fedor/watchtower:latest"
+      },
+      {
+        "id": "f90c84994dc3",
+        "name": "openlist",
+        "status": "running",
+        "image": "openlistteam/openlist:latest"
+      },
+      {
+        "id": "0f866942628b",
+        "name": "multica-db",
+        "status": "running",
+        "image": "pgvector/pgvector:pg17"
+      },
+      {
+        "id": "a104b11f7036",
+        "name": "immich_server",
+        "status": "running",
+        "image": "ghcr.io/immich-app/immich-server:release"
+      },
+      {
+        "id": "033d13938bd3",
+        "name": "immich_machine_learning",
+        "status": "running",
+        "image": "ghcr.io/immich-app/immich-machine-learning:release"
+      },
+      {
+        "id": "c94b131d1aab",
+        "name": "immich_postgres",
+        "status": "running",
+        "image": "sha256:17871"
+      },
+      {
+        "id": "c95918fcbaab",
+        "name": "immich_redis",
+        "status": "running",
+        "image": "sha256:b31e0"
+      },
+      {
+        "id": "ec9e6c980885",
+        "name": "webssh2",
+        "status": "running",
+        "image": "ghcr.io/billchurch/webssh2:latest"
+      },
+      {
+        "id": "508710122aeb",
+        "name": "wud",
+        "status": "running",
+        "image": "getwud/wud:latest"
+      },
+      {
+        "id": "b4f24a16df15",
+        "name": "open-webui",
+        "status": "running",
+        "image": "ghcr.io/open-webui/open-webui:main"
+      },
+      {
+        "id": "f17ea04239e7",
+        "name": "openmaic-built",
+        "status": "running",
+        "image": "openmaic:v0.3.0"
+      },
+      {
+        "id": "3ecd1d40b2ea",
+        "name": "portainer-ce",
+        "status": "running",
+        "image": "portainer/portainer-ce:latest"
+      },
+      {
+        "id": "411f4e20447b",
+        "name": "dockhand",
+        "status": "running",
+        "image": "fnsys/dockhand:latest"
+      },
+      {
+        "id": "2b2971e882cb",
+        "name": "gitea-core",
+        "status": "running",
+        "image": "docker.gitea.com/gitea:latest"
+      },
+      {
+        "id": "f9d0528f3209",
+        "name": "decotv-redis",
+        "status": "running",
+        "image": "redis:alpine"
+      },
+      {
+        "id": "59847132d6a0",
+        "name": "cloudflared",
+        "status": "running",
+        "image": "cloudflare/cloudflared:latest"
+      },
+      {
+        "id": "95577100e35d",
+        "name": "jellyfin",
+        "status": "running",
+        "image": "jellyfin/jellyfin:latest"
+      },
+      {
+        "id": "880d905b4924",
+        "name": "xiaomusic",
+        "status": "running",
+        "image": "docker.hanxi.cc/hanxi/xiaomusic:latest"
+      },
+      {
+        "id": "3d1b407e19aa",
+        "name": "nowen-video",
+        "status": "running",
+        "image": "cropflre/nowen-video:latest"
+      },
+      {
+        "id": "6fe373c6b3f2",
+        "name": "photoprism-server",
+        "status": "running",
+        "image": "photoprism/photoprism:latest"
+      },
+      {
+        "id": "05c2661f2c96",
+        "name": "aria2-pro",
+        "status": "running",
+        "image": "p3terx/aria2-pro:latest"
+      },
+      {
+        "id": "f81d98fd63dc",
+        "name": "kosync",
+        "status": "running",
+        "image": "koreader/kosync:latest"
+      },
+      {
+        "id": "ec50b5565dab",
+        "name": "waoowaoo-redis",
+        "status": "running",
+        "image": "redis:7-alpine"
+      },
+      {
+        "id": "6b6c940c9614",
+        "name": "waoowaoo-mysql",
+        "status": "running",
+        "image": "mysql:8.0"
+      },
+      {
+        "id": "a1498056b10f",
+        "name": "waoowaoo-app",
+        "status": "running",
+        "image": "ghcr.io/saturndec/waoowaoo:latest"
+      },
+      {
+        "id": "a2b269792328",
+        "name": "waoowaoo-minio",
+        "status": "running",
+        "image": "minio/minio:RELEASE.2025-02-28T09-55-16Z"
+      },
+      {
+        "id": "fc8a16079230",
+        "name": "mihomo",
+        "status": "running",
+        "image": "metacubex/mihomo:latest"
+      },
+      {
+        "id": "35eb62ef01e9",
+        "name": "sun-panel",
+        "status": "running",
+        "image": "hslr/sun-panel:latest"
+      },
+      {
+        "id": "ca8f90868221",
+        "name": "taosync",
+        "status": "running",
+        "image": "dr34m/tao-sync:latest"
+      },
+      {
+        "id": "e3ed0dd93756",
+        "name": "dockports",
+        "status": "running",
+        "image": "ghcr.io/coracoo/dockports:latest"
+      },
+      {
+        "id": "b0c52d3558d0",
+        "name": "zerotier-one",
+        "status": "running",
+        "image": "zerotier/zerotier-synology:latest"
+      }
+    ]
+  },
+  {
+    "id": "TC-A12-01",
+    "cat": "A",
+    "desc": "inspect readonly",
+    "tok": "admin",
+    "tool": "inspect_container",
+    "args": {
+      "container_id": "mcpilots-test-readonly"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container\": {\"id\": \"872a4907c8ea\", \"name\": \"mcpilots-test-readonly\", \"status\": \"running\", \"image\": \"nginx:alpine\", \"created\": \"2026",
+    "dt_ms": 45,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container": {
+        "id": "872a4907c8ea",
+        "name": "mcpilots-test-readonly",
+        "status": "running",
+        "image": "nginx:alpine",
+        "created": "2026-07-09T04:42:46.49662488Z",
+        "labels": {
+          "maintainer": "NGINX Docker Maintainers <docker-maint@nginx.com>"
+        },
+        "state": {
+          "status": "running",
+          "running": true,
+          "paused": false,
+          "restarting": false,
+          "oom_killed": false,
+          "dead": false,
+          "pid": 27987,
+          "exit_code": 0,
+          "error": "",
+          "started_at": "2026-07-09T04:42:56.240211876Z",
+          "finished_at": "0001-01-01T00:00:00Z",
+          "restart_count": 0
+        },
+        "health": {
+          "status": "none",
+          "failing_streak": 0,
+          "log": []
+        },
+        "config": {
+          "cmd": [
+            "nginx",
+            "-g",
+            "daemon off;"
+          ],
+          "entrypoint": [
+            "/docker-entrypoint.sh"
+          ],
+          "env": [
+            "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            "NGINX_VERSION=1.31.2",
+            "PKG_RELEASE=1",
+            "DYNPKG_RELEASE=1",
+            "NJS_VERSION=0.9.9",
+            "NJS_RELEASE=1",
+            "ACME_VERSION=0.4.1"
+          ],
+          "image": "nginx:alpine",
+          "working_dir": "/"
+        },
+        "network": {
+          "ip_address": "172.17.0.3",
+          "gateway": "172.17.0.1",
+          "mac_address": "02:42:ac:11:00:03",
+          "ports": {
+            "80/tcp": null
+          },
+          "networks": {
+            "bridge": {
+              "ip": "172.17.0.3",
+              "gateway": "172.17.0.1",
+              "mac": "02:42:ac:11:00:03"
+            }
+          }
+        },
+        "mounts": []
+      }
+    }
+  },
+  {
+    "id": "TC-A12-03",
+    "cat": "A",
+    "desc": "inspect nonexistent",
+    "tok": "admin",
+    "tool": "inspect_container",
+    "args": {
+      "container_id": "does-not-exist-xxx"
+    },
+    "expected": [
+      "REFUSED"
+    ],
+    "status": "REFUSED",
+    "detail": "Container 'does-not-exist-xxx' not found",
+    "dt_ms": 37,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Container 'does-not-exist-xxx' not found"
+    }
+  },
+  {
+    "id": "TC-A12-04",
+    "cat": "A",
+    "desc": "inspect missing arg",
+    "tok": "admin",
+    "tool": "inspect_container",
+    "args": {},
+    "expected": [
+      "SCHEMA"
+    ],
+    "status": "SCHEMA",
+    "detail": "1 validation error for call[inspect_container]\ncontainer_id\n  Missing required argument [type=missing_argument, input_value={}, input_type=dict]\n    For further information visit https://errors.pydant",
+    "dt_ms": 32,
+    "verdict": "PASS",
+    "inner": {}
+  },
+  {
+    "id": "TC-A14-01",
+    "cat": "A",
+    "desc": "stop lifecycle",
+    "tok": "admin",
+    "tool": "stop_container",
+    "args": {
+      "container_id": "mcpilots-test-lifecycle"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container\": {\"id\": \"5412e310adbf\", \"name\": \"mcpilots-test-lifecycle\", \"status\": \"exited\", \"image\": \"nginx:alpine\"}}",
+    "dt_ms": 6343,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container": {
+        "id": "5412e310adbf",
+        "name": "mcpilots-test-lifecycle",
+        "status": "exited",
+        "image": "nginx:alpine"
+      }
+    }
+  },
+  {
+    "id": "TC-A13-01",
+    "cat": "A",
+    "desc": "start after stop",
+    "tok": "admin",
+    "tool": "start_container",
+    "args": {
+      "container_id": "mcpilots-test-lifecycle"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container\": {\"id\": \"5412e310adbf\", \"name\": \"mcpilots-test-lifecycle\", \"status\": \"running\", \"image\": \"nginx:alpine\"}}",
+    "dt_ms": 6507,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container": {
+        "id": "5412e310adbf",
+        "name": "mcpilots-test-lifecycle",
+        "status": "running",
+        "image": "nginx:alpine"
+      }
+    }
+  },
+  {
+    "id": "TC-A15-01",
+    "cat": "A",
+    "desc": "restart lifecycle",
+    "tok": "admin",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "mcpilots-test-lifecycle"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container\": {\"id\": \"5412e310adbf\", \"name\": \"mcpilots-test-lifecycle\", \"status\": \"running\", \"image\": \"nginx:alpine\"}}",
+    "dt_ms": 12176,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container": {
+        "id": "5412e310adbf",
+        "name": "mcpilots-test-lifecycle",
+        "status": "running",
+        "image": "nginx:alpine"
+      }
+    }
+  },
+  {
+    "id": "TC-A13-03",
+    "cat": "A",
+    "desc": "start nonexistent",
+    "tok": "admin",
+    "tool": "start_container",
+    "args": {
+      "container_id": "nope-nope"
+    },
+    "expected": [
+      "REFUSED"
+    ],
+    "status": "REFUSED",
+    "detail": "Container 'nope-nope' not found",
+    "dt_ms": 37,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Container 'nope-nope' not found"
+    }
+  },
+  {
+    "id": "TC-A17-01",
+    "cat": "A",
+    "desc": "logs tail 5",
+    "tok": "admin",
+    "tool": "get_container_logs",
+    "args": {
+      "container_id": "mcpilots-test-readonly",
+      "tail": 5
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container_id\": \"mcpilots-test-readonly\", \"logs\": \"/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perfor",
+    "dt_ms": 44,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container_id": "mcpilots-test-readonly",
+      "logs": "/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration\n/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/\n/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh\n10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf\n10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf\n/docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh\n/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh\n/docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh\n/docker-entrypoint.sh: Configuration complete; ready for start up\n2026/07/09 04:42:57 [notice] 1#1: using the \"epoll\" event method\n2026/07/09 04:42:57 [notice] 1#1: nginx/1.31.2\n2026/07/09 04:42:57 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) \n2026/07/09 04:42:57 [notice] 1#1: OS: Linux 4.4.302+\n2026/07/09 04:42:57 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576\n2026/07/09 04:42:57 [notice] 1#1: start worker processes\n2026/07/09 04:42:57 [notice] 1#1: start worker process 29\n2026/07/09 04:42:57 [notice] 1#1: start worker process 30\n2026/07/09 04:42:57 [notice] 1#1: start worker process 31\n2026/07/09 04:42:57 [notice] 1#1: start worker process 32\n"
+    }
+  },
+  {
+    "id": "TC-A17-05",
+    "cat": "A",
+    "desc": "logs nonexistent",
+    "tok": "admin",
+    "tool": "get_container_logs",
+    "args": {
+      "container_id": "nope",
+      "tail": 5
+    },
+    "expected": [
+      "REFUSED"
+    ],
+    "status": "REFUSED",
+    "detail": "Container 'nope' not found",
+    "dt_ms": 43,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "logs": "",
+      "error": "Container 'nope' not found"
+    }
+  },
+  {
+    "id": "TC-A18-01",
+    "cat": "A",
+    "desc": "stats readonly",
+    "tok": "admin",
+    "tool": "get_container_stats",
+    "args": {
+      "container_id": "mcpilots-test-readonly"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container_id\": \"mcpilots-test-readonly\", \"cpu_percent\": 0.0, \"memory_usage\": 11698176, \"memory_limit\": 20816465920, \"memory_percent",
+    "dt_ms": 2031,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container_id": "mcpilots-test-readonly",
+      "cpu_percent": 0.0,
+      "memory_usage": 11698176,
+      "memory_limit": 20816465920,
+      "memory_percent": 0.06,
+      "network_rx_bytes": 223668,
+      "network_tx_bytes": 0
+    }
+  },
+  {
+    "id": "TC-A21",
+    "cat": "A",
+    "desc": "container_processes",
+    "tok": "admin",
+    "tool": "get_container_processes",
+    "args": {
+      "container_id": "mcpilots-test-readonly"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container_id\": \"mcpilots-test-readonly\", \"titles\": [\"UID\", \"PID\", \"PPID\", \"C\", \"STIME\", \"TTY\", \"TIME\", \"CMD\"], \"processes\": [[\"root",
+    "dt_ms": 55,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container_id": "mcpilots-test-readonly",
+      "titles": [
+        "UID",
+        "PID",
+        "PPID",
+        "C",
+        "STIME",
+        "TTY",
+        "TIME",
+        "CMD"
+      ],
+      "processes": [
+        [
+          "root",
+          "27987",
+          "27965",
+          "0",
+          "12:42",
+          "?",
+          "00:00:00",
+          "nginx: master process nginx -g daemon off;"
+        ],
+        [
+          "101",
+          "28110",
+          "27987",
+          "0",
+          "12:42",
+          "?",
+          "00:00:00",
+          "nginx: worker process"
+        ],
+        [
+          "101",
+          "28111",
+          "27987",
+          "0",
+          "12:42",
+          "?",
+          "00:00:00",
+          "nginx: worker process"
+        ],
+        [
+          "101",
+          "28112",
+          "27987",
+          "0",
+          "12:42",
+          "?",
+          "00:00:00",
+          "nginx: worker process"
+        ],
+        [
+          "101",
+          "28113",
+          "27987",
+          "0",
+          "12:42",
+          "?",
+          "00:00:00",
+          "nginx: worker process"
+        ]
+      ]
+    }
+  },
+  {
+    "id": "TC-A22",
+    "cat": "A",
+    "desc": "container_health (no hc)",
+    "tok": "admin",
+    "tool": "get_container_health",
+    "args": {
+      "container_id": "mcpilots-test-readonly"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container_id\": \"mcpilots-test-readonly\", \"status\": \"none\", \"failing_streak\": 0, \"log\": []}",
+    "dt_ms": 35,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container_id": "mcpilots-test-readonly",
+      "status": "none",
+      "failing_streak": 0,
+      "log": []
+    }
+  },
+  {
+    "id": "TC-A24",
+    "cat": "A",
+    "desc": "container_networks",
+    "tok": "admin",
+    "tool": "get_container_networks",
+    "args": {
+      "container_id": "mcpilots-test-readonly"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container_id\": \"mcpilots-test-readonly\", \"ip_address\": \"172.17.0.3\", \"ports\": {\"80/tcp\": null}, \"networks\": {\"bridge\": {\"ip\": \"172.",
+    "dt_ms": 39,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container_id": "mcpilots-test-readonly",
+      "ip_address": "172.17.0.3",
+      "ports": {
+        "80/tcp": null
+      },
+      "networks": {
+        "bridge": {
+          "ip": "172.17.0.3",
+          "gateway": "172.17.0.1",
+          "mac": "02:42:ac:11:00:03",
+          "dns": []
+        }
+      }
+    }
+  },
+  {
+    "id": "TC-A25",
+    "cat": "A",
+    "desc": "container_mounts",
+    "tok": "admin",
+    "tool": "get_container_mounts",
+    "args": {
+      "container_id": "mcpilots-test-readonly"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container_id\": \"mcpilots-test-readonly\", \"mounts\": []}",
+    "dt_ms": 34,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container_id": "mcpilots-test-readonly",
+      "mounts": []
+    }
+  },
+  {
+    "id": "TC-A26",
+    "cat": "A",
+    "desc": "container_changes",
+    "tok": "admin",
+    "tool": "get_container_changes",
+    "args": {
+      "container_id": "mcpilots-test-readonly"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container_id\": \"mcpilots-test-readonly\", \"changes\": [{\"path\": \"/var\", \"kind\": \"modified\"}, {\"path\": \"/var/cache\", \"kind\": \"modified",
+    "dt_ms": 134,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container_id": "mcpilots-test-readonly",
+      "changes": [
+        {
+          "path": "/var",
+          "kind": "modified"
+        },
+        {
+          "path": "/var/cache",
+          "kind": "modified"
+        },
+        {
+          "path": "/var/cache/nginx",
+          "kind": "modified"
+        },
+        {
+          "path": "/var/cache/nginx/client_temp",
+          "kind": "added"
+        },
+        {
+          "path": "/var/cache/nginx/fastcgi_temp",
+          "kind": "added"
+        },
+        {
+          "path": "/var/cache/nginx/proxy_temp",
+          "kind": "added"
+        },
+        {
+          "path": "/var/cache/nginx/scgi_temp",
+          "kind": "added"
+        },
+        {
+          "path": "/var/cache/nginx/uwsgi_temp",
+          "kind": "added"
+        },
+        {
+          "path": "/run",
+          "kind": "modified"
+        },
+        {
+          "path": "/run/nginx.pid",
+          "kind": "added"
+        },
+        {
+          "path": "/etc",
+          "kind": "modified"
+        },
+        {
+          "path": "/etc/nginx",
+          "kind": "modified"
+        },
+        {
+          "path": "/etc/nginx/conf.d",
+          "kind": "modified"
+        },
+        {
+          "path": "/etc/nginx/conf.d/default.conf",
+          "kind": "modified"
+        }
+      ]
+    }
+  },
+  {
+    "id": "TC-A31-01",
+    "cat": "A",
+    "desc": "list_images",
+    "tok": "admin",
+    "tool": "list_images",
+    "args": {},
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "[{\"id\": \"sha256:6933c49427f4\", \"tags\": [\"ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc10\"], \"size\": 448920750, \"created\": \"2026-07-09T06:52:01.715877794Z\"},",
+    "dt_ms": 305,
+    "verdict": "PASS",
+    "inner": [
+      {
+        "id": "sha256:6933c49427f4",
+        "tags": [
+          "ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc10"
+        ],
+        "size": 448920750,
+        "created": "2026-07-09T06:52:01.715877794Z"
+      },
+      {
+        "id": "sha256:21092ab4aeab",
+        "tags": [
+          "ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc8"
+        ],
+        "size": 448935269,
+        "created": "2026-07-09T05:49:08.454472506Z"
+      },
+      {
+        "id": "sha256:885b6d4d673a",
+        "tags": [
+          "ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc7"
+        ],
+        "size": 448934260,
+        "created": "2026-07-09T05:15:35.545192463Z"
+      },
+      {
+        "id": "sha256:ea641fe04ae5",
+        "tags": [
+          "ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc6"
+        ],
+        "size": 448901163,
+        "created": "2026-07-09T04:54:25.848875709Z"
+      },
+      {
+        "id": "sha256:fc537f4db979",
+        "tags": [
+          "ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc5"
+        ],
+        "size": 448898344,
+        "created": "2026-07-09T04:01:42.642747175Z"
+      },
+      {
+        "id": "sha256:5740dd7e8a90",
+        "tags": [
+          "ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc4"
+        ],
+        "size": 448889946,
+        "created": "2026-07-09T03:02:59.194017628Z"
+      },
+      {
+        "id": "sha256:0562e4e464c0",
+        "tags": [
+          "ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc2"
+        ],
+        "size": 448888777,
+        "created": "2026-07-09T00:21:25.416549919Z"
+      },
+      {
+        "id": "sha256:08c1adbbc974",
+        "tags": [
+          "ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc1"
+        ],
+        "size": 448888728,
+        "created": "2026-07-08T23:32:13.622285845Z"
+      },
+      {
+        "id": "sha256:78381150d917",
+        "tags": [
+          "ghcr.io/sopyk/docker-mcpilots:latest"
+        ],
+        "size": 448882585,
+        "created": "2026-07-08T13:23:24.502494802Z"
+      },
+      {
+        "id": "sha256:915b9fa0c003",
+        "tags": [
+          "linuxserver/qbittorrent:latest"
+        ],
+        "size": 193225985,
+        "created": "2026-07-07T23:39:21.892167227Z"
+      },
+      {
+        "id": "sha256:f6b8b2864f6a",
+        "tags": [
+          "postgres:14"
+        ],
+        "size": 441137567,
+        "created": "2026-07-07T17:47:25.161070595Z"
+      },
+      {
+        "id": "sha256:6ecdba270a8e",
+        "tags": [
+          "ghcr.io/multica-ai/multica-web:latest"
+        ],
+        "size": 274639953,
+        "created": "2026-07-07T10:09:06.759668152Z"
+      },
+      {
+        "id": "sha256:dbed83fd3363",
+        "tags": [
+          "ghcr.io/multica-ai/multica-backend:latest"
+        ],
+        "size": 96288947,
+        "created": "2026-07-07T10:07:36.037920672Z"
+      },
+      {
+        "id": "sha256:6aa0037c7457",
+        "tags": [
+          "ghcr.io/decohererk/decotv:latest"
+        ],
+        "size": 363384306,
+        "created": "2026-07-05T15:35:01.962799781Z"
+      },
+      {
+        "id": "sha256:84e97ca9cc4b",
+        "tags": [
+          "lscr.io/linuxserver/calibre-web:latest"
+        ],
+        "size": 800579492,
+        "created": "2026-07-05T04:25:04.114066788Z"
+      },
+      {
+        "id": "sha256:9703fcc8814d",
+        "tags": [
+          "jiangrui1994/cloudsaver:latest"
+        ],
+        "size": 200796614,
+        "created": "2026-07-04T10:29:58.295252465Z"
+      },
+      {
+        "id": "sha256:d53dabb0c4fd",
+        "tags": [
+          "ghcr.io/hkuds/deeptutor:latest"
+        ],
+        "size": 1262819291,
+        "created": "2026-07-04T08:43:29.4968519Z"
+      },
+      {
+        "id": "sha256:83109bc76daa",
+        "tags": [
+          "p3terx/ariang:latest"
+        ],
+        "size": 2707810,
+        "created": "2026-07-03T17:41:41.81270596Z"
+      },
+      {
+        "id": "sha256:a393a6e87ab6",
+        "tags": [
+          "linuxserver/calibre:latest"
+        ],
+        "size": 3560386405,
+        "created": "2026-07-03T05:12:16.341376544Z"
+      },
+      {
+        "id": "sha256:3539ca80c8c9",
+        "tags": [
+          "ghcr.io/immich-app/immich-server:release"
+        ],
+        "size": 2172960758,
+        "created": "2026-07-02T21:34:27.435138397Z"
+      },
+      {
+        "id": "sha256:e0037496894e",
+        "tags": [
+          "ghcr.io/immich-app/immich-machine-learning:release"
+        ],
+        "size": 1293122030,
+        "created": "2026-07-02T19:25:34.310225739Z"
+      },
+      {
+        "id": "sha256:2635e031137b",
+        "tags": [
+          "openmaic:v0.3.0"
+        ],
+        "size": 430506843,
+        "created": "2026-07-01T11:40:08.854410927Z"
+      },
+      {
+        "id": "sha256:6ddca83008fd",
+        "tags": [
+          "openlistteam/openlist:latest"
+        ],
+        "size": 140510773,
+        "created": "2026-07-01T09:35:57.998387683Z"
+      },
+      {
+        "id": "sha256:5bddf2d93bc3",
+        "tags": [
+          "ghcr.io/open-webui/open-webui:main"
+        ],
+        "size": 4992469219,
+        "created": "2026-07-01T08:45:15.450135287Z"
+      },
+      {
+        "id": "sha256:83d2fe2f7efc",
+        "tags": [
+          "pgvector/pgvector:pg17"
+        ],
+        "size": 442588904,
+        "created": "2026-06-30T22:34:29.13484592Z"
+      },
+      {
+        "id": "sha256:6d5e5255b2d3",
+        "tags": [
+          "ghcr.io/nicholas-fedor/watchtower:latest"
+        ],
+        "size": 18652645,
+        "created": "2026-06-30T17:59:47.587048373Z"
+      },
+      {
+        "id": "sha256:cbc06dce7cad",
+        "tags": [
+          "fnsys/dockhand:latest"
+        ],
+        "size": 469558781,
+        "created": "2026-06-27T10:27:46.023466416Z"
+      },
+      {
+        "id": "sha256:25fe04aabd89",
+        "tags": [
+          "portainer/portainer-ce:latest"
+        ],
+        "size": 145324944,
+        "created": "2026-06-25T01:23:55.415641639Z"
+      },
+      {
+        "id": "sha256:ea51152ef8c4",
+        "tags": [
+          "nginx:alpine"
+        ],
+        "size": 62196973,
+        "created": "2026-06-22T20:17:12.157582832Z"
+      },
+      {
+        "id": "sha256:af555904a096",
+        "tags": [
+          "caddy:2-alpine"
+        ],
+        "size": 62840790,
+        "created": "2026-06-22T20:09:05.216443494Z"
+      },
+      {
+        "id": "sha256:55563f45704d",
+        "tags": [
+          "redis:alpine"
+        ],
+        "size": 114448580,
+        "created": "2026-06-22T20:02:55.947207425Z"
+      },
+      {
+        "id": "sha256:028a5a345719",
+        "tags": [
+          "docker.gitea.com/gitea:latest"
+        ],
+        "size": 172841998,
+        "created": "2026-06-21T15:35:24.653570511Z"
+      },
+      {
+        "id": "sha256:8bfc590db21a",
+        "tags": [
+          "cloudflare/cloudflared:latest"
+        ],
+        "size": 63325032,
+        "created": "2026-06-18T14:46:40.583142328Z"
+      },
+      {
+        "id": "sha256:3a8d0613b60f",
+        "tags": [
+          "docker.hanxi.cc/hanxi/xiaomusic:latest"
+        ],
+        "size": 371568007,
+        "created": "2026-06-09T05:23:58.485255696Z"
+      },
+      {
+        "id": "sha256:d57d4a0c18b3",
+        "tags": [
+          "jellyfin/jellyfin:latest"
+        ],
+        "size": 1561051923,
+        "created": "2026-06-06T15:43:54.688088228Z"
+      },
+      {
+        "id": "sha256:887e5c6eff96",
+        "tags": [
+          "photoprism/photoprism:latest"
+        ],
+        "size": 2384977374,
+        "created": "2026-06-01T20:28:29.976660759Z"
+      },
+      {
+        "id": "sha256:cd7ad91c3341",
+        "tags": [
+          "ghcr.io/billchurch/webssh2:latest"
+        ],
+        "size": 194861048,
+        "created": "2026-05-30T09:38:20.52182055Z"
+      },
+      {
+        "id": "sha256:0435d57a2e3a",
+        "tags": [
+          "cropflre/nowen-video:latest"
+        ],
+        "size": 448646348,
+        "created": "2026-05-29T10:33:49.505371316Z"
+      },
+      {
+        "id": "sha256:b31e0f86bdb1",
+        "tags": [],
+        "size": 124934565,
+        "created": "2026-05-19T16:51:57.452345767Z"
+      },
+      {
+        "id": "sha256:d8449a32a7f0",
+        "tags": [
+          "koreader/kosync:latest"
+        ],
+        "size": 544331485,
+        "created": "2026-05-16T16:05:35.95036542Z"
+      },
+      {
+        "id": "sha256:64033e23f569",
+        "tags": [
+          "lscr.io/linuxserver/firefox:latest"
+        ],
+        "size": 3053889185,
+        "created": "2026-05-12T12:54:54.289370994Z"
+      },
+      {
+        "id": "sha256:d653cdebc342",
+        "tags": [
+          "ghcr.io/franklioxygen/mytube:latest"
+        ],
+        "size": 1668178920,
+        "created": "2026-05-11T22:21:58.530823192Z"
+      },
+      {
+        "id": "sha256:322b900a3418",
+        "tags": [
+          "linuxserver/wikijs:latest"
+        ],
+        "size": 553347147,
+        "created": "2026-05-08T15:13:46.399900685Z"
+      },
+      {
+        "id": "sha256:f18bb5bb44d6",
+        "tags": [
+          "n8nio/n8n:latest"
+        ],
+        "size": 1347964678,
+        "created": "2026-05-08T09:09:41.008181305Z"
+      },
+      {
+        "id": "sha256:697352e7ef8b",
+        "tags": [
+          "frooodle/s-pdf:latest"
+        ],
+        "size": 2274158163,
+        "created": "2026-05-07T19:32:23.345499817Z"
+      },
+      {
+        "id": "sha256:487efc061638",
+        "tags": [
+          "redis:7-alpine"
+        ],
+        "size": 39082723,
+        "created": "2026-05-07T17:34:49.043581139Z"
+      },
+      {
+        "id": "sha256:6cd09145362d",
+        "tags": [
+          "mysql:8.0"
+        ],
+        "size": 799032353,
+        "created": "2026-05-04T23:01:20.676190479Z"
+      },
+      {
+        "id": "sha256:552f511ab86c",
+        "tags": [
+          "ghcr.io/saturndec/waoowaoo:latest"
+        ],
+        "size": 1976856820,
+        "created": "2026-04-26T18:18:47.075657902Z"
+      },
+      {
+        "id": "sha256:daf9541cf187",
+        "tags": [
+          "ghcr.io/zephyruso/zashboard:latest"
+        ],
+        "size": 72228606,
+        "created": "2026-04-23T03:26:57.888517976Z"
+      },
+      {
+        "id": "sha256:667495ca2ac3",
+        "tags": [
+          "postgres:16-alpine"
+        ],
+        "size": 276054894,
+        "created": "2026-04-21T23:10:13.026446405Z"
+      },
+      {
+        "id": "sha256:63796e837f9b",
+        "tags": [
+          "metacubex/mihomo:latest"
+        ],
+        "size": 81430217,
+        "created": "2026-04-20T01:57:29.116007462Z"
+      },
+      {
+        "id": "sha256:bf8527eb54c3",
+        "tags": [
+          "alpine:3.20"
+        ],
+        "size": 7802737,
+        "created": "2026-04-16T23:53:26.803599608Z"
+      },
+      {
+        "id": "sha256:e2ac70e7319a",
+        "tags": [
+          "hello-world:latest"
+        ],
+        "size": 10072,
+        "created": "2026-03-23T21:33:59.562202219Z"
+      },
+      {
+        "id": "sha256:81a85e507c84",
+        "tags": [
+          "doocs/md:latest"
+        ],
+        "size": 12177874,
+        "created": "2026-03-17T13:12:23.096243985Z"
+      },
+      {
+        "id": "sha256:49f1ae9e803d",
+        "tags": [
+          "getwud/wud:latest"
+        ],
+        "size": 355308748,
+        "created": "2026-02-26T15:09:29.734963033Z"
+      },
+      {
+        "id": "sha256:16029c7992e5",
+        "tags": [
+          "hslr/sun-panel:latest"
+        ],
+        "size": 48478874,
+        "created": "2025-12-31T03:35:51.918739385Z"
+      },
+      {
+        "id": "sha256:178719aeb38d",
+        "tags": [],
+        "size": 755714269,
+        "created": "2025-10-07T12:09:13.605869304Z"
+      },
+      {
+        "id": "sha256:050ad8db4f79",
+        "tags": [
+          "wjqserver/caddydash:latest"
+        ],
+        "size": 70666059,
+        "created": "2025-09-13T22:37:02.342014301Z"
+      },
+      {
+        "id": "sha256:b4f39bba1fe5",
+        "tags": [
+          "dr34m/tao-sync:latest"
+        ],
+        "size": 23639751,
+        "created": "2025-07-28T12:48:54.381912288Z"
+      },
+      {
+        "id": "sha256:d402adf5f53b",
+        "tags": [
+          "ghcr.io/coracoo/dockports:latest"
+        ],
+        "size": 762904226,
+        "created": "2025-07-16T14:13:56.388947867Z"
+      },
+      {
+        "id": "sha256:377fe6127f60",
+        "tags": [
+          "minio/minio:RELEASE.2025-02-28T09-55-16Z"
+        ],
+        "size": 180463143,
+        "created": "2025-02-28T18:56:26.063840824Z"
+      },
+      {
+        "id": "sha256:8c683d16f5f2",
+        "tags": [
+          "synology/docviewer:1.3.0.0126"
+        ],
+        "size": 1732132750,
+        "created": "2024-10-16T14:09:26.798549483+08:00"
+      },
+      {
+        "id": "sha256:844c3ad7c381",
+        "tags": [
+          "zerotier/zerotier-synology:latest"
+        ],
+        "size": 28322586,
+        "created": "2024-07-22T23:07:19.72925554Z"
+      },
+      {
+        "id": "sha256:997da399fc5d",
+        "tags": [
+          "p3terx/aria2-pro:latest"
+        ],
+        "size": 29134211,
+        "created": "2022-09-06T04:23:36.191637586Z"
+      }
+    ]
+  },
+  {
+    "id": "TC-A32-01",
+    "cat": "A",
+    "desc": "inspect_image nginx",
+    "tok": "admin",
+    "tool": "inspect_image",
+    "args": {
+      "image_name": "nginx:alpine"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"id\": \"sha256:ea51152ef8c4\", \"tags\": [\"nginx:alpine\"], \"size\": 62196973, \"created\": \"2026-06-22T20:17:12.157582832Z\", \"architecture\"",
+    "dt_ms": 43,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "id": "sha256:ea51152ef8c4",
+      "tags": [
+        "nginx:alpine"
+      ],
+      "size": 62196973,
+      "created": "2026-06-22T20:17:12.157582832Z",
+      "architecture": "amd64",
+      "os": "linux",
+      "config": {
+        "cmd": [
+          "nginx",
+          "-g",
+          "daemon off;"
+        ],
+        "entrypoint": [
+          "/docker-entrypoint.sh"
+        ],
+        "env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "NGINX_VERSION=1.31.2",
+          "PKG_RELEASE=1",
+          "DYNPKG_RELEASE=1",
+          "NJS_VERSION=0.9.9",
+          "NJS_RELEASE=1",
+          "ACME_VERSION=0.4.1"
+        ],
+        "working_dir": "/",
+        "user": "",
+        "exposed_ports": {
+          "80/tcp": {}
+        },
+        "volumes": null,
+        "labels": {
+          "maintainer": "NGINX Docker Maintainers <docker-maint@nginx.com>"
+        }
+      },
+      "history": []
+    }
+  },
+  {
+    "id": "TC-A32-02",
+    "cat": "A",
+    "desc": "inspect_image nonexistent",
+    "tok": "admin",
+    "tool": "inspect_image",
+    "args": {
+      "image_name": "nonexistent:foo"
+    },
+    "expected": [
+      "REFUSED"
+    ],
+    "status": "REFUSED",
+    "detail": "Image 'nonexistent:foo' not found",
+    "dt_ms": 40,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Image 'nonexistent:foo' not found"
+    }
+  },
+  {
+    "id": "TC-A33-02",
+    "cat": "A",
+    "desc": "pull_image bad registry",
+    "tok": "admin",
+    "tool": "pull_image",
+    "args": {
+      "image_name": "gcr.io/nonexistent-xxx/foo",
+      "tag": "latest"
+    },
+    "expected": [
+      "REFUSED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"500 Server Error for http+docker://localhost/v1.43/images/create?tag=latest&fromImage=gcr.io%2Fnonexistent-xxx%2Ffoo: Internal Server Error (\\\"Head \\\"https://gcr.io/v2/nonexi",
+    "dt_ms": 2244,
+    "verdict": "FAIL",
+    "inner": {
+      "success": false,
+      "error": "500 Server Error for http+docker://localhost/v1.43/images/create?tag=latest&fromImage=gcr.io%2Fnonexistent-xxx%2Ffoo: Internal Server Error (\"Head \"https://gcr.io/v2/nonexistent-xxx/foo/manifests/latest\": denied: Unauthenticated request. Unauthenticated requests do not have permission \"artifactregistry.repositories.downloadArtifacts\" on resource \"projects/nonexistent-xxx/locations/us/repositories/gcr.io\" (or it may not exist)\")"
+    }
+  },
+  {
+    "id": "TC-A41",
+    "cat": "A",
+    "desc": "list_networks",
+    "tok": "admin",
+    "tool": "list_networks",
+    "args": {},
+    "expected": [
+      "OK"
+    ],
+    "status": "DENIED",
+    "detail": "[{\"id\":\"56d1efbe1cc0\",\"name\":\"waoo_default\",\"driver\":\"bridge\",\"scope\":\"local\",\"subnet\":\"172.30.31.0/24\",\"containers\":[]},{\"id\":\"b2f6773efbb9\",\"name\":\"cloudflared_default\",\"driver\":\"bridge\",\"scope\":\"lo",
+    "dt_ms": 44,
+    "verdict": "FAIL",
+    "inner": [
+      {
+        "id": "56d1efbe1cc0",
+        "name": "waoo_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.31.0/24",
+        "containers": []
+      },
+      {
+        "id": "b2f6773efbb9",
+        "name": "cloudflared_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.1.0/24",
+        "containers": []
+      },
+      {
+        "id": "18f052b58663",
+        "name": "mcp-toolbox_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.3.0/24",
+        "containers": []
+      },
+      {
+        "id": "5a038284bf26",
+        "name": "docker-mcpilots_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.44.0/24",
+        "containers": []
+      },
+      {
+        "id": "e4e8183c3b99",
+        "name": "watchtower_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.28.0/24",
+        "containers": []
+      },
+      {
+        "id": "19c8ce6bd73c",
+        "name": "stirling-pdf_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.9.0/24",
+        "containers": []
+      },
+      {
+        "id": "5365e08cdbbe",
+        "name": "wechat-md_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.39.0/24",
+        "containers": []
+      },
+      {
+        "id": "738609f1b1af",
+        "name": "photoprism_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.23.0/24",
+        "containers": []
+      },
+      {
+        "id": "8710dea79ba4",
+        "name": "host",
+        "driver": "host",
+        "scope": "local",
+        "subnet": "",
+        "containers": []
+      },
+      {
+        "id": "031276030ff6",
+        "name": "jellyfin_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.21.0/24",
+        "containers": []
+      },
+      {
+        "id": "7a4dcd121c83",
+        "name": "mihomo_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.24.0/24",
+        "containers": []
+      },
+      {
+        "id": "9f83e5cfbe16",
+        "name": "openmaic_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.50.0/24",
+        "containers": []
+      },
+      {
+        "id": "176e224a0480",
+        "name": "openlist_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.4.0/24",
+        "containers": []
+      },
+      {
+        "id": "706c7a2683d5",
+        "name": "sun-panel_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.0.0/24",
+        "containers": []
+      },
+      {
+        "id": "7e447fcc2245",
+        "name": "none",
+        "driver": "null",
+        "scope": "local",
+        "subnet": "",
+        "containers": []
+      },
+      {
+        "id": "e21bee3b8a97",
+        "name": "wikijs_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.10.0/24",
+        "containers": []
+      },
+      {
+        "id": "940cbadbd374",
+        "name": "multica_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.13.0/24",
+        "containers": []
+      },
+      {
+        "id": "ae9d269fef39",
+        "name": "n8n_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.20.0/24",
+        "containers": []
+      },
+      {
+        "id": "26efbca38d09",
+        "name": "nowen-video_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.54.0/24",
+        "containers": []
+      },
+      {
+        "id": "2a1a15f2ed11",
+        "name": "xiaomusic_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.2.0/24",
+        "containers": []
+      },
+      {
+        "id": "2be2c5318b25",
+        "name": "open-webui_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.14.0/24",
+        "containers": []
+      },
+      {
+        "id": "442927db8c60",
+        "name": "calibre-web_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.7.0/24",
+        "containers": []
+      },
+      {
+        "id": "69c8f77fc35f",
+        "name": "deeptutor_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.48.0/24",
+        "containers": []
+      },
+      {
+        "id": "b086a00616a4",
+        "name": "decotv_decotv-network",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.5.0/24",
+        "containers": []
+      },
+      {
+        "id": "29933f767cd5",
+        "name": "koreader-sync-server_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.6.0/24",
+        "containers": []
+      },
+      {
+        "id": "5261721b2171",
+        "name": "dockhand_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.25.0/24",
+        "containers": []
+      },
+      {
+        "id": "8b090514f15b",
+        "name": "immich_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.19.0/24",
+        "containers": []
+      },
+      {
+        "id": "a4cfb4d2c608",
+        "name": "cloudsaver_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.22.0/24",
+        "containers": []
+      },
+      {
+        "id": "c18955b57e33",
+        "name": "aria2pro_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.12.0/24",
+        "containers": []
+      },
+      {
+        "id": "f04ca9904a15",
+        "name": "bridge",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.17.0.0/16",
+        "containers": []
+      },
+      {
+        "id": "57369d74b061",
+        "name": "calibre_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.11.0/24",
+        "containers": []
+      },
+      {
+        "id": "bba12a760f4b",
+        "name": "taosync_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.16.0/24",
+        "containers": []
+      },
+      {
+        "id": "c006e652ffa0",
+        "name": "gitea_gitea",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.43.0/24",
+        "containers": []
+      },
+      {
+        "id": "e49f206ce33e",
+        "name": "portainer_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.38.0/24",
+        "containers": []
+      },
+      {
+        "id": "ec63ea4a76e4",
+        "name": "webssh2_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.17.0/24",
+        "containers": []
+      },
+      {
+        "id": "105827bda918",
+        "name": "firefox-selkies_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.18.0/24",
+        "containers": []
+      },
+      {
+        "id": "13ef52fa4750",
+        "name": "mytube_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.42.0/24",
+        "containers": []
+      },
+      {
+        "id": "70f3e7a6bc3f",
+        "name": "qbittorrent_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.8.0/24",
+        "containers": []
+      },
+      {
+        "id": "e337fad95e80",
+        "name": "whatsupdocker_default",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.15.0/24",
+        "containers": []
+      },
+      {
+        "id": "ef39d7b48dbc",
+        "name": "nas-caddy",
+        "driver": "bridge",
+        "scope": "local",
+        "subnet": "172.30.45.0/24",
+        "containers": []
+      }
+    ]
+  },
+  {
+    "id": "TC-A42",
+    "cat": "A",
+    "desc": "list_volumes (bug#3)",
+    "tok": "admin",
+    "tool": "list_volumes",
+    "args": {},
+    "expected": [
+      "OK",
+      "CRASH"
+    ],
+    "status": "OK",
+    "detail": "[{\"name\": \"e80255f260caedc8f02f88fa108deefead3ed265fa9f2c2379fc5d86a519c648\", \"driver\": \"local\", \"mountpoint\": \"/volume2/@docker/volumes/e80255f260cae",
+    "dt_ms": 36,
+    "verdict": "PASS",
+    "inner": [
+      {
+        "name": "e80255f260caedc8f02f88fa108deefead3ed265fa9f2c2379fc5d86a519c648",
+        "driver": "local",
+        "mountpoint": "/volume2/@docker/volumes/e80255f260caedc8f02f88fa108deefead3ed265fa9f2c2379fc5d86a519c648/_data",
+        "created": "2026-07-08T14:03:08+08:00",
+        "size": "",
+        "in_use": false
+      }
+    ]
+  },
+  {
+    "id": "TC-A51",
+    "cat": "A",
+    "desc": "get_system_info",
+    "tok": "admin",
+    "tool": "get_system_info",
+    "args": {},
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"hostname\": \"f9259afe6e9b\", \"os\": \"Linux\", \"kernel\": \"4.4.302+\", \"architecture\": \"x86_64\", \"boot_time\": \"2026-07-02 08:33:40\", \"uptime_seconds\": 6293",
+    "dt_ms": 34,
+    "verdict": "PASS",
+    "inner": {
+      "hostname": "f9259afe6e9b",
+      "os": "Linux",
+      "kernel": "4.4.302+",
+      "architecture": "x86_64",
+      "boot_time": "2026-07-02 08:33:40",
+      "uptime_seconds": 629329
+    }
+  },
+  {
+    "id": "TC-A52",
+    "cat": "A",
+    "desc": "get_cpu_info",
+    "tok": "admin",
+    "tool": "get_cpu_info",
+    "args": {},
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"percent\": 30.5, \"count_logical\": 4, \"count_physical\": 4, \"freq_current_mhz\": 2001.0, \"freq_min_mhz\": 800.0, \"freq_max_mhz\": 2001.0}",
+    "dt_ms": 544,
+    "verdict": "PASS",
+    "inner": {
+      "percent": 30.5,
+      "count_logical": 4,
+      "count_physical": 4,
+      "freq_current_mhz": 2001.0,
+      "freq_min_mhz": 800.0,
+      "freq_max_mhz": 2001.0
+    }
+  },
+  {
+    "id": "TC-A53",
+    "cat": "A",
+    "desc": "get_cpu_info",
+    "tok": "admin",
+    "tool": "get_cpu_info",
+    "args": {
+      "per_core": true
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"percent\": 39.9, \"count_logical\": 4, \"count_physical\": 4, \"freq_current_mhz\": 2001.0, \"freq_min_mhz\": 800.0, \"freq_max_mhz\": 2001.0, \"percent_per_cor",
+    "dt_ms": 541,
+    "verdict": "PASS",
+    "inner": {
+      "percent": 39.9,
+      "count_logical": 4,
+      "count_physical": 4,
+      "freq_current_mhz": 2001.0,
+      "freq_min_mhz": 800.0,
+      "freq_max_mhz": 2001.0,
+      "percent_per_core": [
+        24.2,
+        23.9,
+        23.2,
+        23.7
+      ]
+    }
+  },
+  {
+    "id": "TC-A54",
+    "cat": "A",
+    "desc": "get_memory_info",
+    "tok": "admin",
+    "tool": "get_memory_info",
+    "args": {},
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"virtual\": {\"total\": 20816465920, \"used\": 9281822720, \"available\": 11534643200, \"percent\": 44.6}, \"swap\": {\"total\": 14638034944, \"used\": 3425914880, ",
+    "dt_ms": 42,
+    "verdict": "PASS",
+    "inner": {
+      "virtual": {
+        "total": 20816465920,
+        "used": 9281822720,
+        "available": 11534643200,
+        "percent": 44.6
+      },
+      "swap": {
+        "total": 14638034944,
+        "used": 3425914880,
+        "free": 11212120064,
+        "percent": 23.4
+      }
+    }
+  },
+  {
+    "id": "TC-A55",
+    "cat": "A",
+    "desc": "get_disk_info",
+    "tok": "admin",
+    "tool": "get_disk_info",
+    "args": {},
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"partitions\": [{\"device\": \"/dev/mapper/cachedev_0\", \"mountpoint\": \"/\", \"fstype\": \"btrfs\", \"total\": 7670124396544, \"used\": 5830674432000, \"free\": 1839",
+    "dt_ms": 37,
+    "verdict": "PASS",
+    "inner": {
+      "partitions": [
+        {
+          "device": "/dev/mapper/cachedev_0",
+          "mountpoint": "/",
+          "fstype": "btrfs",
+          "total": 7670124396544,
+          "used": 5830674432000,
+          "free": 1839449964544,
+          "percent": 76.0
+        },
+        {
+          "device": "/dev/mapper/cachedev_1",
+          "mountpoint": "/app/config",
+          "fstype": "btrfs",
+          "total": 3836004409344,
+          "used": 3078826774528,
+          "free": 757177634816,
+          "percent": 80.3
+        },
+        {
+          "device": "/dev/mapper/cachedev_1",
+          "mountpoint": "/app/secrets",
+          "fstype": "btrfs",
+          "total": 3836004409344,
+          "used": 3078826774528,
+          "free": 757177634816,
+          "percent": 80.3
+        },
+        {
+          "device": "/dev/mapper/cachedev_0",
+          "mountpoint": "/etc/resolv.conf",
+          "fstype": "btrfs",
+          "total": 7670124396544,
+          "used": 5830674432000,
+          "free": 1839449964544,
+          "percent": 76.0
+        },
+        {
+          "device": "/dev/mapper/cachedev_0",
+          "mountpoint": "/etc/hostname",
+          "fstype": "btrfs",
+          "total": 7670124396544,
+          "used": 5830674432000,
+          "free": 1839449964544,
+          "percent": 76.0
+        },
+        {
+          "device": "/dev/mapper/cachedev_0",
+          "mountpoint": "/etc/hosts",
+          "fstype": "btrfs",
+          "total": 7670124396544,
+          "used": 5830674432000,
+          "free": 1839449964544,
+          "percent": 76.0
+        }
+      ]
+    }
+  },
+  {
+    "id": "TC-A56",
+    "cat": "A",
+    "desc": "get_network_info",
+    "tok": "admin",
+    "tool": "get_network_info",
+    "args": {},
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"total\": {\"bytes_sent\": 1410273, \"bytes_recv\": 195515, \"packets_sent\": 692, \"packets_recv\": 1672}, \"per_interface_io\": {\"sit0\": {\"bytes_sent\": 0, \"by",
+    "dt_ms": 38,
+    "verdict": "PASS",
+    "inner": {
+      "total": {
+        "bytes_sent": 1410273,
+        "bytes_recv": 195515,
+        "packets_sent": 692,
+        "packets_recv": 1672
+      },
+      "per_interface_io": {
+        "sit0": {
+          "bytes_sent": 0,
+          "bytes_recv": 0
+        },
+        "lo": {
+          "bytes_sent": 392,
+          "bytes_recv": 392
+        },
+        "eth0": {
+          "bytes_sent": 1409881,
+          "bytes_recv": 195123
+        }
+      },
+      "interfaces": {
+        "sit0": {
+          "isup": false,
+          "speed": 0,
+          "mtu": 1480
+        },
+        "lo": {
+          "isup": true,
+          "speed": 0,
+          "mtu": 65536
+        },
+        "eth0": {
+          "isup": true,
+          "speed": 10000,
+          "mtu": 1500
+        }
+      }
+    }
+  },
+  {
+    "id": "TC-A61-01",
+    "cat": "A",
+    "desc": "exec ls / (bug#2)",
+    "tok": "admin",
+    "tool": "exec_container",
+    "args": {
+      "container_id": "mcpilots-test-readonly",
+      "command": "ls /"
+    },
+    "expected": [
+      "OK",
+      "CRASH"
+    ],
+    "status": "OK",
+    "detail": "",
+    "dt_ms": 941,
+    "verdict": "PASS",
+    "inner": {}
+  },
+  {
+    "id": "TC-A61-02",
+    "cat": "A",
+    "desc": "exec with workdir",
+    "tok": "admin",
+    "tool": "exec_container",
+    "args": {
+      "container_id": "mcpilots-test-readonly",
+      "command": "pwd",
+      "workdir": "/etc"
+    },
+    "expected": [
+      "OK",
+      "CRASH"
+    ],
+    "status": "OK",
+    "detail": "",
+    "dt_ms": 276,
+    "verdict": "PASS",
+    "inner": {}
+  },
+  {
+    "id": "TC-A61-04",
+    "cat": "A",
+    "desc": "exec nonexistent",
+    "tok": "admin",
+    "tool": "exec_container",
+    "args": {
+      "container_id": "nope",
+      "command": "ls"
+    },
+    "expected": [
+      "REFUSED",
+      "CRASH"
+    ],
+    "status": "REFUSED",
+    "detail": "Container 'nope' not found",
+    "dt_ms": 46,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Container 'nope' not found"
+    }
+  },
+  {
+    "id": "TC-A61-05",
+    "cat": "A",
+    "desc": "exec missing command",
+    "tok": "admin",
+    "tool": "exec_container",
+    "args": {
+      "container_id": "mcpilots-test-readonly"
+    },
+    "expected": [
+      "SCHEMA"
+    ],
+    "status": "SCHEMA",
+    "detail": "1 validation error for call[exec_container]\ncommand\n  Missing required argument [type=missing_argument, input_value={'container_id': 'mcpilots-test-readonly'}, input_type=dict]\n    For further informa",
+    "dt_ms": 39,
+    "verdict": "PASS",
+    "inner": {}
+  },
+  {
+    "id": "TC-A61-06",
+    "cat": "A",
+    "desc": "exec command as list",
+    "tok": "admin",
+    "tool": "exec_container",
+    "args": {
+      "container_id": "mcpilots-test-readonly",
+      "command": [
+        "ls",
+        "/"
+      ]
+    },
+    "expected": [
+      "SCHEMA"
+    ],
+    "status": "SCHEMA",
+    "detail": "1 validation error for call[exec_container]\ncommand\n  Input should be a valid string [type=string_type, input_value=['ls', '/'], input_type=list]\n    For further information visit https://errors.pydan",
+    "dt_ms": 39,
+    "verdict": "PASS",
+    "inner": {}
+  },
+  {
+    "id": "TC-B-op_full-rmimg",
+    "cat": "B",
+    "desc": "op_full → remove_image (admin-only)",
+    "tok": "op_full",
+    "tool": "remove_image",
+    "args": {
+      "image_name": "hello-world:latest",
+      "force": false
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-full' (role: operator) lacks permission 'image:remove'\"}",
+    "dt_ms": 53,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-full' (role: operator) lacks permission 'image:remove'"
+    }
+  },
+  {
+    "id": "TC-B-op_full-exec",
+    "cat": "B",
+    "desc": "op_full → exec_container (admin-only)",
+    "tok": "op_full",
+    "tool": "exec_container",
+    "args": {
+      "container_id": "mcpilots-test-readonly",
+      "command": "ls /"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-full' (role: operator) lacks permission 'exec:run'\"}",
+    "dt_ms": 35,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-full' (role: operator) lacks permission 'exec:run'"
+    }
+  },
+  {
+    "id": "TC-B-op_full-rmc",
+    "cat": "B",
+    "desc": "op_full → remove_container (admin-only)",
+    "tok": "op_full",
+    "tool": "remove_container",
+    "args": {
+      "container_id": "nope",
+      "force": false
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-full' (role: operator) lacks permission 'container:remove'\"}",
+    "dt_ms": 38,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-full' (role: operator) lacks permission 'container:remove'"
+    }
+  },
+  {
+    "id": "TC-B-op_inconly-rmimg",
+    "cat": "B",
+    "desc": "op_inconly → remove_image (admin-only)",
+    "tok": "op_inconly",
+    "tool": "remove_image",
+    "args": {
+      "image_name": "hello-world:latest",
+      "force": false
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-inconly' (role: operator) lacks permission 'image:remove'\"}",
+    "dt_ms": 37,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-inconly' (role: operator) lacks permission 'image:remove'"
+    }
+  },
+  {
+    "id": "TC-B-op_inconly-exec",
+    "cat": "B",
+    "desc": "op_inconly → exec_container (admin-only)",
+    "tok": "op_inconly",
+    "tool": "exec_container",
+    "args": {
+      "container_id": "mcpilots-test-readonly",
+      "command": "ls /"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-inconly' (role: operator) lacks permission 'exec:run'\"}",
+    "dt_ms": 31,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-inconly' (role: operator) lacks permission 'exec:run'"
+    }
+  },
+  {
+    "id": "TC-B-op_inconly-rmc",
+    "cat": "B",
+    "desc": "op_inconly → remove_container (admin-only)",
+    "tok": "op_inconly",
+    "tool": "remove_container",
+    "args": {
+      "container_id": "nope",
+      "force": false
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-inconly' (role: operator) lacks permission 'container:remove'\"}",
+    "dt_ms": 35,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-inconly' (role: operator) lacks permission 'container:remove'"
+    }
+  },
+  {
+    "id": "TC-B-op_exconly-rmimg",
+    "cat": "B",
+    "desc": "op_exconly → remove_image (admin-only)",
+    "tok": "op_exconly",
+    "tool": "remove_image",
+    "args": {
+      "image_name": "hello-world:latest",
+      "force": false
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-exconly' (role: operator) lacks permission 'image:remove'\"}",
+    "dt_ms": 33,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-exconly' (role: operator) lacks permission 'image:remove'"
+    }
+  },
+  {
+    "id": "TC-B-op_exconly-exec",
+    "cat": "B",
+    "desc": "op_exconly → exec_container (admin-only)",
+    "tok": "op_exconly",
+    "tool": "exec_container",
+    "args": {
+      "container_id": "mcpilots-test-readonly",
+      "command": "ls /"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-exconly' (role: operator) lacks permission 'exec:run'\"}",
+    "dt_ms": 32,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-exconly' (role: operator) lacks permission 'exec:run'"
+    }
+  },
+  {
+    "id": "TC-B-op_exconly-rmc",
+    "cat": "B",
+    "desc": "op_exconly → remove_container (admin-only)",
+    "tok": "op_exconly",
+    "tool": "remove_container",
+    "args": {
+      "container_id": "nope",
+      "force": false
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-exconly' (role: operator) lacks permission 'container:remove'\"}",
+    "dt_ms": 30,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-exconly' (role: operator) lacks permission 'container:remove'"
+    }
+  },
+  {
+    "id": "TC-B-op_both-rmimg",
+    "cat": "B",
+    "desc": "op_both → remove_image (admin-only)",
+    "tok": "op_both",
+    "tool": "remove_image",
+    "args": {
+      "image_name": "hello-world:latest",
+      "force": false
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-both' (role: operator) lacks permission 'image:remove'\"}",
+    "dt_ms": 30,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-both' (role: operator) lacks permission 'image:remove'"
+    }
+  },
+  {
+    "id": "TC-B-op_both-exec",
+    "cat": "B",
+    "desc": "op_both → exec_container (admin-only)",
+    "tok": "op_both",
+    "tool": "exec_container",
+    "args": {
+      "container_id": "mcpilots-test-readonly",
+      "command": "ls /"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-both' (role: operator) lacks permission 'exec:run'\"}",
+    "dt_ms": 34,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-both' (role: operator) lacks permission 'exec:run'"
+    }
+  },
+  {
+    "id": "TC-B-op_both-rmc",
+    "cat": "B",
+    "desc": "op_both → remove_container (admin-only)",
+    "tok": "op_both",
+    "tool": "remove_container",
+    "args": {
+      "container_id": "nope",
+      "force": false
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-both' (role: operator) lacks permission 'container:remove'\"}",
+    "dt_ms": 32,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-both' (role: operator) lacks permission 'container:remove'"
+    }
+  },
+  {
+    "id": "TC-B-op_glob-rmimg",
+    "cat": "B",
+    "desc": "op_glob → remove_image (admin-only)",
+    "tok": "op_glob",
+    "tool": "remove_image",
+    "args": {
+      "image_name": "hello-world:latest",
+      "force": false
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-glob' (role: operator) lacks permission 'image:remove'\"}",
+    "dt_ms": 32,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-glob' (role: operator) lacks permission 'image:remove'"
+    }
+  },
+  {
+    "id": "TC-B-op_glob-exec",
+    "cat": "B",
+    "desc": "op_glob → exec_container (admin-only)",
+    "tok": "op_glob",
+    "tool": "exec_container",
+    "args": {
+      "container_id": "mcpilots-test-readonly",
+      "command": "ls /"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-glob' (role: operator) lacks permission 'exec:run'\"}",
+    "dt_ms": 31,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-glob' (role: operator) lacks permission 'exec:run'"
+    }
+  },
+  {
+    "id": "TC-B-op_glob-rmc",
+    "cat": "B",
+    "desc": "op_glob → remove_container (admin-only)",
+    "tok": "op_glob",
+    "tool": "remove_container",
+    "args": {
+      "container_id": "nope",
+      "force": false
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-glob' (role: operator) lacks permission 'container:remove'\"}",
+    "dt_ms": 33,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-glob' (role: operator) lacks permission 'container:remove'"
+    }
+  },
+  {
+    "id": "TC-B-ob_full-restart",
+    "cat": "B",
+    "desc": "ob_full → restart_container (无 restart 权限)",
+    "tok": "ob_full",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "mcpilots-test-lifecycle"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-ob-full' (role: observer) lacks permission 'container:restart'\"}",
+    "dt_ms": 33,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-ob-full' (role: observer) lacks permission 'container:restart'"
+    }
+  },
+  {
+    "id": "TC-B-ob_full-pull",
+    "cat": "B",
+    "desc": "ob_full → pull_image (无 pull 权限)",
+    "tok": "ob_full",
+    "tool": "pull_image",
+    "args": {
+      "image_name": "hello-world",
+      "tag": "latest"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-ob-full' (role: observer) lacks permission 'image:pull'\"}",
+    "dt_ms": 38,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-ob-full' (role: observer) lacks permission 'image:pull'"
+    }
+  },
+  {
+    "id": "TC-B-ob_glob-restart",
+    "cat": "B",
+    "desc": "ob_glob → restart_container (无 restart 权限)",
+    "tok": "ob_glob",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "mcpilots-test-lifecycle"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-ob-glob' (role: observer) lacks permission 'container:restart'\"}",
+    "dt_ms": 48,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-ob-glob' (role: observer) lacks permission 'container:restart'"
+    }
+  },
+  {
+    "id": "TC-B-ob_glob-pull",
+    "cat": "B",
+    "desc": "ob_glob → pull_image (无 pull 权限)",
+    "tok": "ob_glob",
+    "tool": "pull_image",
+    "args": {
+      "image_name": "hello-world",
+      "tag": "latest"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-ob-glob' (role: observer) lacks permission 'image:pull'\"}",
+    "dt_ms": 36,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-ob-glob' (role: observer) lacks permission 'image:pull'"
+    }
+  },
+  {
+    "id": "TC-B-ob_full-listc",
+    "cat": "B",
+    "desc": "ob_full → list_containers (读权限)",
+    "tok": "ob_full",
+    "tool": "list_containers",
+    "args": {
+      "all": true
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "[{\"id\": \"f9259afe6e9b\", \"name\": \"docker-mcpilots\", \"status\": \"running\", \"image\": \"ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc10\"}, {\"id\": \"872a4907c8ea\", ",
+    "dt_ms": 599,
+    "verdict": "PASS",
+    "inner": [
+      {
+        "id": "f9259afe6e9b",
+        "name": "docker-mcpilots",
+        "status": "running",
+        "image": "ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc10"
+      },
+      {
+        "id": "872a4907c8ea",
+        "name": "mcpilots-test-readonly",
+        "status": "running",
+        "image": "nginx:alpine"
+      },
+      {
+        "id": "5412e310adbf",
+        "name": "mcpilots-test-lifecycle",
+        "status": "running",
+        "image": "nginx:alpine"
+      },
+      {
+        "id": "6631a8b46f9c",
+        "name": "mcp-toolbox",
+        "status": "exited",
+        "image": "alpine:3.20"
+      },
+      {
+        "id": "9d9f690f4540",
+        "name": "qbittorrent",
+        "status": "running",
+        "image": "linuxserver/qbittorrent:latest"
+      },
+      {
+        "id": "efa4f07e1e0c",
+        "name": "ariang",
+        "status": "running",
+        "image": "p3terx/ariang:latest"
+      },
+      {
+        "id": "89ee4b965a5c",
+        "name": "calibre",
+        "status": "running",
+        "image": "linuxserver/calibre:latest"
+      },
+      {
+        "id": "46f466b62666",
+        "name": "calibre-web",
+        "status": "running",
+        "image": "lscr.io/linuxserver/calibre-web:latest"
+      },
+      {
+        "id": "cee3c35bd10f",
+        "name": "cloud-saver",
+        "status": "running",
+        "image": "jiangrui1994/cloudsaver:latest"
+      },
+      {
+        "id": "20f71f644f06",
+        "name": "decotv-core",
+        "status": "running",
+        "image": "ghcr.io/decohererk/decotv:latest"
+      },
+      {
+        "id": "1f665b848ea9",
+        "name": "deeptutor",
+        "status": "running",
+        "image": "ghcr.io/hkuds/deeptutor:latest"
+      },
+      {
+        "id": "f134b8bc1f37",
+        "name": "gitea-db",
+        "status": "running",
+        "image": "postgres:14"
+      },
+      {
+        "id": "8b3fa63b4e43",
+        "name": "multica-backend",
+        "status": "running",
+        "image": "ghcr.io/multica-ai/multica-backend:latest"
+      },
+      {
+        "id": "b3a78ba7ff53",
+        "name": "multica-web",
+        "status": "running",
+        "image": "ghcr.io/multica-ai/multica-web:latest"
+      },
+      {
+        "id": "39910ba74b17",
+        "name": "caddy-proxy",
+        "status": "running",
+        "image": "caddy:2-alpine"
+      },
+      {
+        "id": "fc4aafa9c3f6",
+        "name": "caddy-dash",
+        "status": "running",
+        "image": "wjqserver/caddydash:latest"
+      },
+      {
+        "id": "25bcd61c5ec8",
+        "name": "watchtower",
+        "status": "running",
+        "image": "ghcr.io/nicholas-fedor/watchtower:latest"
+      },
+      {
+        "id": "f90c84994dc3",
+        "name": "openlist",
+        "status": "running",
+        "image": "openlistteam/openlist:latest"
+      },
+      {
+        "id": "0f866942628b",
+        "name": "multica-db",
+        "status": "running",
+        "image": "pgvector/pgvector:pg17"
+      },
+      {
+        "id": "a104b11f7036",
+        "name": "immich_server",
+        "status": "running",
+        "image": "ghcr.io/immich-app/immich-server:release"
+      },
+      {
+        "id": "033d13938bd3",
+        "name": "immich_machine_learning",
+        "status": "running",
+        "image": "ghcr.io/immich-app/immich-machine-learning:release"
+      },
+      {
+        "id": "c94b131d1aab",
+        "name": "immich_postgres",
+        "status": "running",
+        "image": "sha256:17871"
+      },
+      {
+        "id": "c95918fcbaab",
+        "name": "immich_redis",
+        "status": "running",
+        "image": "sha256:b31e0"
+      },
+      {
+        "id": "ec9e6c980885",
+        "name": "webssh2",
+        "status": "running",
+        "image": "ghcr.io/billchurch/webssh2:latest"
+      },
+      {
+        "id": "508710122aeb",
+        "name": "wud",
+        "status": "running",
+        "image": "getwud/wud:latest"
+      },
+      {
+        "id": "b4f24a16df15",
+        "name": "open-webui",
+        "status": "running",
+        "image": "ghcr.io/open-webui/open-webui:main"
+      },
+      {
+        "id": "f17ea04239e7",
+        "name": "openmaic-built",
+        "status": "running",
+        "image": "openmaic:v0.3.0"
+      },
+      {
+        "id": "3ecd1d40b2ea",
+        "name": "portainer-ce",
+        "status": "running",
+        "image": "portainer/portainer-ce:latest"
+      },
+      {
+        "id": "411f4e20447b",
+        "name": "dockhand",
+        "status": "running",
+        "image": "fnsys/dockhand:latest"
+      },
+      {
+        "id": "2b2971e882cb",
+        "name": "gitea-core",
+        "status": "running",
+        "image": "docker.gitea.com/gitea:latest"
+      },
+      {
+        "id": "f9d0528f3209",
+        "name": "decotv-redis",
+        "status": "running",
+        "image": "redis:alpine"
+      },
+      {
+        "id": "59847132d6a0",
+        "name": "cloudflared",
+        "status": "running",
+        "image": "cloudflare/cloudflared:latest"
+      },
+      {
+        "id": "95577100e35d",
+        "name": "jellyfin",
+        "status": "running",
+        "image": "jellyfin/jellyfin:latest"
+      },
+      {
+        "id": "880d905b4924",
+        "name": "xiaomusic",
+        "status": "running",
+        "image": "docker.hanxi.cc/hanxi/xiaomusic:latest"
+      },
+      {
+        "id": "3d1b407e19aa",
+        "name": "nowen-video",
+        "status": "running",
+        "image": "cropflre/nowen-video:latest"
+      },
+      {
+        "id": "6fe373c6b3f2",
+        "name": "photoprism-server",
+        "status": "running",
+        "image": "photoprism/photoprism:latest"
+      },
+      {
+        "id": "05c2661f2c96",
+        "name": "aria2-pro",
+        "status": "running",
+        "image": "p3terx/aria2-pro:latest"
+      },
+      {
+        "id": "f81d98fd63dc",
+        "name": "kosync",
+        "status": "running",
+        "image": "koreader/kosync:latest"
+      },
+      {
+        "id": "9c74db222069",
+        "name": "stirling-pdf",
+        "status": "exited",
+        "image": "frooodle/s-pdf:latest"
+      },
+      {
+        "id": "ec50b5565dab",
+        "name": "waoowaoo-redis",
+        "status": "running",
+        "image": "redis:7-alpine"
+      },
+      {
+        "id": "b416e6d6f4c5",
+        "name": "wikijs",
+        "status": "exited",
+        "image": "linuxserver/wikijs:latest"
+      },
+      {
+        "id": "88869e06ac0e",
+        "name": "n8n-app",
+        "status": "exited",
+        "image": "n8nio/n8n:latest"
+      },
+      {
+        "id": "aeaa3b542463",
+        "name": "firefox-selkies",
+        "status": "exited",
+        "image": "lscr.io/linuxserver/firefox:latest"
+      },
+      {
+        "id": "5a0c0421ec28",
+        "name": "synology_docviewer_2",
+        "status": "exited",
+        "image": "synology/docviewer:1.3.0.0126"
+      },
+      {
+        "id": "a7d2e43baddb",
+        "name": "synology_docviewer_1",
+        "status": "exited",
+        "image": "synology/docviewer:1.3.0.0126"
+      },
+      {
+        "id": "6b6c940c9614",
+        "name": "waoowaoo-mysql",
+        "status": "running",
+        "image": "mysql:8.0"
+      },
+      {
+        "id": "a1498056b10f",
+        "name": "waoowaoo-app",
+        "status": "running",
+        "image": "ghcr.io/saturndec/waoowaoo:latest"
+      },
+      {
+        "id": "a2b269792328",
+        "name": "waoowaoo-minio",
+        "status": "running",
+        "image": "minio/minio:RELEASE.2025-02-28T09-55-16Z"
+      },
+      {
+        "id": "2ab8daf78bb0",
+        "name": "zashboard",
+        "status": "exited",
+        "image": "ghcr.io/zephyruso/zashboard:latest"
+      },
+      {
+        "id": "69a934bd1e4a",
+        "name": "n8n-db",
+        "status": "exited",
+        "image": "postgres:16-alpine"
+      },
+      {
+        "id": "fc8a16079230",
+        "name": "mihomo",
+        "status": "running",
+        "image": "metacubex/mihomo:latest"
+      },
+      {
+        "id": "c142daeb5271",
+        "name": "wechat-md",
+        "status": "exited",
+        "image": "doocs/md:latest"
+      },
+      {
+        "id": "35eb62ef01e9",
+        "name": "sun-panel",
+        "status": "running",
+        "image": "hslr/sun-panel:latest"
+      },
+      {
+        "id": "ca8f90868221",
+        "name": "taosync",
+        "status": "running",
+        "image": "dr34m/tao-sync:latest"
+      },
+      {
+        "id": "e3ed0dd93756",
+        "name": "dockports",
+        "status": "running",
+        "image": "ghcr.io/coracoo/dockports:latest"
+      },
+      {
+        "id": "b0c52d3558d0",
+        "name": "zerotier-one",
+        "status": "running",
+        "image": "zerotier/zerotier-synology:latest"
+      }
+    ]
+  },
+  {
+    "id": "TC-B-ob_full-inspect",
+    "cat": "B",
+    "desc": "ob_full → inspect_container (读权限)",
+    "tok": "ob_full",
+    "tool": "inspect_container",
+    "args": {
+      "container_id": "mcpilots-test-readonly"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container\": {\"id\": \"872a4907c8ea\", \"name\": \"mcpilots-test-readonly\", \"status\": \"running\", \"image\": \"nginx:alpine\", \"created\": \"2026",
+    "dt_ms": 44,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container": {
+        "id": "872a4907c8ea",
+        "name": "mcpilots-test-readonly",
+        "status": "running",
+        "image": "nginx:alpine",
+        "created": "2026-07-09T04:42:46.49662488Z",
+        "labels": {
+          "maintainer": "NGINX Docker Maintainers <docker-maint@nginx.com>"
+        },
+        "state": {
+          "status": "running",
+          "running": true,
+          "paused": false,
+          "restarting": false,
+          "oom_killed": false,
+          "dead": false,
+          "pid": 27987,
+          "exit_code": 0,
+          "error": "",
+          "started_at": "2026-07-09T04:42:56.240211876Z",
+          "finished_at": "0001-01-01T00:00:00Z",
+          "restart_count": 0
+        },
+        "health": {
+          "status": "none",
+          "failing_streak": 0,
+          "log": []
+        },
+        "config": {
+          "cmd": [
+            "nginx",
+            "-g",
+            "daemon off;"
+          ],
+          "entrypoint": [
+            "/docker-entrypoint.sh"
+          ],
+          "env": [
+            "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            "NGINX_VERSION=1.31.2",
+            "PKG_RELEASE=1",
+            "DYNPKG_RELEASE=1",
+            "NJS_VERSION=0.9.9",
+            "NJS_RELEASE=1",
+            "ACME_VERSION=0.4.1"
+          ],
+          "image": "nginx:alpine",
+          "working_dir": "/"
+        },
+        "network": {
+          "ip_address": "172.17.0.3",
+          "gateway": "172.17.0.1",
+          "mac_address": "02:42:ac:11:00:03",
+          "ports": {
+            "80/tcp": null
+          },
+          "networks": {
+            "bridge": {
+              "ip": "172.17.0.3",
+              "gateway": "172.17.0.1",
+              "mac": "02:42:ac:11:00:03"
+            }
+          }
+        },
+        "mounts": []
+      }
+    }
+  },
+  {
+    "id": "TC-B311",
+    "cat": "B",
+    "desc": "op_inconly → restart mihomo (include ✓)",
+    "tok": "op_inconly",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "mihomo"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container\": {\"id\": \"fc8a16079230\", \"name\": \"mihomo\", \"status\": \"running\", \"image\": \"metacubex/mihomo:latest\"}}",
+    "dt_ms": 10979,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container": {
+        "id": "fc8a16079230",
+        "name": "mihomo",
+        "status": "running",
+        "image": "metacubex/mihomo:latest"
+      }
+    }
+  },
+  {
+    "id": "TC-B313",
+    "cat": "B",
+    "desc": "op_inconly → restart caddy-proxy (not in include)",
+    "tok": "op_inconly",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "caddy-proxy"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-inconly' scope does not include container 'caddy-proxy'\"}",
+    "dt_ms": 43,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-inconly' scope does not include container 'caddy-proxy'"
+    }
+  },
+  {
+    "id": "TC-B314",
+    "cat": "B",
+    "desc": "op_inconly → restart lifecycle (not in include)",
+    "tok": "op_inconly",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "mcpilots-test-lifecycle"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-inconly' scope does not include container 'mcpilots-test-lifecycle'\"}",
+    "dt_ms": 39,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-inconly' scope does not include container 'mcpilots-test-lifecycle'"
+    }
+  },
+  {
+    "id": "TC-B321",
+    "cat": "B",
+    "desc": "op_exconly → restart mihomo (not in exclude)",
+    "tok": "op_exconly",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "mihomo"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container\": {\"id\": \"fc8a16079230\", \"name\": \"mihomo\", \"status\": \"running\", \"image\": \"metacubex/mihomo:latest\"}}",
+    "dt_ms": 11801,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container": {
+        "id": "fc8a16079230",
+        "name": "mihomo",
+        "status": "running",
+        "image": "metacubex/mihomo:latest"
+      }
+    }
+  },
+  {
+    "id": "TC-B323",
+    "cat": "B",
+    "desc": "op_exconly → restart sun-panel (excluded)",
+    "tok": "op_exconly",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "sun-panel"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-exconly' scope excludes container 'sun-panel'\"}",
+    "dt_ms": 62,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-exconly' scope excludes container 'sun-panel'"
+    }
+  },
+  {
+    "id": "TC-B324",
+    "cat": "B",
+    "desc": "op_exconly → restart dockports (excluded)",
+    "tok": "op_exconly",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "dockports"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-exconly' scope excludes container 'dockports'\"}",
+    "dt_ms": 51,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-exconly' scope excludes container 'dockports'"
+    }
+  },
+  {
+    "id": "TC-B331",
+    "cat": "B",
+    "desc": "op_both → restart mihomo (include ✓ 未 exclude)",
+    "tok": "op_both",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "mihomo"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container\": {\"id\": \"fc8a16079230\", \"name\": \"mihomo\", \"status\": \"running\", \"image\": \"metacubex/mihomo:latest\"}}",
+    "dt_ms": 13481,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container": {
+        "id": "fc8a16079230",
+        "name": "mihomo",
+        "status": "running",
+        "image": "metacubex/mihomo:latest"
+      }
+    }
+  },
+  {
+    "id": "TC-B333",
+    "cat": "B",
+    "desc": "op_both → restart sun-panel (include ✓ 但 exclude)",
+    "tok": "op_both",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "sun-panel"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-both' scope excludes container 'sun-panel'\"}",
+    "dt_ms": 55,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-both' scope excludes container 'sun-panel'"
+    }
+  },
+  {
+    "id": "TC-B334",
+    "cat": "B",
+    "desc": "op_both → restart caddy-proxy (不在 include)",
+    "tok": "op_both",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "caddy-proxy"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-both' scope does not include container 'caddy-proxy'\"}",
+    "dt_ms": 46,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-both' scope does not include container 'caddy-proxy'"
+    }
+  },
+  {
+    "id": "TC-B341",
+    "cat": "B",
+    "desc": "op_glob → restart lifecycle (glob ✓)",
+    "tok": "op_glob",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "mcpilots-test-lifecycle"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container\": {\"id\": \"5412e310adbf\", \"name\": \"mcpilots-test-lifecycle\", \"status\": \"running\", \"image\": \"nginx:alpine\"}}",
+    "dt_ms": 13596,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container": {
+        "id": "5412e310adbf",
+        "name": "mcpilots-test-lifecycle",
+        "status": "running",
+        "image": "nginx:alpine"
+      }
+    }
+  },
+  {
+    "id": "TC-B344",
+    "cat": "B",
+    "desc": "op_glob → restart mihomo (glob 不匹配)",
+    "tok": "op_glob",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "mihomo"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-glob' scope does not include container 'mihomo'\"}",
+    "dt_ms": 36,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-glob' scope does not include container 'mihomo'"
+    }
+  },
+  {
+    "id": "TC-B351",
+    "cat": "B",
+    "desc": "op_full → restart lifecycle (无 scope, 有 restart)",
+    "tok": "op_full",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "mcpilots-test-lifecycle"
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "{\"success\": true, \"container\": {\"id\": \"5412e310adbf\", \"name\": \"mcpilots-test-lifecycle\", \"status\": \"running\", \"image\": \"nginx:alpine\"}}",
+    "dt_ms": 13842,
+    "verdict": "PASS",
+    "inner": {
+      "success": true,
+      "container": {
+        "id": "5412e310adbf",
+        "name": "mcpilots-test-lifecycle",
+        "status": "running",
+        "image": "nginx:alpine"
+      }
+    }
+  },
+  {
+    "id": "TC-B352",
+    "cat": "B",
+    "desc": "op_full → remove_container (无 role 权限)",
+    "tok": "op_full",
+    "tool": "remove_container",
+    "args": {
+      "container_id": "nope",
+      "force": false
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-op-full' (role: operator) lacks permission 'container:remove'\"}",
+    "dt_ms": 32,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-op-full' (role: operator) lacks permission 'container:remove'"
+    }
+  },
+  {
+    "id": "TC-B362",
+    "cat": "B",
+    "desc": "ob_glob → inspect mihomo (scope 不匹配)",
+    "tok": "ob_glob",
+    "tool": "inspect_container",
+    "args": {
+      "container_id": "mihomo"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-ob-glob' scope does not include container 'mihomo'\"}",
+    "dt_ms": 31,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-ob-glob' scope does not include container 'mihomo'"
+    }
+  },
+  {
+    "id": "TC-B363",
+    "cat": "B",
+    "desc": "ob_glob → list_containers (是否被 scope 过滤?)",
+    "tok": "ob_glob",
+    "tool": "list_containers",
+    "args": {
+      "all": true
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "OK",
+    "detail": "[{\"id\": \"f9259afe6e9b\", \"name\": \"docker-mcpilots\", \"status\": \"running\", \"image\": \"ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc10\"}, {\"id\": \"872a4907c8ea\", ",
+    "dt_ms": 743,
+    "verdict": "PASS",
+    "inner": [
+      {
+        "id": "f9259afe6e9b",
+        "name": "docker-mcpilots",
+        "status": "running",
+        "image": "ghcr.io/sopyk/docker-mcpilots:v2.0.2-rc10"
+      },
+      {
+        "id": "872a4907c8ea",
+        "name": "mcpilots-test-readonly",
+        "status": "running",
+        "image": "nginx:alpine"
+      },
+      {
+        "id": "5412e310adbf",
+        "name": "mcpilots-test-lifecycle",
+        "status": "running",
+        "image": "nginx:alpine"
+      },
+      {
+        "id": "6631a8b46f9c",
+        "name": "mcp-toolbox",
+        "status": "exited",
+        "image": "alpine:3.20"
+      },
+      {
+        "id": "9d9f690f4540",
+        "name": "qbittorrent",
+        "status": "running",
+        "image": "linuxserver/qbittorrent:latest"
+      },
+      {
+        "id": "efa4f07e1e0c",
+        "name": "ariang",
+        "status": "running",
+        "image": "p3terx/ariang:latest"
+      },
+      {
+        "id": "89ee4b965a5c",
+        "name": "calibre",
+        "status": "running",
+        "image": "linuxserver/calibre:latest"
+      },
+      {
+        "id": "46f466b62666",
+        "name": "calibre-web",
+        "status": "running",
+        "image": "lscr.io/linuxserver/calibre-web:latest"
+      },
+      {
+        "id": "cee3c35bd10f",
+        "name": "cloud-saver",
+        "status": "running",
+        "image": "jiangrui1994/cloudsaver:latest"
+      },
+      {
+        "id": "20f71f644f06",
+        "name": "decotv-core",
+        "status": "running",
+        "image": "ghcr.io/decohererk/decotv:latest"
+      },
+      {
+        "id": "1f665b848ea9",
+        "name": "deeptutor",
+        "status": "running",
+        "image": "ghcr.io/hkuds/deeptutor:latest"
+      },
+      {
+        "id": "f134b8bc1f37",
+        "name": "gitea-db",
+        "status": "running",
+        "image": "postgres:14"
+      },
+      {
+        "id": "8b3fa63b4e43",
+        "name": "multica-backend",
+        "status": "running",
+        "image": "ghcr.io/multica-ai/multica-backend:latest"
+      },
+      {
+        "id": "b3a78ba7ff53",
+        "name": "multica-web",
+        "status": "running",
+        "image": "ghcr.io/multica-ai/multica-web:latest"
+      },
+      {
+        "id": "39910ba74b17",
+        "name": "caddy-proxy",
+        "status": "running",
+        "image": "caddy:2-alpine"
+      },
+      {
+        "id": "fc4aafa9c3f6",
+        "name": "caddy-dash",
+        "status": "running",
+        "image": "wjqserver/caddydash:latest"
+      },
+      {
+        "id": "25bcd61c5ec8",
+        "name": "watchtower",
+        "status": "running",
+        "image": "ghcr.io/nicholas-fedor/watchtower:latest"
+      },
+      {
+        "id": "f90c84994dc3",
+        "name": "openlist",
+        "status": "running",
+        "image": "openlistteam/openlist:latest"
+      },
+      {
+        "id": "0f866942628b",
+        "name": "multica-db",
+        "status": "running",
+        "image": "pgvector/pgvector:pg17"
+      },
+      {
+        "id": "a104b11f7036",
+        "name": "immich_server",
+        "status": "running",
+        "image": "ghcr.io/immich-app/immich-server:release"
+      },
+      {
+        "id": "033d13938bd3",
+        "name": "immich_machine_learning",
+        "status": "running",
+        "image": "ghcr.io/immich-app/immich-machine-learning:release"
+      },
+      {
+        "id": "c94b131d1aab",
+        "name": "immich_postgres",
+        "status": "running",
+        "image": "sha256:17871"
+      },
+      {
+        "id": "c95918fcbaab",
+        "name": "immich_redis",
+        "status": "running",
+        "image": "sha256:b31e0"
+      },
+      {
+        "id": "ec9e6c980885",
+        "name": "webssh2",
+        "status": "running",
+        "image": "ghcr.io/billchurch/webssh2:latest"
+      },
+      {
+        "id": "508710122aeb",
+        "name": "wud",
+        "status": "running",
+        "image": "getwud/wud:latest"
+      },
+      {
+        "id": "b4f24a16df15",
+        "name": "open-webui",
+        "status": "running",
+        "image": "ghcr.io/open-webui/open-webui:main"
+      },
+      {
+        "id": "f17ea04239e7",
+        "name": "openmaic-built",
+        "status": "running",
+        "image": "openmaic:v0.3.0"
+      },
+      {
+        "id": "3ecd1d40b2ea",
+        "name": "portainer-ce",
+        "status": "running",
+        "image": "portainer/portainer-ce:latest"
+      },
+      {
+        "id": "411f4e20447b",
+        "name": "dockhand",
+        "status": "running",
+        "image": "fnsys/dockhand:latest"
+      },
+      {
+        "id": "2b2971e882cb",
+        "name": "gitea-core",
+        "status": "running",
+        "image": "docker.gitea.com/gitea:latest"
+      },
+      {
+        "id": "f9d0528f3209",
+        "name": "decotv-redis",
+        "status": "running",
+        "image": "redis:alpine"
+      },
+      {
+        "id": "59847132d6a0",
+        "name": "cloudflared",
+        "status": "running",
+        "image": "cloudflare/cloudflared:latest"
+      },
+      {
+        "id": "95577100e35d",
+        "name": "jellyfin",
+        "status": "running",
+        "image": "jellyfin/jellyfin:latest"
+      },
+      {
+        "id": "880d905b4924",
+        "name": "xiaomusic",
+        "status": "running",
+        "image": "docker.hanxi.cc/hanxi/xiaomusic:latest"
+      },
+      {
+        "id": "3d1b407e19aa",
+        "name": "nowen-video",
+        "status": "running",
+        "image": "cropflre/nowen-video:latest"
+      },
+      {
+        "id": "6fe373c6b3f2",
+        "name": "photoprism-server",
+        "status": "running",
+        "image": "photoprism/photoprism:latest"
+      },
+      {
+        "id": "05c2661f2c96",
+        "name": "aria2-pro",
+        "status": "running",
+        "image": "p3terx/aria2-pro:latest"
+      },
+      {
+        "id": "f81d98fd63dc",
+        "name": "kosync",
+        "status": "running",
+        "image": "koreader/kosync:latest"
+      },
+      {
+        "id": "9c74db222069",
+        "name": "stirling-pdf",
+        "status": "exited",
+        "image": "frooodle/s-pdf:latest"
+      },
+      {
+        "id": "ec50b5565dab",
+        "name": "waoowaoo-redis",
+        "status": "running",
+        "image": "redis:7-alpine"
+      },
+      {
+        "id": "b416e6d6f4c5",
+        "name": "wikijs",
+        "status": "exited",
+        "image": "linuxserver/wikijs:latest"
+      },
+      {
+        "id": "88869e06ac0e",
+        "name": "n8n-app",
+        "status": "exited",
+        "image": "n8nio/n8n:latest"
+      },
+      {
+        "id": "aeaa3b542463",
+        "name": "firefox-selkies",
+        "status": "exited",
+        "image": "lscr.io/linuxserver/firefox:latest"
+      },
+      {
+        "id": "5a0c0421ec28",
+        "name": "synology_docviewer_2",
+        "status": "exited",
+        "image": "synology/docviewer:1.3.0.0126"
+      },
+      {
+        "id": "a7d2e43baddb",
+        "name": "synology_docviewer_1",
+        "status": "exited",
+        "image": "synology/docviewer:1.3.0.0126"
+      },
+      {
+        "id": "6b6c940c9614",
+        "name": "waoowaoo-mysql",
+        "status": "running",
+        "image": "mysql:8.0"
+      },
+      {
+        "id": "a1498056b10f",
+        "name": "waoowaoo-app",
+        "status": "running",
+        "image": "ghcr.io/saturndec/waoowaoo:latest"
+      },
+      {
+        "id": "a2b269792328",
+        "name": "waoowaoo-minio",
+        "status": "running",
+        "image": "minio/minio:RELEASE.2025-02-28T09-55-16Z"
+      },
+      {
+        "id": "2ab8daf78bb0",
+        "name": "zashboard",
+        "status": "exited",
+        "image": "ghcr.io/zephyruso/zashboard:latest"
+      },
+      {
+        "id": "69a934bd1e4a",
+        "name": "n8n-db",
+        "status": "exited",
+        "image": "postgres:16-alpine"
+      },
+      {
+        "id": "fc8a16079230",
+        "name": "mihomo",
+        "status": "running",
+        "image": "metacubex/mihomo:latest"
+      },
+      {
+        "id": "c142daeb5271",
+        "name": "wechat-md",
+        "status": "exited",
+        "image": "doocs/md:latest"
+      },
+      {
+        "id": "35eb62ef01e9",
+        "name": "sun-panel",
+        "status": "running",
+        "image": "hslr/sun-panel:latest"
+      },
+      {
+        "id": "ca8f90868221",
+        "name": "taosync",
+        "status": "running",
+        "image": "dr34m/tao-sync:latest"
+      },
+      {
+        "id": "e3ed0dd93756",
+        "name": "dockports",
+        "status": "running",
+        "image": "ghcr.io/coracoo/dockports:latest"
+      },
+      {
+        "id": "b0c52d3558d0",
+        "name": "zerotier-one",
+        "status": "running",
+        "image": "zerotier/zerotier-synology:latest"
+      }
+    ]
+  },
+  {
+    "id": "TC-B364",
+    "cat": "B",
+    "desc": "ob_glob → restart (无 role 权限)",
+    "tok": "ob_glob",
+    "tool": "restart_container",
+    "args": {
+      "container_id": "nginx-anything"
+    },
+    "expected": [
+      "DENIED"
+    ],
+    "status": "DENIED",
+    "detail": "{\"success\":false,\"error\":\"Key 't-ob-glob' (role: observer) lacks permission 'container:restart'\"}",
+    "dt_ms": 37,
+    "verdict": "PASS",
+    "inner": {
+      "success": false,
+      "error": "Key 't-ob-glob' (role: observer) lacks permission 'container:restart'"
+    }
+  },
+  {
+    "id": "TC-B41",
+    "cat": "B",
+    "desc": "missing Authorization header",
+    "verdict": "FAIL",
+    "detail": "HTTP/1.1 200 OK\ndate: Thu, 09 Jul 2026 07:23:25 GMT\nserver: uvicorn\ncache-control: no-cache, no-transform\nconnection: keep-alive\ncontent-type: text/event-stream\nmcp-session-id: 129695b188a44c878b7d9f6d2a051c47\nx-accel-buffering: no\nTransfer-Encoding: chunked\n\nevent: message\ndata: {\"jsonrpc\":\"2.0\",\"id\":0,\"result\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{\"experimental\":{},\"logging\":{},\"prompts\":{\"listChanged\":true},\"resources\":{\"subscribe\":false,\"listChanged\":true},\"tools\":{\"listChanged\":true},\"extensions\":{\"io.modelcontextprotocol/ui\":{}}},\"serverInfo\":{\"name\":\"Docker-MCPilotS\",\"version\":\"2.0.2\"},\"instructions\":\"Docker container and image management server with system diagnostics for Synology NAS.\"}}",
+    "expected": "HTTP 401/403"
+  },
+  {
+    "id": "TC-B43",
+    "cat": "B",
+    "desc": "unknown token",
+    "verdict": "FAIL",
+    "detail": "HTTP/1.1 200 OK\ndate: Thu, 09 Jul 2026 07:23:25 GMT\nserver: uvicorn\ncache-control: no-cache, no-transform\nconnection: keep-alive\ncontent-type: text/event-stream\nmcp-session-id: 45d3c4dbe5a14ec2ac70a82fed9f1f93\nx-accel-buffering: no\nTransfer-Encoding: chunked\n\nevent: message\ndata: {\"jsonrpc\":\"2.0\",\"id\":0,\"result\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{\"experimental\":{},\"logging\":{},\"prompts\":{\"listChanged\":true},\"resources\":{\"subscribe\":false,\"listChanged\":true},\"tools\":{\"listChanged\":true},\"extensions\":{\"io.modelcontextprotocol/ui\":{}}},\"serverInfo\":{\"name\":\"Docker-MCPilotS\",\"version\":\"2.0.2\"},\"instructions\":\"Docker container and image management server with system diagnostics for Synology NAS.\"}}",
+    "expected": "HTTP 401/403"
+  },
+  {
+    "id": "TC-C41",
+    "cat": "C",
+    "desc": "/health x20 连续",
+    "verdict": "PASS",
+    "detail": "20/20 200, bad=[]",
+    "expected": "20/20 200"
+  },
+  {
+    "id": "TC-A16-01",
+    "cat": "A",
+    "desc": "remove exited victim",
+    "tok": "admin",
+    "tool": "remove_container",
+    "args": {
+      "container_id": "mcpilots-test-victim",
+      "force": false
+    },
+    "expected": [
+      "OK"
+    ],
+    "status": "REFUSED",
+    "detail": "Container 'mcpilots-test-victim' not found",
+    "dt_ms": 42,
+    "verdict": "FAIL"
+  }
+]
