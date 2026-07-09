@@ -16,6 +16,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - **Favicon Display**: Uses dedicated favicon icon (user-provided image), shows project logo in browser tabs
 - **Container Detail Page Top Back Button**: Adds back button at page top as well
 - **Consistent Back Button Placement**: Both back buttons at the top and bottom of the container detail page are right-aligned for consistency
+- **Container Page Batch Operations**: Supports checkbox selection for bulk start/stop/restart
+  - Checkbox on each row + select-all in header
+  - Top batch action bar: selected count + bulk start/stop/restart + select-all/deselect-all
+  - Confirmation prompt supported
+- **User Page Bulk Delete API Keys**: Supports checkbox selection for bulk deleting multiple API Keys
+  - Checkbox on each row + select-all in header
+  - Top batch action bar: selected count + bulk delete + select-all/deselect-all
+  - Confirmation prompt supported
+- **User Page Inline Add API Key**: Removed standalone "新增 API Key" section, replaced with "+ 添加 API Key" button at bottom of list, inserts blank row (name/role/key/scope/save/cancel) when clicked
+- **Multi-Architecture Image Support**: Publish both linux/amd64 and linux/arm64 images, compatible with Synology NAS (amd64) and Mac M-series (arm64) devices
 
 ### Fixed
 #### Critical Fixes
