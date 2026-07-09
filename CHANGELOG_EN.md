@@ -9,20 +9,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [v2.0.2] - 2026-07-09
 
 ### Added
-- **Auto Permission Migration**: Automatically adds missing permissions (network:list / volume:list) to the three standard roles on first startup
-- **Favicon Display**: Uses dedicated favicon icon, shows project logo in browser tabs
+- **Auto Permission Migration**: Automatically adds missing permissions to the three standard roles on first startup
+  - Admin role gets `network:*` and `volume:*`
+  - Operator and observer roles get `network:list` and `volume:list`
+  - Auto-updates the persisted auth.yaml config file
+- **Favicon Display**: Uses dedicated favicon icon (user-provided image), shows project logo in browser tabs
+- **Container Detail Page Top Back Button**: Adds back button at page top as well
 - **Consistent Back Button Placement**: Both back buttons at the top and bottom of the container detail page are right-aligned for consistency
 
 ### Fixed
-- **RBAC Fully Disabled**: Added permission checks to all MCP tools (previously only exec_container had)
-- **exec_container Crashes**: Compatible with KeyConfig being serialized to dict (adapts to fastmcp behavior)
-- **list_volumes NoneType**: Fixed access error when Volume Options is None
-- **Navbar Fixed**: Changed to position: fixed, fully anchored at page top
-- **Hot Reload URL Params**: Auto removes ?success/error params to avoid refresh issues
+#### Critical Fixes
+- **RBAC Fully Disabled**: Added permission checks to ALL MCP tools! Previously only exec_container had permission checks!
+  - container_tools: list_containers / inspect_container / start_container / stop_container / restart_container / get_container_logs / get_container_stats / remove_container / get_container_processes / get_container_health / get_container_networks / get_container_mounts / get_container_changes
+  - image_tools: list_images / inspect_image / pull_image / remove_image
+  - docker_diag_tools: list_networks / list_volumes
+  - diag_tools: get_system_info / get_cpu_info / get_memory_info / get_disk_info / get_network_info
+- **exec_container 100% Crashes**: Compatible with KeyConfig being serialized to dict by fastmcp (modified core/auth.py to handle both dict and object)
+- **list_volumes NoneType Error**: Fixed when Volume Options is None using `(options or {})` fallback
+
+#### Web UI Fixes
+- **Navbar Fixed Issue**: Changed from position: sticky to position: fixed, fully anchored at page top with left:0 and width:100%, added padding-top:72px to body to avoid content being covered
+- **Hot Reload URL Params**: Added JS script in base.html to auto remove ?success/error params after page loads
 - **Settings Page Button Rename**: "保存设置" → "应用设置" (Save Settings → Apply Settings)
 - **Settings Page Raw Content Removed**: No longer shows raw settings.yaml content
-- **Dashboard Cards Clickable**: Click container card to go to container page, click image card to go to image page
-- **Favicon Issue**: Uses separate favicon.jpg without affecting page logo
+- **Dashboard Cards Clickable**: Click container stats card to go to container page, click image stats card to go to image page
+- **Favicon Issue**: Uses separate favicon.jpg without affecting the page logo (page logo still uses logo.jpg)
+- **Settings Page Buttons Position Correct
+
+#### Tool Registration Optimization
+- All MCP tool registration functions now take app_state parameter for permission checks
+- All tool functions changed to async functions, correctly using await ctx.get_state() to get authentication state
 
 ## [v2.0.1] - 2026-07-08
 

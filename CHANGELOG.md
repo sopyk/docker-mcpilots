@@ -9,20 +9,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [v2.0.2] - 2026-07-09
 
 ### 新增
-- **自动权限迁移**：首次启动时自动为三个标准角色补充缺失的权限（network:list / volume:list 等）
-- **favicon显示**：使用专用 favicon 图标，浏览器标签页显示项目 logo
+- **自动权限迁移**：首次启动时自动为三个标准角色补充缺失的权限
+  - 为 admin 角色添加 `network:*`、`volume:*`
+  - 为 operator/observer 角色添加 `network:list`、`volume:list`
+  - 自动更新持久化的 auth.yaml 配置文件
+- **favicon显示**：使用专用 favicon 图标，浏览器标签页显示项目 logo（使用用户提供的图片）
+- **容器详情页顶部返回按钮**：在页面顶部也添加返回列表按钮
 - **返回按钮统一位置**：容器详情页顶部和底部返回按钮均靠右对齐，保持一致
 
 ### 修复
-- **RBAC权限完全失效**：所有 MCP 工具均添加权限检查（此前仅有 exec_container 有）
-- **exec_container 崩溃**：兼容 KeyConfig 被序列化为 dict 的情况（兼容 fastmcp 行为）
-- **list_volumes NoneType**：修复 Volume Options 为 None 时的访问错误
-- **导航栏固定**：改成 position: fixed，完全固定在页面顶部
-- **热加载后URL参数问题**：自动去除 ?success/error 参数，避免刷新问题
+#### Critical级修复
+- **RBAC权限完全失效**：所有 MCP 工具均添加权限检查（此前仅有 exec_container 工具有权限检查！）
+  - container_tools：list_containers / inspect_container / start_container / stop_container / restart_container / get_container_logs / get_container_stats / remove_container / get_container_processes / get_container_health / get_container_networks / get_container_mounts / get_container_changes
+  - image_tools：list_images / inspect_image / pull_image / remove_image
+  - docker_diag_tools：list_networks / list_volumes
+  - diag_tools：get_system_info / get_cpu_info / get_memory_info / get_disk_info / get_network_info
+- **exec_container 100%崩溃**：兼容 KeyConfig 被 fastmcp 序列化为 dict 的情况（修改 core/auth.py 兼容判断）
+- **list_volumes NoneType错误**：修复 Volume 的 Options 为 None 时的访问错误（使用 `(options or {})` 兜底）
+
+#### Web UI 修复
+- **导航栏固定问题**：从 position: sticky 改成 position: fixed，完全固定在页面顶部，添加 left: 0 和 width: 100%，同时在 body 上添加 padding-top: 72px 避免内容被遮挡
+- **热加载后URL参数问题**：在 base.html 中添加 JS 脚本，加载完成后自动去除 ?success/error 参数，避免刷新问题
 - **设置页面按钮改名**：“保存设置” → “应用设置”
 - **设置页面移除原始内容**：不再显示 settings.yaml 原始内容
-- **仪表盘卡片可点击**：点击容器卡片跳转到容器页，点击镜像卡片跳转到镜像页
-- **favicon问题**：使用独立的 favicon.jpg，不影响页面 logo
+- **仪表盘卡片可点击**：点击容器统计卡片跳转到容器页，点击镜像统计卡片跳转到镜像页
+- **favicon问题**：使用独立的 favicon.jpg，不影响页面上的 logo（页面 logo 继续用 logo.jpg）
+- **设置页面按钮位置正确**
+
+#### 工具注册函数优化
+- 所有 MCP 工具注册函数均添加 app_state 参数，用于权限检查
+- 所有工具函数均改为 async 函数，正确使用 await ctx.get_state() 获取认证状态
 
 ## [v2.0.1] - 2026-07-08
 
