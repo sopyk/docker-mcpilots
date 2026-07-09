@@ -9,13 +9,7 @@
     {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
 
     <div class="section">
-        <div class="section-header">
-            <h2>API Key 列表</h2>
-            <form method="post" action="/ui/users/reload" class="inline-form">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                <button type="submit" class="btn btn-sm btn-blue">热加载 auth.yaml</button>
-            </form>
-        </div>
+        <h2>API Key 列表</h2>
         <table class="data-table">
             <thead>
                 <tr>
@@ -29,40 +23,42 @@
             <tbody>
             {% for k in keys %}
             <tr>
-                <form method="post" action="/ui/users/{{ k.name | urlencode }}/update">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                    <td><input type="text" name="name" value="{{ k.name }}" class="input-plain"></td>
-                    <td>
-                        <select name="role">
-                            {% for r in roles %}
-                            {% if r.name == k.role %}
-                            <option value="{{ r.name }}" selected>{{ r.name }}</option>
-                            {% else %}
-                            <option value="{{ r.name }}">{{ r.name }}</option>
-                            {% endif %}
-                            {% endfor %}
-                        </select>
-                    </td>
-                    <td>
-                        <div class="key-input-wrap">
-                            <input type="text" name="key" value="{{ k.key }}" placeholder="留空则保持不变" class="key-input">
-                            <button type="button" class="btn btn-sm" onclick="genKey(this)">随机生成</button>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="scope-inputs">
-                            <input type="text" name="scope_include" value="{{ k.scope_include }}" placeholder="包含,逗号分隔">
-                            <input type="text" name="scope_exclude" value="{{ k.scope_exclude }}" placeholder="排除,逗号分隔">
-                        </div>
-                    </td>
-                    <td class="actions">
-                        <button type="submit" class="btn btn-sm btn-blue">保存</button>
+                <td><input type="text" name="name" value="{{ k.name }}" class="input-plain" form="update-form-{{ loop.index }}"></td>
+                <td>
+                    <select name="role" form="update-form-{{ loop.index }}">
+                        {% for r in roles %}
+                        {% if r.name == k.role %}
+                        <option value="{{ r.name }}" selected>{{ r.name }}</option>
+                        {% else %}
+                        <option value="{{ r.name }}">{{ r.name }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <div class="key-input-wrap">
+                        <input type="text" name="key" value="{{ k.key }}" placeholder="留空则保持不变" class="key-input" form="update-form-{{ loop.index }}">
+                        <button type="button" class="btn btn-sm" onclick="genKey(this)">随机生成</button>
+                    </div>
+                </td>
+                <td>
+                    <div class="scope-inputs">
+                        <input type="text" name="scope_include" value="{{ k.scope_include }}" placeholder="包含,逗号分隔" form="update-form-{{ loop.index }}">
+                        <input type="text" name="scope_exclude" value="{{ k.scope_exclude }}" placeholder="排除,逗号分隔" form="update-form-{{ loop.index }}">
+                    </div>
+                </td>
+                <td>
+                    <div class="actions">
+                        <form id="update-form-{{ loop.index }}" method="post" action="/ui/users/{{ k.name | urlencode }}/update" class="inline-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <button type="submit" class="btn btn-sm btn-blue">保存</button>
                         </form>
                         <form method="post" action="/ui/users/{{ k.name | urlencode }}/delete" class="inline-form" onsubmit="return confirm('确认删除 {{ k.name }}?');">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                             <button type="submit" class="btn btn-sm btn-red">删除</button>
                         </form>
-                    </td>
+                    </div>
+                </td>
             </tr>
             {% endfor %}
             {% if not keys %}
