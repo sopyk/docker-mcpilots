@@ -170,11 +170,13 @@ docker-mcpilots/
 │   ├── docker-compose.yml         # 预构建镜像版（推荐）
 │   └── docker-compose-build.yml   # 源码构建版
 ├── docs/                      # 文档
-│   ├── CODE_WIKI.md / CODE_WIKI_EN.md
-│   ├── deploy-vps.md / deploy-vps_EN.md
-│   ├── plans/                 # 实施计划
-│   └── specs/                 # 设计规格书
-├── assets/                    # 品牌素材（banner / logo）
+│   ├── guides/               # 使用指南（部署/权限/工具容器/WebUI）
+│   ├── en/                   # 英文文档
+│   ├── wiki/                 # 代码 Wiki
+│   ├── plans/                # 实施计划
+│   ├── specs/                # 设计规格书
+│   └── testing/              # 测试方案与结果
+├── web/static/assets/        # 品牌素材（banner / logo / favicon）
 ├── requirements.txt
 ├── pytest.ini
 ├── CHANGELOG.md / CHANGELOG_EN.md
@@ -193,7 +195,7 @@ docker-mcpilots/
 
 #### 4.1.1 `Settings` 类
 
-**位置**: [config.py](../core/config.py)
+**位置**: [config.py](../../core/config.py)
 
 服务端主配置，对应 `config/settings.yaml`。
 
@@ -270,7 +272,7 @@ docker-mcpilots/
 
 #### 4.2.2 `PermissionChecker` 类
 
-**位置**: [auth.py](../core/auth.py)
+**位置**: [auth.py](../../core/auth.py)
 
 所有权限判断的统一入口，构造时注入 `AuthConfig`。
 
@@ -304,7 +306,7 @@ docker-mcpilots/
 
 | 函数 | 位置 | 说明 |
 |---|---|---|
-| `_parse_since_until(value)` | [docker_client.py](../core/docker_client.py) | 解析日志时间参数：相对时间（`1h`/`30m`/`2d`/`45s`）或 RFC3339/ISO，返回 timezone-aware datetime |
+| `_parse_since_until(value)` | [docker_client.py](../../core/docker_client.py) | 解析日志时间参数：相对时间（`1h`/`30m`/`2d`/`45s`）或 RFC3339/ISO，返回 timezone-aware datetime |
 | `_extract_mounts(attrs)` | 同上 | 从容器 attrs 提取挂载信息列表 |
 | `_extract_health(state)` | 同上 | 从容器 state 提取健康检查信息（status/failing_streak/log） |
 | `_change_kind_str(kind)` | 同上 | Docker 文件变更类型 `0/1/2` → `modified/added/deleted` |
@@ -375,7 +377,7 @@ docker-mcpilots/
 
 #### `SystemDiag` 类
 
-**位置**: [system_diag.py](../core/system_diag.py)
+**位置**: [system_diag.py](../../core/system_diag.py)
 
 | 方法 | 返回字段 |
 |---|---|
@@ -466,7 +468,7 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient):
 
 ## 6. 应用入口与中间件（main.py）
 
-**位置**: [main.py](../main.py)
+**位置**: [main.py](../../main.py)
 
 ### 6.1 常量与环境变量
 
@@ -478,7 +480,7 @@ TEMPLATE_DIR = Path(__file__).parent / "templates"
 
 ### 6.2 `AuthMiddleware` 类
 
-**位置**: [main.py](../main.py)（`Middleware` 子类）
+**位置**: [main.py](../../main.py)（`Middleware` 子类）
 
 API Key 认证中间件，实现 FastMCP 的 `Middleware` 接口。
 
@@ -670,7 +672,7 @@ keys:
 
 ### 10.1 Dockerfile 要点
 
-**位置**: [docker/Dockerfile](../docker/Dockerfile)
+**位置**: [docker/Dockerfile](../../docker/Dockerfile)
 
 - 基础镜像 `python:3.11-slim`
 - 安装 `gosu`（用于降权运行）
@@ -680,7 +682,7 @@ keys:
 
 ### 10.2 entrypoint.sh 要点
 
-**位置**: [docker/entrypoint.sh](../docker/entrypoint.sh)
+**位置**: [docker/entrypoint.sh](../../docker/entrypoint.sh)
 
 解决 NAS 挂载卷权限问题的核心脚本：
 

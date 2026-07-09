@@ -60,7 +60,7 @@ Default port is 8900, remember to change the API Key in `secrets/auth.yaml`.
 
 ## Option 3: Direct Installation on VPS Host
 
-Suitable for scenarios seeking minimal resource usage, no Docker-in-Docker. See [VPS Deployment](deploy-vps.md).
+Suitable for scenarios seeking minimal resource usage, no Docker-in-Docker. See [VPS Deployment](deploy-vps_EN.md).
 
 ## Supported Architectures
 

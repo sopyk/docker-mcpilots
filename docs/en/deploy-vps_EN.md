@@ -1,4 +1,4 @@
-> 🌐 English | [简体中文](deploy-vps.md)
+> 🌐 English | [简体中文](../guides/deploy-vps.md)
 
 # VPS Host-Native Deployment
 

@@ -171,11 +171,13 @@ docker-mcpilots/
 │   ├── docker-compose.yml         # Pre-built image version (recommended)
 │   └── docker-compose-build.yml   # Source build version
 ├── docs/                      # Documentation
-│   ├── CODE_WIKI.md / CODE_WIKI_EN.md
-│   ├── deploy-vps.md / deploy-vps_EN.md
-│   ├── plans/                 # Implementation plans
-│   └── specs/                 # Design specs
-├── assets/                    # Branding (banner / logo)
+│   ├── guides/               # User guides (deploy/access/toolbox/web-ui)
+│   ├── en/                   # English docs
+│   ├── wiki/                 # Code wiki
+│   ├── plans/                # Implementation plans
+│   ├── specs/                # Design specs
+│   └── testing/              # Test plans & results
+├── web/static/assets/        # Branding (banner / logo / favicon)
 ├── requirements.txt
 ├── pytest.ini
 ├── CHANGELOG.md / CHANGELOG_EN.md
@@ -194,7 +196,7 @@ docker-mcpilots/
 
 #### 4.1.1 `Settings` Class
 
-**Location**: [config.py](../core/config.py)
+**Location**: [config.py](../../core/config.py)
 
 Server main config, corresponds to `config/settings.yaml`.
 
@@ -271,7 +273,7 @@ Complete permission config (in-memory representation of `auth.yaml`).
 
 #### 4.2.2 `PermissionChecker` Class
 
-**Location**: [auth.py](../core/auth.py)
+**Location**: [auth.py](../../core/auth.py)
 
 Unified entry point for all permission decisions. Injected with `AuthConfig` at construction.
 
@@ -305,7 +307,7 @@ Unified entry point for all permission decisions. Injected with `AuthConfig` at 
 
 | Function | Location | Description |
 |---|---|---|
-| `_parse_since_until(value)` | [docker_client.py](../core/docker_client.py) | Parse log time params: relative (`1h`/`30m`/`2d`/`45s`) or RFC3339/ISO, returns timezone-aware datetime |
+| `_parse_since_until(value)` | [docker_client.py](../../core/docker_client.py) | Parse log time params: relative (`1h`/`30m`/`2d`/`45s`) or RFC3339/ISO, returns timezone-aware datetime |
 | `_extract_mounts(attrs)` | same file | Extract mount info list from container attrs |
 | `_extract_health(state)` | same file | Extract health check info (status/failing_streak/log) from container state |
 | `_change_kind_str(kind)` | same file | Docker filesystem change type `0/1/2` → `modified/added/deleted` |
@@ -376,7 +378,7 @@ Unified entry point for all permission decisions. Injected with `AuthConfig` at 
 
 #### `SystemDiag` Class
 
-**Location**: [system_diag.py](../core/system_diag.py)
+**Location**: [system_diag.py](../../core/system_diag.py)
 
 | Method | Return Fields |
 |---|---|
@@ -467,7 +469,7 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient):
 
 ## 6. Application Entry & Middleware (main.py)
 
-**Location**: [main.py](../main.py)
+**Location**: [main.py](../../main.py)
 
 ### 6.1 Constants & Environment Variables
 
@@ -479,7 +481,7 @@ TEMPLATE_DIR = Path(__file__).parent / "templates"
 
 ### 6.2 `AuthMiddleware` Class
 
-**Location**: [main.py](../main.py) (`Middleware` subclass)
+**Location**: [main.py](../../main.py) (`Middleware` subclass)
 
 API Key auth middleware, implements FastMCP's `Middleware` interface.
 
@@ -671,7 +673,7 @@ keys:
 
 ### 10.1 Dockerfile Highlights
 
-**Location**: [docker/Dockerfile](../docker/Dockerfile)
+**Location**: [docker/Dockerfile](../../docker/Dockerfile)
 
 - Base image `python:3.11-slim`
 - Install `gosu` (for privilege dropping)
@@ -681,7 +683,7 @@ keys:
 
 ### 10.2 entrypoint.sh Highlights
 
-**Location**: [docker/entrypoint.sh](../docker/entrypoint.sh)
+**Location**: [docker/entrypoint.sh](../../docker/entrypoint.sh)
 
 Core script for solving NAS volume mount permission issues:
 

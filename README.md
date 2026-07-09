@@ -1,4 +1,4 @@
-![Docker-MCPilotS Banner](assets/banner.jpg)
+![Docker-MCPilotS Banner](web/static/assets/banner.jpg)
 
 # 🐳 Docker-MCPilotS
 
@@ -35,7 +35,7 @@
 
 ## 📖 怎么用？
 
-1. 把这个 MCP Server 部署到你的 NAS 上（见 [部署指南](docs/部署指南.md)）
+1. 把这个 MCP Server 部署到你的 NAS 上（见 [部署指南](docs/guides/部署指南.md)）
 2. 在 AI 客户端（OpenClaw、Hermes、Trae、Cursor、Claude Code、Codex……）里添加 MCP Server，填入地址和 API Key
 3. 开始对话，让 Agent 帮你管理容器
 
@@ -55,16 +55,16 @@
 
 如果你想用 `exec_container` 工具在容器内执行命令，强烈建议用专门的工具容器，不要直接在业务容器里操作。
 
-详见 [工具容器](docs/工具容器.md)。
+详见 [工具容器](docs/guides/工具容器.md)。
 
 ## 📚 更多文档
 
 | 文档 | 说明 |
 |------|------|
-| [部署指南](docs/部署指南.md) | 三种部署方式、环境变量、配置文件说明 |
-| [权限控制](docs/权限控制.md) | 角色说明、容器范围控制、exec 权限 |
-| [工具容器](docs/工具容器.md) | 为什么要用、使用步骤、挂载说明 |
-| [Web UI 使用说明](docs/WebUI使用说明.md) | 各页面功能、首次登录、状态说明 |
+| [部署指南](docs/guides/部署指南.md) | 三种部署方式、环境变量、配置文件说明 |
+| [权限控制](docs/guides/权限控制.md) | 角色说明、容器范围控制、exec 权限 |
+| [工具容器](docs/guides/工具容器.md) | 为什么要用、使用步骤、挂载说明 |
+| [Web UI 使用说明](docs/guides/WebUI使用说明.md) | 各页面功能、首次登录、状态说明 |
 
 ## ⚠️ 风险提示
 

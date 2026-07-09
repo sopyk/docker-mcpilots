@@ -1,4 +1,4 @@
-![Docker-MCPilotS Banner](assets/banner.jpg)
+![Docker-MCPilotS Banner](web/static/assets/banner.jpg)
 
 # 🐳 Docker-MCPilotS
 

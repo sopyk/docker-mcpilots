@@ -1,4 +1,4 @@
-> 🌐 [English](deploy-vps_EN.md) | 简体中文
+> 🌐 [English](../en/deploy-vps_EN.md) | 简体中文
 
 # VPS 宿主机直装部署
 
