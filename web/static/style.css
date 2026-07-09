@@ -582,6 +582,35 @@ body {
 .form-inline { margin-bottom: 0; }
 .form-inline input, .form-inline select { width: auto; min-width: 120px; }
 
+/* 批量操作栏与复选框列 */
+.batch-bar {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+.batch-bar .batch-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-right: var(--space-2);
+}
+.col-check { width: 36px; text-align: center; }
+.col-check input[type="checkbox"] { width: auto; cursor: pointer; }
+
+/* 列表底部添加行按钮区 */
+.add-row-bar {
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border);
+  background-color: var(--bg-card-hover);
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+}
+
 /* 红色徽章（失败状态） */
 .badge-red { color: var(--red); border-color: rgba(239,83,80,0.3); background-color: rgba(239,83,80,0.1); }
 .badge-red .badge-dot { background-color: var(--red); }

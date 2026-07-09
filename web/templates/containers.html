@@ -4,7 +4,8 @@
 {% block body %}
 <main class="content">
     <h1>容器管理</h1>
-    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    {% if success %}<div class="alert alert-success">{{ success }}</div>{% endif %}
+    {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
     
     {% if not docker_available %}
     <div class="error-box" style="background: #fee2e2; border: 1px solid #f87171; border-radius: 8px; padding: 16px; margin: 16px 0;">
@@ -22,10 +23,26 @@
         {% endif %}
     </div>
     {% endif %}
+
+    {% if containers %}
+    <div class="batch-bar">
+        <form id="batch-form" method="post" action="/ui/containers/batch" class="inline-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="action" id="batch-action" value="">
+            <span class="batch-count">已选 <b id="batch-count">0</b> 项</span>
+            <button type="button" class="btn btn-sm btn-green" onclick="submitBatch('start')">批量启动</button>
+            <button type="button" class="btn btn-sm btn-amber" onclick="submitBatch('stop')">批量停止</button>
+            <button type="button" class="btn btn-sm btn-blue" onclick="submitBatch('restart')">批量重启</button>
+            <button type="button" class="btn btn-sm" onclick="selectAll(true)">全选</button>
+            <button type="button" class="btn btn-sm" onclick="selectAll(false)">全部不选</button>
+        </form>
+    </div>
+    {% endif %}
     
     <table class="data-table">
         <thead>
             <tr>
+                {% if containers %}<th class="col-check"><input type="checkbox" id="check-all" onclick="toggleAll(this)"></th>{% endif %}
                 <th>名称</th>
                 <th>镜像</th>
                 <th>状态</th>
@@ -35,6 +52,7 @@
         <tbody>
         {% for c in containers %}
         <tr>
+            <td class="col-check"><input type="checkbox" class="row-check" name="ids" value="{{ c.id }}" form="batch-form" onclick="updateCount()"></td>
             <td>{{ c.name }}</td>
             <td>{{ c.image }}</td>
             <td>
@@ -49,27 +67,59 @@
                     <span class="badge-dot"></span>{{ c.status }}
                 </span>
             </td>
-            <td class="actions">
-                <form method="post" action="/ui/containers/{{ c.id }}/start" class="inline-form">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                    <button type="submit" class="btn btn-sm btn-green">启动</button>
-                </form>
-                <form method="post" action="/ui/containers/{{ c.id }}/stop" class="inline-form">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                    <button type="submit" class="btn btn-sm btn-amber">停止</button>
-                </form>
-                <form method="post" action="/ui/containers/{{ c.id }}/restart" class="inline-form">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                    <button type="submit" class="btn btn-sm btn-blue">重启</button>
-                </form>
-                <a href="/ui/containers/{{ c.id }}" class="btn btn-sm">详情</a>
+            <td>
+                <div class="actions">
+                    <form method="post" action="/ui/containers/{{ c.id }}/start" class="inline-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                        <button type="submit" class="btn btn-sm btn-green">启动</button>
+                    </form>
+                    <form method="post" action="/ui/containers/{{ c.id }}/stop" class="inline-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                        <button type="submit" class="btn btn-sm btn-amber">停止</button>
+                    </form>
+                    <form method="post" action="/ui/containers/{{ c.id }}/restart" class="inline-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                        <button type="submit" class="btn btn-sm btn-blue">重启</button>
+                    </form>
+                    <a href="/ui/containers/{{ c.id }}" class="btn btn-sm">详情</a>
+                </div>
             </td>
         </tr>
         {% endfor %}
         {% if not containers %}
-        <tr><td colspan="4" class="empty-row">暂无容器</td></tr>
+        <tr><td colspan="5" class="empty-row">暂无容器</td></tr>
         {% endif %}
         </tbody>
     </table>
 </main>
+
+<script>
+function toggleAll(master) {
+    document.querySelectorAll('.row-check').forEach(cb => cb.checked = master.checked);
+    updateCount();
+}
+function selectAll(state) {
+    document.querySelectorAll('.row-check').forEach(cb => cb.checked = state);
+    const master = document.getElementById('check-all');
+    if (master) master.checked = state;
+    updateCount();
+}
+function updateCount() {
+    const n = document.querySelectorAll('.row-check:checked').length;
+    const el = document.getElementById('batch-count');
+    if (el) el.textContent = n;
+}
+function submitBatch(action) {
+    const checked = document.querySelectorAll('.row-check:checked');
+    if (checked.length === 0) {
+        alert('请先勾选至少一个容器');
+        return;
+    }
+    if (!confirm('确认对选中的 ' + checked.length + ' 个容器执行' + ({start:'启动',stop:'停止',restart:'重启'}[action]) + '操作?')) {
+        return;
+    }
+    document.getElementById('batch-action').value = action;
+    document.getElementById('batch-form').submit();
+}
+</script>
 {% endblock %}

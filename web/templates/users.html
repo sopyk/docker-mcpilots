@@ -10,9 +10,21 @@
 
     <div class="section">
         <h2>API Key 列表</h2>
+        {% if keys %}
+        <div class="batch-bar">
+            <form id="batch-delete-form" method="post" action="/ui/users/batch-delete" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <span class="batch-count">已选 <b id="batch-count">0</b> 项</span>
+                <button type="button" class="btn btn-sm btn-red" onclick="submitBatchDelete()">批量删除</button>
+                <button type="button" class="btn btn-sm" onclick="selectAllKeys(true)">全选</button>
+                <button type="button" class="btn btn-sm" onclick="selectAllKeys(false)">全部不选</button>
+            </form>
+        </div>
+        {% endif %}
         <table class="data-table">
             <thead>
                 <tr>
+                    {% if keys %}<th class="col-check"><input type="checkbox" id="check-all-keys" onclick="toggleAllKeys(this)"></th>{% endif %}
                     <th>名称</th>
                     <th>角色</th>
                     <th>API Key</th>
@@ -23,6 +35,7 @@
             <tbody>
             {% for k in keys %}
             <tr>
+                <td class="col-check"><input type="checkbox" class="row-check-key" name="names" value="{{ k.name }}" form="batch-delete-form" onclick="updateKeyCount()"></td>
                 <td><input type="text" name="name" value="{{ k.name }}" class="input-plain" form="update-form-{{ loop.index }}"></td>
                 <td>
                     <select name="role" form="update-form-{{ loop.index }}">
@@ -62,57 +75,13 @@
             </tr>
             {% endfor %}
             {% if not keys %}
-            <tr><td colspan="5" class="empty-row">暂无 API Key</td></tr>
+            <tr><td colspan="6" class="empty-row">暂无 API Key</td></tr>
             {% endif %}
             </tbody>
         </table>
-    </div>
-
-    <div class="section">
-        <h2>新增 API Key</h2>
-        <form method="post" action="/ui/users/create" class="form-create">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-            <div class="form-row">
-                <label>
-                    名称
-                    <input type="text" name="name" placeholder="如: home-assistant" required>
-                </label>
-            </div>
-            <div class="form-row">
-                <label>
-                    角色
-                    <select name="role" required>
-                        {% for r in roles %}
-                        <option value="{{ r.name }}">{{ r.name }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </div>
-            <div class="form-row key-row">
-                <label>
-                    API Key
-                    <div class="key-input-wrap">
-                        <input type="text" name="key" id="new-key" placeholder="留空自动生成 sk-dm-...">
-                        <button type="button" class="btn btn-sm" onclick="genKeyFor('new-key')">随机生成</button>
-                    </div>
-                </label>
-            </div>
-            <div class="form-row">
-                <label>
-                    包含容器（可选）
-                    <input type="text" name="scope_include" placeholder="如: home-*,plex">
-                </label>
-            </div>
-            <div class="form-row">
-                <label>
-                    排除容器（可选）
-                    <input type="text" name="scope_exclude" placeholder="如: home-db">
-                </label>
-            </div>
-            <div class="form-row">
-                <button type="submit" class="btn btn-blue">创建</button>
-            </div>
-        </form>
+        <div class="add-row-bar">
+            <button type="button" class="btn btn-sm btn-green" id="btn-add-key" onclick="addKeyRow()">+ 添加 API Key</button>
+        </div>
     </div>
 
     <div class="section">
@@ -161,6 +130,141 @@ function genKey(btn) {
 
 function genKeyFor(inputId) {
     document.getElementById(inputId).value = generateKey();
+}
+
+function toggleAllKeys(master) {
+    document.querySelectorAll('.row-check-key').forEach(cb => cb.checked = master.checked);
+    updateKeyCount();
+}
+function selectAllKeys(state) {
+    document.querySelectorAll('.row-check-key').forEach(cb => cb.checked = state);
+    const master = document.getElementById('check-all-keys');
+    if (master) master.checked = state;
+    updateKeyCount();
+}
+function updateKeyCount() {
+    const n = document.querySelectorAll('.row-check-key:checked').length;
+    const el = document.getElementById('batch-count');
+    if (el) el.textContent = n;
+}
+function submitBatchDelete() {
+    const checked = document.querySelectorAll('.row-check-key:checked');
+    if (checked.length === 0) {
+        alert('请先勾选至少一个 API Key');
+        return;
+    }
+    if (!confirm('确认删除选中的 ' + checked.length + ' 个 API Key?')) {
+        return;
+    }
+    document.getElementById('batch-delete-form').submit();
+}
+
+function addKeyRow() {
+    const tbody = document.querySelector('.data-table tbody');
+    const emptyRow = tbody.querySelector('.empty-row');
+    if (emptyRow) emptyRow.remove();
+
+    const csrfToken = {{ csrf_token | tojson }};
+    const roleOptions = [{% for r in roles %}{name:{{ r.name | tojson }}},{% endfor %}];
+    const newIdx = 'new-' + Date.now();
+
+    const tr = document.createElement('tr');
+    tr.classList.add('new-key-row');
+
+    const tdCheck = document.createElement('td');
+    tdCheck.className = 'col-check';
+    tr.appendChild(tdCheck);
+
+    const tdName = document.createElement('td');
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.name = 'name';
+    nameInput.placeholder = '如: home-assistant';
+    nameInput.setAttribute('form', 'create-form-' + newIdx);
+    tdName.appendChild(nameInput);
+    tr.appendChild(tdName);
+
+    const tdRole = document.createElement('td');
+    const sel = document.createElement('select');
+    sel.name = 'role';
+    sel.setAttribute('form', 'create-form-' + newIdx);
+    roleOptions.forEach(opt => {
+        const o = document.createElement('option');
+        o.value = opt.name;
+        o.textContent = opt.name;
+        sel.appendChild(o);
+    });
+    tdRole.appendChild(sel);
+    tr.appendChild(tdRole);
+
+    const tdKey = document.createElement('td');
+    const keyWrap = document.createElement('div');
+    keyWrap.className = 'key-input-wrap';
+    const keyInput = document.createElement('input');
+    keyInput.type = 'text';
+    keyInput.name = 'key';
+    keyInput.placeholder = '留空自动生成 sk-dm-...';
+    keyInput.className = 'key-input';
+    keyInput.setAttribute('form', 'create-form-' + newIdx);
+    const genBtn = document.createElement('button');
+    genBtn.type = 'button';
+    genBtn.className = 'btn btn-sm';
+    genBtn.textContent = '随机生成';
+    genBtn.onclick = function() { keyInput.value = generateKey(); };
+    keyWrap.appendChild(keyInput);
+    keyWrap.appendChild(genBtn);
+    tdKey.appendChild(keyWrap);
+    tr.appendChild(tdKey);
+
+    const tdScope = document.createElement('td');
+    const scopeWrap = document.createElement('div');
+    scopeWrap.className = 'scope-inputs';
+    const incInput = document.createElement('input');
+    incInput.type = 'text';
+    incInput.name = 'scope_include';
+    incInput.placeholder = '包含,逗号分隔';
+    incInput.setAttribute('form', 'create-form-' + newIdx);
+    const excInput = document.createElement('input');
+    excInput.type = 'text';
+    excInput.name = 'scope_exclude';
+    excInput.placeholder = '排除,逗号分隔';
+    excInput.setAttribute('form', 'create-form-' + newIdx);
+    scopeWrap.appendChild(incInput);
+    scopeWrap.appendChild(excInput);
+    tdScope.appendChild(scopeWrap);
+    tr.appendChild(tdScope);
+
+    const tdActions = document.createElement('td');
+    const actWrap = document.createElement('div');
+    actWrap.className = 'actions';
+    const formEl = document.createElement('form');
+    formEl.id = 'create-form-' + newIdx;
+    formEl.method = 'post';
+    formEl.action = '/ui/users/create';
+    formEl.className = 'inline-form';
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrf_token';
+    csrfInput.value = csrfToken;
+    const saveBtn = document.createElement('button');
+    saveBtn.type = 'submit';
+    saveBtn.className = 'btn btn-sm btn-blue';
+    saveBtn.textContent = '保存';
+    formEl.appendChild(csrfInput);
+    formEl.appendChild(saveBtn);
+    actWrap.appendChild(formEl);
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.type = 'button';
+    cancelBtn.className = 'btn btn-sm btn-red';
+    cancelBtn.textContent = '取消';
+    cancelBtn.onclick = function() { tr.remove(); if (tbody.children.length === 0) { /* keep empty state off; add row still visible */ } };
+    actWrap.appendChild(cancelBtn);
+    tdActions.appendChild(actWrap);
+    tr.appendChild(tdActions);
+
+    tbody.appendChild(tr);
+    nameInput.focus();
 }
 </script>
 {% endblock %}

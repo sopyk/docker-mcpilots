@@ -97,6 +97,7 @@ def test_register_web_routes_registers_all():
         "/ui/containers/{container_id}/start",
         "/ui/containers/{container_id}/stop",
         "/ui/containers/{container_id}/restart",
+        "/ui/containers/batch",
         "/ui/containers/{container_id}",
         "/ui/static/{path:path}",
     }
@@ -129,7 +130,7 @@ def test_container_action_routes_are_post():
 
 
 def test_users_template_with_data():
-    """用户权限模板渲染 API Key 列表、角色"""
+    """用户权限模板渲染 API Key 列表、角色、批量删除"""
     keys = [
         {"name": "admin-key", "role": "admin", "key": "sk-dm-a1234567890123456789012345678", "key_masked": "sk-d********", "scope": "全部", "scope_include": "", "scope_exclude": ""},
         {"name": "ci-key", "role": "operator", "key": "sk-dm-b1234567890123456789012345678", "key_masked": "sk-d********", "scope": "include: web,db", "scope_include": "web,db", "scope_exclude": ""},
@@ -146,6 +147,11 @@ def test_users_template_with_data():
     assert "管理员" in html
     assert "container:*" in html
     assert "/ui/users/create" in html
+    assert "/ui/users/batch-delete" in html
+    assert "批量删除" in html
+    assert "全选" in html
+    assert "row-check-key" in html
+    assert "addKeyRow" in html
 
 
 def test_users_template_empty():
@@ -192,6 +198,7 @@ def test_users_routes_registered():
     assert "/ui/users" in registered
     assert "/ui/users/reload" in registered
     assert "/ui/users/create" in registered
+    assert "/ui/users/batch-delete" in registered
     assert "/ui/users/{name}/update" in registered
     assert "/ui/users/{name}/delete" in registered
 

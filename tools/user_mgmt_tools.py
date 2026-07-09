@@ -203,3 +203,26 @@ def delete_api_key(auth_yaml: str, name: str, app_state=None) -> dict[str, Any]:
         app_state.reload_auth(auth_yaml)
 
     return {"success": True, "removed": name}
+
+
+def batch_delete_api_keys(auth_yaml: str, names: list[str], app_state=None) -> dict[str, Any]:
+    """批量删除多个 API Key。一次读写文件、一次热加载，避免多次 IO。"""
+    if not names:
+        return {"success": False, "error": "未提供待删除的名称"}
+
+    data = _load_auth_yaml(auth_yaml)
+    keys = data.get("keys", [])
+    name_set = {n for n in names if n}
+    removed = [k.get("name", "") for k in keys if k.get("name", "") in name_set]
+    data["keys"] = [k for k in keys if k.get("name", "") not in name_set]
+
+    if not removed:
+        return {"success": False, "error": "未找到任何匹配的 API Key"}
+
+    _save_auth_yaml(auth_yaml, data)
+
+    if app_state is not None:
+        app_state.reload_auth(auth_yaml)
+
+    missing = [n for n in names if n and n not in set(removed)]
+    return {"success": True, "removed": removed, "missing": missing}
