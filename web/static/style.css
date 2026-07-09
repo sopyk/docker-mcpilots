@@ -234,7 +234,7 @@ body {
   letter-spacing: 0.5px;
   color: var(--text-muted);
 }
-.data-table td { font-family: var(--font-mono); }
+.data-table td { font-family: var(--font-mono); vertical-align: middle; }
 
 /* 登录卡片 */
 .login-card {

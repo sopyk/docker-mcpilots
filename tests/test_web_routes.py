@@ -129,7 +129,7 @@ def test_container_action_routes_are_post():
 
 
 def test_users_template_with_data():
-    """用户权限模板渲染 API Key 列表、角色、热加载按钮"""
+    """用户权限模板渲染 API Key 列表、角色"""
     keys = [
         {"name": "admin-key", "role": "admin", "key": "sk-dm-a1234567890123456789012345678", "key_masked": "sk-d********", "scope": "全部", "scope_include": "", "scope_exclude": ""},
         {"name": "ci-key", "role": "operator", "key": "sk-dm-b1234567890123456789012345678", "key_masked": "sk-d********", "scope": "include: web,db", "scope_include": "web,db", "scope_exclude": ""},
@@ -145,9 +145,7 @@ def test_users_template_with_data():
     assert "sk-dm-a1234567890123456789012345678" in html
     assert "管理员" in html
     assert "container:*" in html
-    assert "/ui/users/reload" in html
     assert "/ui/users/create" in html
-    assert "热加载" in html
 
 
 def test_users_template_empty():
