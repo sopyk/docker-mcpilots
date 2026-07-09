@@ -6,6 +6,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.0.2] - 2026-07-09
+
+### Added
+- **Auto Permission Migration**: Automatically adds missing permissions (network:list / volume:list) to the three standard roles on first startup
+- **Favicon Display**: Uses dedicated favicon icon, shows project logo in browser tabs
+- **Consistent Back Button Placement**: Both back buttons at the top and bottom of the container detail page are right-aligned for consistency
+
+### Fixed
+- **RBAC Fully Disabled**: Added permission checks to all MCP tools (previously only exec_container had)
+- **exec_container Crashes**: Compatible with KeyConfig being serialized to dict (adapts to fastmcp behavior)
+- **list_volumes NoneType**: Fixed access error when Volume Options is None
+- **Navbar Fixed**: Changed to position: fixed, fully anchored at page top
+- **Hot Reload URL Params**: Auto removes ?success/error params to avoid refresh issues
+- **Settings Page Button Rename**: "保存设置" → "应用设置" (Save Settings → Apply Settings)
+- **Settings Page Raw Content Removed**: No longer shows raw settings.yaml content
+- **Dashboard Cards Clickable**: Click container card to go to container page, click image card to go to image page
+- **Favicon Issue**: Uses separate favicon.jpg without affecting page logo
+
 ## [v2.0.1] - 2026-07-08
 
 ### Added
