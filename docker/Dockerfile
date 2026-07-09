@@ -1,31 +1,39 @@
+# 第一阶段：Build 阶段
+FROM python:3.11-alpine AS builder
+WORKDIR /app
+
+# 安装构建工具，只在这阶段使用
+RUN apk add --no-cache build-base libffi-dev openssl-dev
+
+# 安装 Python 依赖
+COPY requirements.txt .
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt && \
+    # 清理 Python 的 pyc 缓存，减小体积
+    find /install -type d -name __pycache__ -prune -exec rm -rf {} + && \
+    find /install -type f -name "*.pyc" -delete && \
+    find /install -type f -name "*.pyo" -delete
+
+# 第二阶段：Final 阶段（只保留运行时所需）
 FROM python:3.11-alpine
 
 WORKDIR /app
 
-# 安装系统依赖（su-exec 用于降权运行，比 gosu 更轻量）
-RUN apk add --no-cache su-exec build-base libffi-dev openssl-dev
+# 只安装运行时依赖（su-exec，不用 build-base！）
+RUN apk add --no-cache su-exec
 
-# 安装 Python 依赖
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# 从 builder 阶段复制安装好的 Python 包
+COPY --from=builder /install /usr/local
 
-# 复制源代码（精确复制，避免把 .venv/tests/docs/scripts 等无关文件打入镜像）
+# 复制源代码
 COPY core/ ./core/
 COPY tools/ ./tools/
 COPY web/ ./web/
 COPY main.py .
 COPY templates/ ./templates/
-
-# 复制 entrypoint（从 docker/ 子目录取出放到容器 /app/ 根）
 COPY docker/entrypoint.sh /app/entrypoint.sh
 
-# 创建数据目录（先以 root 创建，entrypoint 会调整权限）
 RUN mkdir -p /app/config /app/secrets
-
-# 创建 mcpuser 用户（默认 UID/GID 会在 entrypoint 中按需调整）
 RUN addgroup -S mcpuser && adduser -S mcpuser -G mcpuser -h /app
-
-# entrypoint 需要可执行权限
 RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 8900
