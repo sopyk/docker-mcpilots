@@ -707,7 +707,7 @@ docker compose up -d
 - GHCR: `ghcr.io/sopyk/docker-mcpilots:latest`
 - Docker Hub: `sopyk/docker-mcpilots:latest`
 
-#### 方式二：源码构建（开发者 / ARM 设备）
+#### 方式二：源码构建（开发者）
 
 ```bash
 git clone https://github.com/sopyk/docker-mcpilots.git
@@ -724,7 +724,7 @@ docker compose -f docker/docker-compose-build.yml up -d --build
 | 架构 | 状态 | 适用设备 |
 |---|---|---|
 | linux/amd64 | ✅ 已支持 | 群晖/威联通 Intel/AMD NAS、多数 VPS、PC 服务器 |
-| linux/arm64 | 🚧 计划中 | 树莓派、Mac M 系列、部分 ARM NAS |
+| linux/arm64 | ✅ 已支持 | 树莓派、Mac M 系列、部分 ARM NAS |
 | linux/arm/v7 | ❌ 暂不支持 | 老款 32 位 ARM 设备 |
 
 ### 10.5 健康检查

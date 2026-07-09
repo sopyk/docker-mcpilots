@@ -708,7 +708,7 @@ Image registries:
 - GHCR: `ghcr.io/sopyk/docker-mcpilots:latest`
 - Docker Hub: `sopyk/docker-mcpilots:latest`
 
-#### Method 2: Source Build (Developers / ARM Devices)
+#### Method 2: Source Build (Developers)
 
 ```bash
 git clone https://github.com/sopyk/docker-mcpilots.git
@@ -725,7 +725,7 @@ No Docker nesting, lowest resource usage, supports systemd / nginx reverse proxy
 | Architecture | Status | Applicable Devices |
 |---|---|---|
 | linux/amd64 | ✅ Supported | Synology/QNAP Intel/AMD NAS, most VPS, PC servers |
-| linux/arm64 | 🚧 Planned | Raspberry Pi, Mac M series, some ARM NAS |
+| linux/arm64 | ✅ Supported | Raspberry Pi, Mac M series, some ARM NAS |
 | linux/arm/v7 | ❌ Not supported | Older 32-bit ARM devices |
 
 ### 10.5 Health Check

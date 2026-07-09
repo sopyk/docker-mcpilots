@@ -46,9 +46,9 @@ Suitable for Synology/QNAP NAS, regular Linux servers — works out of the box.
 | `MCP_CONFIG_DIR` | Config file directory | `/app/config` |
 | `MCP_SECRETS_DIR` | Sensitive file directory | `/app/secrets` |
 
-## Option 2: Build from Source (Developers / ARM Devices)
+## Option 2: Build from Source (Developers)
 
-Suitable for local development debugging, or ARM architecture devices (ARM pre-built images are not currently available).
+Suitable for local development debugging, or scenarios requiring custom modifications.
 
 ```bash
 git clone https://github.com/sopyk/docker-mcpilots.git
@@ -67,7 +67,7 @@ Suitable for scenarios seeking minimal resource usage, no Docker-in-Docker. See 
 | Architecture | Status | Supported Devices |
 |--------------|--------|-------------------|
 | **linux/amd64 (x86_64)** | ✅ Supported | Synology/QNAP Intel/AMD NAS, most VPS, regular PC servers |
-| **linux/arm64** | 🚧 Planned | Raspberry Pi, Mac M-series, some ARM NAS |
+| **linux/arm64** | ✅ Supported | Raspberry Pi, Mac M-series, some ARM NAS |
 | **linux/arm/v7** | ❌ Not supported | Older Raspberry Pi and other 32-bit ARM devices |
 
-> 💡 Currently only amd64 images are provided. ARM users please build from source.
+> 💡 Pre-built images are provided for both amd64 and arm64 architectures; docker pull automatically fetches the variant matching your CPU. For 32-bit ARM (arm/v7) devices, please build from source.
