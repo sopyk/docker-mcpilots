@@ -93,7 +93,10 @@ class AuthMiddleware(Middleware):
         if ctx and ctx.request_context:
             key_config = await ctx.get_state("auth_key_config")
             if key_config is not None:
-                actor = getattr(key_config, "name", str(key_config))
+                if isinstance(key_config, dict):
+                    actor = key_config.get("name", str(key_config))
+                else:
+                    actor = getattr(key_config, "name", str(key_config))
         success = True
         try:
             return await call_next(context)
