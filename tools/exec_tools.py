@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 from fastmcp import FastMCP
+from fastmcp.server.dependencies import CurrentContext
+from fastmcp.server.context import Context
 
 from core.docker_client import DockerClient
 from core.app_state import AppState
@@ -16,6 +18,7 @@ def register_exec_tools(mcp: FastMCP, docker_client: DockerClient, app_state: Ap
         container_id: str,
         command: str,
         workdir: str | None = None,
+        ctx: Context = CurrentContext(),
     ) -> dict:
         """在容器内执行命令。需要 exec:run 权限，且受容器 scope 限制。
 
@@ -27,10 +30,7 @@ def register_exec_tools(mcp: FastMCP, docker_client: DockerClient, app_state: Ap
             command: 要执行的命令（如 "ls -la /app" 或 "cat /etc/os-release"）。
             workdir: 工作目录，不传则使用容器默认工作目录。
         """
-        from fastmcp.server.dependencies import get_fastmcp_context
-
-        ctx = get_fastmcp_context()
-        key_config = await ctx.get_state("auth_key_config") if ctx and ctx.request_context else None
+        key_config = await ctx.get_state("auth_key_config")
 
         if key_config is None:
             return {"success": False, "error": "Authentication required"}
