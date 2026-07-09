@@ -12,7 +12,7 @@ from core.app_state import AppState
 from core.admin_auth import AdminAuth, SessionManager
 from core.csrf import CSRFProtection
 from core.audit import AuditEntry
-from tools.user_mgmt_tools import list_api_keys, create_api_key, update_api_key, delete_api_key
+from tools.user_mgmt_tools import list_api_keys, create_api_key, update_api_key, delete_api_key, batch_delete_api_keys
 from tools.settings_tools import update_settings_from_form, change_admin_password
 from core.admin_auth import AdminConfig
 
@@ -226,7 +226,9 @@ def register_web_routes(
         containers = docker.list_containers(all=True) if docker else []
         token = csrf.generate_token()
         html = env.get_template("containers.html").render(
-            user=user, containers=containers, csrf_token=token, error="",
+            user=user, containers=containers, csrf_token=token,
+            error=unquote(request.query_params.get("error", "")),
+            success=unquote(request.query_params.get("success", "")),
             docker_available=docker_available, docker_error=docker_error
         )
         resp = Response(html, media_type="text/html")
@@ -277,6 +279,55 @@ def register_web_routes(
     @mcp.custom_route("/ui/containers/{container_id}/restart", methods=["POST"])
     async def container_restart(request):
         return await _container_action(request, "restart", "restart_container")
+
+    @mcp.custom_route("/ui/containers/batch", methods=["POST"])
+    async def containers_batch(request):
+        user = require_login(request)
+        if not user:
+            return RedirectResponse("/ui/login", status_code=303)
+        form = await request.form()
+        if not csrf.validate_token(form.get("csrf_token", "")):
+            return RedirectResponse("/ui/containers", status_code=303)
+        action = form.get("action", "")
+        valid_actions = {"start", "stop", "restart"}
+        if action not in valid_actions:
+            return RedirectResponse("/ui/containers?error=" + quote("无效的批量操作"), status_code=303)
+        docker_method = {"start": "start_container", "stop": "stop_container", "restart": "restart_container"}[action]
+        ids = form.getlist("ids")
+        docker = app_state.docker_client
+        results = []
+        for cid in ids:
+            cname = cid
+            success = False
+            if docker:
+                try:
+                    info = docker.get_container(cid)
+                    if info.get("success"):
+                        cname = info.get("container", {}).get("name", cid)
+                except Exception:
+                    pass
+                r = getattr(docker, docker_method)(cid)
+                success = r.get("success", False)
+            results.append({"id": cid, "name": cname, "success": success})
+            if app_state.audit_logger:
+                app_state.audit_logger.log(AuditEntry(
+                    timestamp=_now_iso(),
+                    source="web",
+                    actor=user,
+                    action=f"container.{action}",
+                    target=cname,
+                    detail={"container_id": cid, "batch": True},
+                    success=success,
+                ))
+        ok = sum(1 for r in results if r["success"])
+        total = len(results)
+        if ok == total and total > 0:
+            msg = f"批量{action}成功: {ok}/{total}"
+        elif ok > 0:
+            msg = f"批量{action}部分成功: {ok}/{total}"
+        else:
+            msg = f"批量{action}失败: {ok}/{total}"
+        return RedirectResponse("/ui/containers?success=" + quote(msg), status_code=303)
 
     @mcp.custom_route("/ui/containers/{container_id}", methods=["GET"])
     async def container_detail_page(request):
@@ -470,6 +521,36 @@ def register_web_routes(
         if result.get("success"):
             return RedirectResponse("/ui/users?success=" + quote(f"删除成功: {name}"), status_code=303)
         return RedirectResponse("/ui/users?error=" + quote(result.get("error", "删除失败")), status_code=303)
+
+    @mcp.custom_route("/ui/users/batch-delete", methods=["POST"])
+    async def users_batch_delete(request):
+        user = require_login(request)
+        if not user:
+            return RedirectResponse("/ui/login", status_code=303)
+        form = await request.form()
+        if not csrf.validate_token(form.get("csrf_token", "")):
+            return RedirectResponse("/ui/users?error=" + quote("CSRF校验失败"), status_code=303)
+        auth_yaml = app_state.auth_yaml_path or str(Path("dev-secrets") / "auth.yaml")
+        names = [n for n in form.getlist("names") if n]
+        result = batch_delete_api_keys(auth_yaml=auth_yaml, names=names, app_state=app_state)
+        if app_state.audit_logger:
+            app_state.audit_logger.log(AuditEntry(
+                timestamp=_now_iso(),
+                source="web",
+                actor=user,
+                action="user.batch_delete",
+                target=",".join(names),
+                detail=result,
+                success=result.get("success", False),
+            ))
+        if result.get("success"):
+            removed = result.get("removed", [])
+            msg = f"批量删除成功: {len(removed)} 个"
+            missing = result.get("missing", [])
+            if missing:
+                msg += f"，未找到 {len(missing)} 个"
+            return RedirectResponse("/ui/users?success=" + quote(msg), status_code=303)
+        return RedirectResponse("/ui/users?error=" + quote(result.get("error", "批量删除失败")), status_code=303)
 
     # ── 审计日志页面 ──
 

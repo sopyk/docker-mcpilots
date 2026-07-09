@@ -11,6 +11,7 @@ from tools.user_mgmt_tools import (
     create_api_key,
     update_api_key,
     delete_api_key,
+    batch_delete_api_keys,
 )
 
 
@@ -149,3 +150,47 @@ class TestDeleteApiKey:
         path = seed_auth()
         result = delete_api_key(path, name="missing")
         assert result["success"] is False
+
+
+class TestBatchDeleteApiKeys:
+    def test_batch_delete_multiple(self, seed_auth):
+        path = seed_auth(extra_keys=[
+            {"key": "sk-dm-key000000000000000000000a", "name": "a", "role": "admin"},
+            {"key": "sk-dm-key000000000000000000000b", "name": "b", "role": "admin"},
+            {"key": "sk-dm-key000000000000000000000c", "name": "c", "role": "admin"},
+        ])
+        result = batch_delete_api_keys(path, names=["a", "c"])
+        assert result["success"] is True
+        assert set(result["removed"]) == {"a", "c"}
+        data = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+        remaining = {k["name"] for k in data["keys"]}
+        assert remaining == {"old", "b"}
+
+    def test_batch_delete_with_missing(self, seed_auth):
+        path = seed_auth(extra_keys=[
+            {"key": "sk-dm-key000000000000000000000a", "name": "a", "role": "admin"},
+        ])
+        result = batch_delete_api_keys(path, names=["a", "ghost"])
+        assert result["success"] is True
+        assert result["removed"] == ["a"]
+        assert "ghost" in result["missing"]
+
+    def test_batch_delete_none_found(self, seed_auth):
+        path = seed_auth()
+        result = batch_delete_api_keys(path, names=["ghost1", "ghost2"])
+        assert result["success"] is False
+
+    def test_batch_delete_empty(self, seed_auth):
+        path = seed_auth()
+        result = batch_delete_api_keys(path, names=[])
+        assert result["success"] is False
+
+    def test_batch_delete_reloads_app_state(self, seed_auth):
+        path = seed_auth(extra_keys=[
+            {"key": "sk-dm-key000000000000000000000a", "name": "a", "role": "admin"},
+        ])
+        calls = []
+        app_state = type("S", (), {"reload_auth": lambda self, p=None: calls.append(p)})()
+        result = batch_delete_api_keys(path, names=["a"], app_state=app_state)
+        assert result["success"] is True
+        assert len(calls) == 1
