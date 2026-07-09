@@ -38,9 +38,15 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 100;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+body {
+  /* 因为导航栏固定了，内容区域需要向下移动避免被遮挡 */
+  padding-top: 72px;
 }
 .navbar .brand {
   font-family: var(--font-mono);
