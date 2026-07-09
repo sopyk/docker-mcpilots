@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}容器详情 - {{ detail.name if detail.success else container_id }}{% endblock %}
+{% block title %}容器详情 - {{ detail.container.name if detail.success else container_id }}{% endblock %}
 
 {% block body %}
 <main class="content">
@@ -7,19 +7,19 @@
     {% if detail.success %}
     <div class="detail-header">
         <div>
-            <h2>{{ detail.name }}</h2>
-            <p class="text-muted">{{ detail.id }} · {{ detail.image }}</p>
+            <h2>{{ detail.container.name }}</h2>
+            <p class="text-muted">{{ detail.container.id }} · {{ detail.container.image }}</p>
         </div>
         <div class="actions">
-            <form method="post" action="/ui/containers/{{ detail.id }}/start" class="inline-form">
+            <form method="post" action="/ui/containers/{{ detail.container.id }}/start" class="inline-form">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                 <button type="submit" class="btn btn-sm btn-green">启动</button>
             </form>
-            <form method="post" action="/ui/containers/{{ detail.id }}/stop" class="inline-form">
+            <form method="post" action="/ui/containers/{{ detail.container.id }}/stop" class="inline-form">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                 <button type="submit" class="btn btn-sm btn-amber">停止</button>
             </form>
-            <form method="post" action="/ui/containers/{{ detail.id }}/restart" class="inline-form">
+            <form method="post" action="/ui/containers/{{ detail.container.id }}/restart" class="inline-form">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                 <button type="submit" class="btn btn-sm btn-blue">重启</button>
             </form>
@@ -30,45 +30,45 @@
         <div class="detail-section">
             <h3>基本信息</h3>
             <table class="kv-table">
-                <tr><th>名称</th><td>{{ detail.name }}</td></tr>
-                <tr><th>ID</th><td>{{ detail.id }}</td></tr>
-                <tr><th>镜像</th><td>{{ detail.image }}</td></tr>
-                <tr><th>状态</th><td>{{ detail.status }}</td></tr>
-                <tr><th>创建时间</th><td>{{ detail.created }}</td></tr>
+                <tr><th>名称</th><td>{{ detail.container.name }}</td></tr>
+                <tr><th>ID</th><td>{{ detail.container.id }}</td></tr>
+                <tr><th>镜像</th><td>{{ detail.container.image }}</td></tr>
+                <tr><th>状态</th><td>{{ detail.container.status }}</td></tr>
+                <tr><th>创建时间</th><td>{{ detail.container.created }}</td></tr>
             </table>
         </div>
         <div class="detail-section">
             <h3>运行状态</h3>
             <table class="kv-table">
-                <tr><th>运行中</th><td>{{ "是" if detail.state.running else "否" }}</td></tr>
-                <tr><th>PID</th><td>{{ detail.state.pid }}</td></tr>
-                <tr><th>退出码</th><td>{{ detail.state.exit_code }}</td></tr>
-                <tr><th>重启次数</th><td>{{ detail.state.restart_count }}</td></tr>
-                <tr><th>OOM Killed</th><td>{{ "是" if detail.state.oom_killed else "否" }}</td></tr>
-                <tr><th>启动时间</th><td>{{ detail.state.started_at }}</td></tr>
-                <tr><th>结束时间</th><td>{{ detail.state.finished_at }}</td></tr>
+                <tr><th>运行中</th><td>{{ "是" if detail.container.state.running else "否" }}</td></tr>
+                <tr><th>PID</th><td>{{ detail.container.state.pid }}</td></tr>
+                <tr><th>退出码</th><td>{{ detail.container.state.exit_code }}</td></tr>
+                <tr><th>重启次数</th><td>{{ detail.container.state.restart_count }}</td></tr>
+                <tr><th>OOM Killed</th><td>{{ "是" if detail.container.state.oom_killed else "否" }}</td></tr>
+                <tr><th>启动时间</th><td>{{ detail.container.state.started_at }}</td></tr>
+                <tr><th>结束时间</th><td>{{ detail.container.state.finished_at }}</td></tr>
             </table>
         </div>
     </div>
 
-    {% if detail.network %}
+    {% if detail.container.network %}
     <div class="section">
         <h3>网络</h3>
         <table class="kv-table">
-            <tr><th>IP 地址</th><td>{{ detail.network.ip_address or "-" }}</td></tr>
-            <tr><th>网关</th><td>{{ detail.network.gateway or "-" }}</td></tr>
-            <tr><th>MAC 地址</th><td>{{ detail.network.mac_address or "-" }}</td></tr>
+            <tr><th>IP 地址</th><td>{{ detail.container.network.ip_address or "-" }}</td></tr>
+            <tr><th>网关</th><td>{{ detail.container.network.gateway or "-" }}</td></tr>
+            <tr><th>MAC 地址</th><td>{{ detail.container.network.mac_address or "-" }}</td></tr>
         </table>
     </div>
     {% endif %}
 
-    {% if detail.mounts %}
+    {% if detail.container.mounts %}
     <div class="section">
         <h3>挂载卷</h3>
         <table class="data-table">
             <thead><tr><th>类型</th><th>源路径</th><th>目标路径</th><th>读写</th></tr></thead>
             <tbody>
-            {% for m in detail.mounts %}
+            {% for m in detail.container.mounts %}
             <tr>
                 <td>{{ m.type }}</td>
                 <td>{{ m.source }}</td>

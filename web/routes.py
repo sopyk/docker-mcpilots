@@ -181,7 +181,7 @@ def register_web_routes(
         docker_error = docker.get_last_error() if (docker and not docker_available) else None
         
         containers = docker.list_containers(all=True) if docker else []
-        running = [c for c in containers if c.get("status", "").startswith("Up")]
+        running = [c for c in containers if c.get("status", "").lower() == "running"]
         images = docker.list_images() if docker else []
         cpu = sysdiag.get_cpu_info() if sysdiag else {}
         mem = sysdiag.get_memory_info() if sysdiag else {}
@@ -243,7 +243,15 @@ def register_web_routes(
         container_id = request.path_params["container_id"]
         docker = app_state.docker_client
         success = False
+        container_name = container_id
         if docker:
+            # 先尝试获取容器信息来获取名称
+            try:
+                container_info = docker.get_container(container_id)
+                if container_info.get("success"):
+                    container_name = container_info.get("container", {}).get("name", container_id)
+            except Exception:
+                pass
             result = getattr(docker, docker_method)(container_id)
             success = result.get("success", False)
         if app_state.audit_logger:
@@ -252,8 +260,8 @@ def register_web_routes(
                 source="web",
                 actor=user,
                 action=f"container.{action_name}",
-                target=container_id,
-                detail={},
+                target=container_name,
+                detail={"container_id": container_id},
                 success=success,
             ))
         return RedirectResponse("/ui/containers", status_code=303)
