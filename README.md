@@ -18,7 +18,9 @@
 
 但又不能真的把 SSH 权限交给 Agent，NAS 系统太特殊了，万一出岔子代价太大。
 
-所以就想到了 MCP（Model Context Protocol）——把 Docker 的管理能力通过 MCP 接口暴露出去，Agent 只能做我们允许的操作，不会误伤系统。本质上就是一个**沙箱里的 Docker 管理工具**。
+所以就想到了 MCP（Model Context Protocol）--把 Docker 的管理能力通过 MCP 接口暴露出去，Agent 只能做我们允许的操作，不会误伤系统。本质上就是一个**沙箱里的 Docker 管理工具**。
+
+> 🤖 本项目是通过 **Vibe Coding** 的方式开发的--全程与 AI 协作完成设计、编码与测试，没有手写过一行代码。如果你对这种开发方式感兴趣，欢迎交流。
 
 ## ✨ 能做什么？
 
