@@ -18,7 +18,9 @@ Now that AI Agents have become so capable, I thought: **why not let AI help me m
 
 But I couldn't just hand SSH access over to an Agent. NAS systems are too special, and the cost of a mistake is too high.
 
-That's where MCP (Model Context Protocol) comes in — expose Docker management capabilities through the MCP interface, so the Agent can only perform operations we allow, with no risk to the system. It's essentially a **sandboxed Docker management tool**.
+That's where MCP (Model Context Protocol) comes in - expose Docker management capabilities through the MCP interface, so the Agent can only perform operations we allow, with no risk to the system. It's essentially a **sandboxed Docker management tool**.
+
+> 🤖 This project was built via **Vibe Coding** - the entire design, coding, and testing process was done in collaboration with AI, without a single line of hand-written code. If you're curious about this development approach, feel free to reach out.
 
 ## ✨ What Can It Do?
 
