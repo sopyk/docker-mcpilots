@@ -1,0 +1,34 @@
+{
+  "id": "docker-mcpilots_ui_audit",
+  "viewports": [
+    { "name": "desktop", "width": 1440, "height": 900 },
+    { "name": "tablet", "width": 768, "height": 1024 },
+    { "name": "mobile", "width": 375, "height": 812 }
+  ],
+  "scenarios": [
+    {
+      "label": "Login Page",
+      "url": "http://localhost:8900/ui/login",
+      "selectors": ["document"],
+      "misMatchThreshold": 0.05
+    },
+    {
+      "label": "About Page",
+      "url": "http://localhost:8900/ui/about",
+      "selectors": ["document"],
+      "misMatchThreshold": 0.05
+    }
+  ],
+  "paths": {
+    "bitmaps_reference": "backstop_data/bitmaps_reference",
+    "bitmaps_test": "backstop_data/bitmaps_test",
+    "engine_scripts": "backstop_data/engine_scripts",
+    "html_report": "backstop_data/html_report",
+    "ci_report": "backstop_data/ci_report",
+    "json_report": "backstop_data/json_report"
+  },
+  "engine": "playwright",
+  "engineOptions": { "args": ["--no-sandbox"] },
+  "report": ["browser", "json"],
+  "debug": false
+}
