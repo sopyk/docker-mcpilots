@@ -6,8 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/ui/static/tokens.css?v=6">
     <link rel="stylesheet" href="/ui/static/style.css?v=6">
-    <link rel="stylesheet" href="/ui/static/mobile.css?v=1">
+    <link rel="stylesheet" href="/ui/static/mobile.css?v=2">
     <link rel="icon" type="image/jpeg" href="/ui/static/assets/favicon.jpg">
+    <!-- 首屏关键 CSS：确保 JS 加载前汉堡按钮在手机上可见 -->
+    <style>
+        @media (max-width: 768px) {
+            #hamburger { display: inline-flex !important; }
+        }
+    </style>
 </head>
 <body>
 {% block navbar %}
@@ -17,7 +23,7 @@
         <span class="status-dot"></span>
         Docker-MCPilotS
     </a>
-    <button class="hamburger" id="hamburger" aria-label="导航菜单" style="display:none">☰</button>
+    <button class="hamburger" id="hamburger" aria-label="导航菜单">☰</button>
     <div class="nav-links" id="nav-links">
         {% if user %}
             <a href="/ui/">仪表盘</a>
@@ -64,19 +70,6 @@
     }
 })();
 
-// 自动将 data-table 包裹在 .table-wrap 中（解决手机横向滚动）
-(function() {
-    var tables = document.querySelectorAll('.data-table');
-    for (var i = 0; i < tables.length; i++) {
-        var parent = tables[i].parentNode;
-        if (parent && !parent.classList.contains('table-wrap')) {
-            var wrap = document.createElement('div');
-            wrap.className = 'table-wrap';
-            parent.insertBefore(wrap, tables[i]);
-            wrap.appendChild(tables[i]);
-        }
-    }
-})();
 </script>
 </body>
 </html>

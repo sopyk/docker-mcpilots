@@ -21,7 +21,7 @@
             </form>
         </div>
         {% endif %}
-        <table class="data-table">
+        <div class="table-wrap"><table class="data-table">
             <thead>
                 <tr>
                     {% if keys %}<th class="col-check"><input type="checkbox" id="check-all-keys" onclick="toggleAllKeys(this)"></th>{% endif %}
@@ -78,7 +78,7 @@
             <tr><td colspan="6" class="empty-row">暂无 API Key</td></tr>
             {% endif %}
             </tbody>
-        </table>
+        </table></div>
         <div class="add-row-bar">
             <button type="button" class="btn btn-sm btn-green" id="btn-add-key" onclick="addKeyRow()">+ 添加 API Key</button>
         </div>
@@ -86,7 +86,7 @@
 
     <div class="section">
         <h2>角色定义</h2>
-        <table class="data-table">
+        <div class="table-wrap"><table class="data-table">
             <thead>
                 <tr>
                     <th>角色</th>
@@ -110,7 +110,7 @@
             <tr><td colspan="3" class="empty-row">暂无角色</td></tr>
             {% endif %}
             </tbody>
-        </table>
+        </table></div>
     </div>
 </main>
 

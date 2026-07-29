@@ -61,6 +61,8 @@
     padding: var(--space-2) 0;
     z-index: 999;
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
   }
   .nav-links.open {
     display: flex;
@@ -262,9 +264,11 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    touch-action: manipulation;
   }
   .btn-sm {
     min-height: 32px;
+    touch-action: manipulation;
   }
 
   /* ========== 底部安全区 ========== */
@@ -272,11 +276,4 @@
     padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
   }
 
-}
-
-/* 768px 以上确保 detail-grid 保持双列 */
-@media (min-width: 769px) {
-  .detail-grid {
-    grid-template-columns: 1fr 1fr;
-  }
 }

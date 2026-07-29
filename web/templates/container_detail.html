@@ -80,7 +80,7 @@
     {% if detail.container.mounts %}
     <div class="section">
         <h3>挂载卷</h3>
-        <table class="data-table">
+        <div class="table-wrap"><table class="data-table">
             <thead><tr><th>类型</th><th>源路径</th><th>目标路径</th><th>读写</th></tr></thead>
             <tbody>
             {% for m in detail.container.mounts %}
@@ -92,7 +92,7 @@
             </tr>
             {% endfor %}
             </tbody>
-        </table>
+        </table></div>
     </div>
     {% endif %}
 

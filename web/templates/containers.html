@@ -39,7 +39,7 @@
     </div>
     {% endif %}
     
-    <table class="data-table">
+    <div class="table-wrap"><table class="data-table">
         <thead>
             <tr>
                 {% if containers %}<th class="col-check"><input type="checkbox" id="check-all" onclick="toggleAll(this)"></th>{% endif %}
@@ -103,7 +103,7 @@
         <tr><td colspan="5" class="empty-row">暂无容器</td></tr>
         {% endif %}
         </tbody>
-    </table>
+    </table></div>
 </main>
 
 <script>
