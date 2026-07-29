@@ -16,12 +16,14 @@ def register_image_tools(mcp: FastMCP, docker_client: DockerClient, app_state: A
     @mcp.tool
     async def list_images(
         name_filter: str | None = None,
+        limit: int | None = None,
         ctx: Context = CurrentContext(),
     ) -> list[dict]:
         """列出本地 Docker 镜像。
 
         Args:
             name_filter: 按镜像名称过滤，如 "nginx"。
+            limit: 返回镜像数量上限。
         """
         key_config = await ctx.get_state("auth_key_config")
         if key_config is None:

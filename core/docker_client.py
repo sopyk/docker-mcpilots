@@ -312,12 +312,12 @@ class DockerClient:
 
     # ── 镜像操作 ──
 
-    def list_images(self, name_filter: str | None = None) -> list[dict]:
+    def list_images(self, name_filter: str | None = None, limit: int | None = None) -> list[dict]:
         """列出镜像（Docker 不可用时返回空列表）"""
         if not self._ensure_connected():
             return []
         try:
-            images = self._client.images.list(name=name_filter)
+            images = self._client.images.list(name=name_filter, limit=limit)
             return [self._format_image(img) for img in images]
         except DockerAPIError:
             return []
