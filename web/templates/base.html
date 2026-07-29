@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <title>{% block title %}Docker-MCPilotS{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/ui/static/tokens.css?v=5">
-    <link rel="stylesheet" href="/ui/static/style.css?v=5">
+    <link rel="stylesheet" href="/ui/static/tokens.css?v=6">
+    <link rel="stylesheet" href="/ui/static/style.css?v=6">
+    <link rel="stylesheet" href="/ui/static/mobile.css?v=1">
     <link rel="icon" type="image/jpeg" href="/ui/static/assets/favicon.jpg">
 </head>
 <body>
@@ -16,7 +17,8 @@
         <span class="status-dot"></span>
         Docker-MCPilotS
     </a>
-    <div class="nav-links">
+    <button class="hamburger" id="hamburger" aria-label="导航菜单" style="display:none">☰</button>
+    <div class="nav-links" id="nav-links">
         {% if user %}
             <a href="/ui/">仪表盘</a>
             <a href="/ui/containers">容器</a>
@@ -41,6 +43,38 @@
         const url = new URL(window.location.href);
         url.search = '';
         window.history.replaceState({}, document.title, url.toString());
+    }
+})();
+
+// 汉堡菜单
+(function() {
+    var btn = document.getElementById('hamburger');
+    var nav = document.getElementById('nav-links');
+    if (btn && nav) {
+        btn.style.display = '';
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            nav.classList.toggle('open');
+        });
+        document.addEventListener('click', function(e) {
+            if (!nav.contains(e.target) && e.target !== btn) {
+                nav.classList.remove('open');
+            }
+        });
+    }
+})();
+
+// 自动将 data-table 包裹在 .table-wrap 中（解决手机横向滚动）
+(function() {
+    var tables = document.querySelectorAll('.data-table');
+    for (var i = 0; i < tables.length; i++) {
+        var parent = tables[i].parentNode;
+        if (parent && !parent.classList.contains('table-wrap')) {
+            var wrap = document.createElement('div');
+            wrap.className = 'table-wrap';
+            parent.insertBefore(wrap, tables[i]);
+            wrap.appendChild(tables[i]);
+        }
     }
 })();
 </script>

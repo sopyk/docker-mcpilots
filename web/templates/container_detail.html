@@ -13,7 +13,7 @@
             <h2>{{ detail.container.name }}</h2>
             <p class="text-muted">{{ detail.container.id }} · {{ detail.container.image }}</p>
         </div>
-        <div class="actions">
+        <div class="actions actions-desktop">
             <form method="post" action="/ui/containers/{{ detail.container.id }}/start" class="inline-form">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                 <button type="submit" class="btn btn-sm btn-green">启动</button>
@@ -26,6 +26,18 @@
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                 <button type="submit" class="btn btn-sm btn-blue">重启</button>
             </form>
+        </div>
+        <div class="actions actions-mobile action-select-wrap">
+            <form method="post" action="/ui/containers/{{ detail.container.id }}/start" class="inline-form" id="detail-mobile-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <input type="hidden" name="action_type" value="start">
+            </form>
+            <select onchange="detailMobileAction(this, '{{ detail.container.id }}')">
+                <option value="start">启动</option>
+                <option value="stop">停止</option>
+                <option value="restart">重启</option>
+            </select>
+            <button type="button" class="btn btn-sm btn-blue" onclick="document.getElementById('detail-mobile-form').submit()">执行</button>
         </div>
     </div>
 
@@ -96,5 +108,13 @@
         <h2></h2>
         <a href="/ui/containers" class="btn">返回列表</a>
     </div>
+<script>
+function detailMobileAction(sel, containerId) {
+    var form = document.getElementById('detail-mobile-form');
+    if (!form) return;
+    form.action = '/ui/containers/' + containerId + '/' + sel.value;
+    form.querySelector('[name="action_type"]').value = sel.value;
+}
+</script>
 </main>
 {% endblock %}

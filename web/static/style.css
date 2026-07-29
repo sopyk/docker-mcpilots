@@ -212,6 +212,21 @@ body {
   letter-spacing: 1px;
 }
 
+/* 表格水平滚动容器 */
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-card);
+}
+.table-wrap::-webkit-scrollbar {
+  height: 4px;
+}
+.table-wrap::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 4px;
+}
+
 /* 数据表格 */
 .data-table {
   width: 100%;
@@ -219,6 +234,10 @@ body {
   background-color: var(--bg-card);
   border-radius: var(--radius-card);
   overflow: hidden;
+  min-width: 600px;
+}
+.table-wrap .data-table {
+  min-width: 600px;
 }
 .data-table th, .data-table td {
   padding: var(--space-3) var(--space-4);
@@ -730,6 +749,53 @@ body {
 }
 .toggle input:checked + .toggle-slider:before {
   transform: translateX(20px);
+}
+
+/* 关于页 */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.grid-2 .stat-card ul {
+  margin-left: 24px;
+  line-height: 1.8;
+}
+.links a {
+  color: var(--blue);
+  text-decoration: underline;
+}
+.code-block-wrap {
+  position: relative;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 12px;
+}
+.code-block-wrap .copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--text);
+  z-index: 1;
+  transition: background 0.15s;
+}
+.code-block-wrap .copy-btn:hover {
+  background: color-mix(in srgb, var(--text) 10%, var(--bg-card));
+}
+.code-block-pre {
+  margin: 0;
+  color: var(--text);
+  font-family: monospace;
+  font-size: 13px;
+  overflow-x: auto;
 }
 
 /* 动效 */

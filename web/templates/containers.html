@@ -8,16 +8,16 @@
     {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
     
     {% if not docker_available %}
-    <div class="error-box" style="background: #fee2e2; border: 1px solid #f87171; border-radius: 8px; padding: 16px; margin: 16px 0;">
-        <h3 style="margin:0 0 8px 0; color:#991b1b;">⚠️ Docker 连接失败</h3>
-        <p style="margin:0; color:#7f1d1d;">请检查：
-        <ul style="margin: 8px 0 0 0; padding-left: 20px;">
+    <div class="alert alert-error" style="background:rgba(239,83,80,0.1);border-color:rgba(239,83,80,0.3);">
+        <strong style="color:var(--red);">⚠️ Docker 连接失败</strong>
+        <p style="margin:8px 0 0 0;color:var(--text);font-size:13px;">请检查：
+        <ul style="margin: 8px 0 0 0; padding-left: 20px;color:var(--text);font-size:12px;">
             <li>Docker socket 是否正确挂载：<code>/var/run/docker.sock</code></li>
             <li>PUID/PGID 设置是否正确（群晖一般是 1026/100）</li>
             <li>查看容器日志：<code>docker logs docker-mcpilots</code></li>
         </ul>
         {% if docker_error %}
-        <p style="margin: 8px 0 0 0; color:#7f1d1d; font-family: monospace; font-size: 12px;">
+        <p style="margin: 8px 0 0 0; color:var(--red); font-family: var(--font-mono); font-size: 12px;">
             错误详情：{{ docker_error }}
         </p>
         {% endif %}
@@ -68,7 +68,7 @@
                 </span>
             </td>
             <td>
-                <div class="actions">
+                <div class="actions actions-desktop">
                     <form method="post" action="/ui/containers/{{ c.id }}/start" class="inline-form">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                         <button type="submit" class="btn btn-sm btn-green">启动</button>
@@ -82,6 +82,19 @@
                         <button type="submit" class="btn btn-sm btn-blue">重启</button>
                     </form>
                     <a href="/ui/containers/{{ c.id }}" class="btn btn-sm">详情</a>
+                </div>
+                <div class="actions actions-mobile action-select-wrap">
+                    <form method="post" action="/ui/containers/{{ c.id }}/start" class="inline-form" id="mobile-form-{{ loop.index }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                        <input type="hidden" name="action_type" value="start">
+                    </form>
+                    <select onchange="mobileAction(this, '{{ c.id }}', {{ loop.index }})">
+                        <option value="start">启动</option>
+                        <option value="stop">停止</option>
+                        <option value="restart">重启</option>
+                        <option value="detail">详情</option>
+                    </select>
+                    <button type="button" class="btn btn-sm btn-blue" onclick="submitMobileAction({{ loop.index }})">执行</button>
                 </div>
             </td>
         </tr>
@@ -120,6 +133,25 @@ function submitBatch(action) {
     }
     document.getElementById('batch-action').value = action;
     document.getElementById('batch-form').submit();
+}
+function mobileAction(sel, containerId, idx) {
+    // 当选择改变时，更新隐藏表单的 action
+    const form = document.getElementById('mobile-form-' + idx);
+    if (!form) return;
+    const val = sel.value;
+    var actionMap = {'start':'启动','stop':'停止','restart':'重启','detail':'详情'};
+    if (val === 'detail') {
+        window.location.href = '/ui/containers/' + containerId;
+        return;
+    }
+    form.action = '/ui/containers/' + containerId + '/' + val;
+    form.querySelector('[name="action_type"]').value = val;
+}
+function submitMobileAction(idx) {
+    const form = document.getElementById('mobile-form-' + idx);
+    if (!form) return;
+    // 确保 action 和 action_type 已同步
+    form.submit();
 }
 </script>
 {% endblock %}

@@ -1,0 +1,282 @@
+/* ── Mobile 响应式适配（<= 768px） ── */
+/* 桌面版完全不受影响 */
+
+/* 桌面端隐藏汉堡菜单和手机操作区 */
+.hamburger {
+  display: none !important;
+}
+.actions-mobile {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+
+  /* ========== 导航栏 ========== */
+  .navbar {
+    padding: var(--space-3) var(--space-4);
+  }
+  .navbar .brand {
+    font-size: 14px;
+  }
+  .navbar .brand .logo {
+    height: 32px;
+  }
+  .navbar .brand .status-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  /* 汉堡菜单按钮 */
+  .hamburger {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    z-index: 1001;
+  }
+  .hamburger:hover {
+    border-color: var(--blue);
+  }
+
+  /* 导航链接 → 垂直折叠菜单 */
+  .nav-links {
+    display: none;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    gap: 0;
+    padding: var(--space-2) 0;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .nav-links.open {
+    display: flex;
+  }
+  .nav-links a {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .nav-links a:last-child {
+    border-bottom: none;
+  }
+  .nav-links .version-tag {
+    margin: var(--space-2) var(--space-4);
+    display: inline-block;
+  }
+
+  /* ========== 内容区 ========== */
+  .content {
+    padding: var(--space-4);
+  }
+  body {
+    padding-top: 60px;
+  }
+
+  /* ========== 仪表盘 ========== */
+  .stats-rings {
+    gap: var(--space-3);
+  }
+  .stats-counts {
+    gap: var(--space-3);
+  }
+  .stat-card {
+    padding: var(--space-3);
+  }
+  .stat-value {
+    font-size: 26px;
+  }
+
+  /* SVG 环形自适应 */
+  .ring {
+    width: min(120px, 38vw) !important;
+    height: min(120px, 38vw) !important;
+  }
+
+  /* ========== 数据表格 ========== */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-left: calc(var(--space-4) * -1);
+    margin-right: calc(var(--space-4) * -1);
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+    border-radius: 0;
+  }
+  .table-wrap::-webkit-scrollbar {
+    height: 4px;
+  }
+  .table-wrap::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 4px;
+  }
+  .table-wrap::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: var(--space-2) var(--space-3);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  /* ========== 批量操作栏 ========== */
+  .batch-bar {
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+  }
+  .batch-bar .btn-sm {
+    font-size: 11px;
+    padding: var(--space-1) var(--space-2);
+  }
+
+  /* ========== 容器操作 → 下拉选择 ========== */
+  .action-select-wrap {
+    display: flex;
+    gap: var(--space-1);
+    align-items: center;
+  }
+  .action-select-wrap select {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-1) var(--space-2);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    max-width: 90px;
+  }
+  .action-select-wrap .btn-sm {
+    flex-shrink: 0;
+  }
+
+  /* 隐藏桌面的多按钮区，显示下拉区 */
+  .actions-desktop {
+    display: none !important;
+  }
+  .actions-mobile {
+    display: flex !important;
+  }
+
+  /* ========== 容器详情 ========== */
+  .detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .detail-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+  .detail-header .actions {
+    width: 100%;
+  }
+
+  /* ========== 筛选栏 ========== */
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--space-3);
+  }
+  .filter-bar .form-group {
+    margin-bottom: var(--space-2);
+  }
+  .filter-bar .form-inline input,
+  .filter-bar .form-inline select {
+    width: 100%;
+    min-width: 0;
+  }
+  .filter-bar .btn {
+    align-self: flex-start;
+  }
+
+  /* ========== 设置页 ========== */
+  .setting-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+  .setting-control {
+    width: 100%;
+  }
+  .setting-control input,
+  .setting-control select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* ========== 用户管理 ========== */
+  .key-input-wrap {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .key-input-wrap .key-input {
+    min-width: 0;
+    width: 100%;
+  }
+  .scope-inputs input {
+    width: 100%;
+  }
+
+  /* ========== 表单创建 ========== */
+  .form-create {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .form-create input,
+  .form-create select {
+    width: 100%;
+    min-width: 0;
+  }
+  .form-create .key-row input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* ========== 关于页 ========== */
+  .grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ========== 登录页 ========== */
+  .login-card {
+    margin: 4rem var(--space-4);
+  }
+
+  /* ========== 触控友好 ========== */
+  .btn {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-sm {
+    min-height: 32px;
+  }
+
+  /* ========== 底部安全区 ========== */
+  .content {
+    padding-bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
+  }
+
+}
+
+/* 768px 以上确保 detail-grid 保持双列 */
+@media (min-width: 769px) {
+  .detail-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

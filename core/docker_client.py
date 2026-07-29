@@ -317,7 +317,10 @@ class DockerClient:
         if not self._ensure_connected():
             return []
         try:
-            images = self._client.images.list(name=name_filter, limit=limit)
+            kwargs = {}
+            if name_filter is not None:
+                kwargs["name"] = name_filter
+            images = self._client.images.list(**kwargs)
             return [self._format_image(img) for img in images]
         except DockerAPIError:
             return []
