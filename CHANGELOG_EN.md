@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.0.4] - 2026-07-29
+
+### Added
+- **UI Improvement**: One-click copy button for the MCP config code block on the About page
+- **UI Improvement**: Hint text "(click to edit directly)" added to the Name column header on the Users page
+- **list_images limit parameter**: Supports limiting the number of returned images
+
+### Fixed
+- **audit.sh compatibility**: Fixed pip/python → pip3/python3 commands
+
 ## [v2.0.3] - 2026-07-25
 
 ### Fixed

@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.0.4] - 2026-07-29
+
+### 新增
+- **UI 改进**：关于页 MCP 配置代码块添加一键复制按钮，点击直接复制配置
+- **UI 改进**：用户页名称表头添加「点击可直接编辑」提示
+- **list_images 新增 limit 参数**：支持限制返回镜像数量
+
+### 修复
+- **audit.sh 兼容性**：修复 pip/python → pip3/python3 命令
+
 ## [v2.0.3] - 2026-07-25
 
 ### 修复
