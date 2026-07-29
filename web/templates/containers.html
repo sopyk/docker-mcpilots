@@ -25,17 +25,21 @@
     {% endif %}
 
     {% if containers %}
-    <div class="batch-bar">
-        <form id="batch-form" method="post" action="/ui/containers/batch" class="inline-form">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-            <input type="hidden" name="action" id="batch-action" value="">
-            <span class="batch-count">已选 <b id="batch-count">0</b> 项</span>
+    <form id="batch-form" method="post" action="/ui/containers/batch" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="action" id="batch-action" value="">
+    </form>
+    <div class="batch-bar" id="batch-bar-top">
+        <div class="batch-row-actions">
+            <span class="batch-count">已选 <b class="batch-count-num">0</b> 项</span>
             <button type="button" class="btn btn-sm btn-green" onclick="submitBatch('start')">批量启动</button>
             <button type="button" class="btn btn-sm btn-amber" onclick="submitBatch('stop')">批量停止</button>
             <button type="button" class="btn btn-sm btn-blue" onclick="submitBatch('restart')">批量重启</button>
+        </div>
+        <div class="batch-check-row">
             <button type="button" class="btn btn-sm" onclick="selectAll(true)">全选</button>
             <button type="button" class="btn btn-sm" onclick="selectAll(false)">全部不选</button>
-        </form>
+        </div>
     </div>
     {% endif %}
     
@@ -104,6 +108,20 @@
         {% endif %}
         </tbody>
     </table></div>
+    {% if containers %}
+    <div class="batch-bar" id="batch-bar-bottom">
+        <div class="batch-row-actions">
+            <span class="batch-count">已选 <b class="batch-count-num">0</b> 项</span>
+            <button type="button" class="btn btn-sm btn-green" onclick="submitBatch('start')">批量启动</button>
+            <button type="button" class="btn btn-sm btn-amber" onclick="submitBatch('stop')">批量停止</button>
+            <button type="button" class="btn btn-sm btn-blue" onclick="submitBatch('restart')">批量重启</button>
+        </div>
+        <div class="batch-check-row">
+            <button type="button" class="btn btn-sm" onclick="selectAll(true)">全选</button>
+            <button type="button" class="btn btn-sm" onclick="selectAll(false)">全部不选</button>
+        </div>
+    </div>
+    {% endif %}
 </main>
 
 <script>
@@ -119,8 +137,7 @@ function selectAll(state) {
 }
 function updateCount() {
     const n = document.querySelectorAll('.row-check:checked').length;
-    const el = document.getElementById('batch-count');
-    if (el) el.textContent = n;
+    document.querySelectorAll('.batch-count-num').forEach(el => el.textContent = n);
 }
 function submitBatch(action) {
     const checked = document.querySelectorAll('.row-check:checked');

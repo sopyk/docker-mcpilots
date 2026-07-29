@@ -228,9 +228,15 @@ def _init_config_files() -> None:
         current_config = None
 
     if admin_password and admin_password.strip():
-        # 如果密码不为空，设置/更新密码
-        admin_auth.set_password(admin_username, admin_password.strip())
-        logger.info(f"Set admin password from environment: {admin_file}")
+        # 如果已有非空密码（比如通过 UI 设置过），跳过环境变量覆盖
+        if current_config and current_config.password_hash:
+            logger.info(
+                f"Admin password already configured (hash present), "
+                f"skipping env override. To reset, delete {admin_file} and restart."
+            )
+        else:
+            admin_auth.set_password(admin_username, admin_password.strip())
+            logger.info(f"Set admin password from environment: {admin_file}")
     else:
         # 如果没有密码（无论是新文件还是旧文件密码为空），都检查一下
         if current_config and not current_config.password_hash:

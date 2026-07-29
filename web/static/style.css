@@ -401,6 +401,17 @@ body {
   font-family: var(--font-mono);
   font-size: 11px;
 }
+.key-input-wrap .key-input-actions {
+  display: flex;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+.btn-copy {
+  font-size: 11px;
+  padding: var(--space-1) var(--space-2);
+  min-width: 52px;
+  text-align: center;
+}
 
 /* Scope 输入 */
 .scope-inputs {
@@ -619,6 +630,21 @@ body {
   color: var(--text-muted);
   margin-right: var(--space-2);
 }
+.batch-row-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.batch-check-row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+#batch-bar-bottom {
+  margin-top: var(--space-4);
+  margin-bottom: 0;
+}
 .col-check { width: 36px; text-align: center; }
 .col-check input[type="checkbox"] { width: auto; cursor: pointer; }
 
@@ -659,6 +685,30 @@ body {
   color: var(--text-muted);
   margin: 0 0 var(--space-3) 0;
   line-height: 1.5;
+}
+.setting-note {
+  font-size: 13px;
+  color: var(--text);
+  background-color: rgba(255, 193, 7, 0.08);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: var(--radius-card);
+  padding: var(--space-3) var(--space-4);
+  margin-top: var(--space-4);
+  line-height: 1.6;
+}
+.setting-note code {
+  font-size: 12px;
+  background-color: var(--bg-card-hover);
+  padding: 1px 6px;
+  border-radius: var(--radius);
+}
+.setting-note ol {
+  margin-top: 6px;
+  margin-bottom: 0;
+  padding-left: 20px;
+}
+.setting-note ol li {
+  margin-bottom: 2px;
 }
 .setting-row {
   display: flex;

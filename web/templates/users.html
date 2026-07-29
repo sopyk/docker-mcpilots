@@ -51,7 +51,10 @@
                 <td>
                     <div class="key-input-wrap">
                         <input type="text" name="key" value="{{ k.key }}" placeholder="留空则保持不变" class="key-input" form="update-form-{{ loop.index }}">
-                        <button type="button" class="btn btn-sm" onclick="genKey(this)">随机生成</button>
+                        <span class="key-input-actions">
+                            <button type="button" class="btn btn-sm btn-copy" onclick="copyKey(this)">复制</button>
+                            <button type="button" class="btn btn-sm" onclick="genKey(this)">随机生成</button>
+                        </span>
                     </div>
                 </td>
                 <td>
@@ -126,6 +129,33 @@ function genKey(btn) {
     const wrap = btn.closest('.key-input-wrap');
     const input = wrap.querySelector('input[name="key"]');
     input.value = generateKey();
+}
+
+function copyKey(btn) {
+    const wrap = btn.closest('.key-input-wrap');
+    const input = wrap.querySelector('input[name="key"]');
+    const key = input.value;
+    if (!key) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(key).then(function() {
+            const orig = btn.textContent;
+            btn.textContent = '已复制!';
+            btn.disabled = true;
+            setTimeout(function() {
+                btn.textContent = orig;
+                btn.disabled = false;
+            }, 1500);
+        });
+    } else {
+        // fallback
+        input.select();
+        document.execCommand('copy');
+        const orig = btn.textContent;
+        btn.textContent = '已复制!';
+        setTimeout(function() {
+            btn.textContent = orig;
+        }, 1500);
+    }
 }
 
 function genKeyFor(inputId) {
@@ -206,13 +236,22 @@ function addKeyRow() {
     keyInput.placeholder = '留空自动生成 sk-dm-...';
     keyInput.className = 'key-input';
     keyInput.setAttribute('form', 'create-form-' + newIdx);
+    const actionsSpan = document.createElement('span');
+    actionsSpan.className = 'key-input-actions';
+    const copyBtn = document.createElement('button');
+    copyBtn.type = 'button';
+    copyBtn.className = 'btn btn-sm btn-copy';
+    copyBtn.textContent = '复制';
+    copyBtn.onclick = function() { copyKey(copyBtn); };
     const genBtn = document.createElement('button');
     genBtn.type = 'button';
     genBtn.className = 'btn btn-sm';
     genBtn.textContent = '随机生成';
     genBtn.onclick = function() { keyInput.value = generateKey(); };
+    actionsSpan.appendChild(copyBtn);
+    actionsSpan.appendChild(genBtn);
     keyWrap.appendChild(keyInput);
-    keyWrap.appendChild(genBtn);
+    keyWrap.appendChild(actionsSpan);
     tdKey.appendChild(keyWrap);
     tr.appendChild(tdKey);
 
