@@ -498,10 +498,10 @@ class DockerClient:
             if environment:
                 exec_kwargs["environment"] = environment
             exec_id = container.client.api.exec_create(container.id, **exec_kwargs)
-            raw = container.client.api.exec_start(exec_id)
-            # 兼容处理：
-            #   docker-py >= 7.x + Docker API >= 1.42 → 返回 (stdout, stderr) 元组
-            #   docker-py 旧版 / API < 1.42 → 返回多路复用原始字节流
+            raw = container.client.api.exec_start(exec_id, demux=True)
+            # demux=True 是 docker-py 客户端侧的纯 Python 实现（_demux_data），
+            # 不依赖 Docker API 版本，始终生效。
+            # 保留 isinstance 判断作为兜底，兼容上游实现变化。
             if isinstance(raw, tuple):
                 stdout, stderr = raw
             else:
