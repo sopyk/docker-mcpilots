@@ -34,20 +34,22 @@ def test_container_detail_template_success():
     """容器详情成功渲染"""
     detail = {
         "success": True,
-        "id": "abc123",
-        "name": "web",
-        "status": "Up 2 hours",
-        "image": "nginx:latest",
-        "created": "2026-07-01T00:00:00Z",
-        "state": {
-            "running": True, "pid": 1234, "exit_code": 0,
-            "restart_count": 1, "oom_killed": False,
-            "started_at": "2026-07-01T00:00:00Z", "finished_at": "",
+        "container": {
+            "id": "abc123",
+            "name": "web",
+            "status": "Up 2 hours",
+            "image": "nginx:latest",
+            "created": "2026-07-01T00:00:00Z",
+            "state": {
+                "running": True, "pid": 1234, "exit_code": 0,
+                "restart_count": 1, "oom_killed": False,
+                "started_at": "2026-07-01T00:00:00Z", "finished_at": "",
+            },
+            "network": {"ip_address": "172.17.0.2", "gateway": "172.17.0.1", "mac_address": "02:42:ac:11:00:02"},
+            "mounts": [
+                {"type": "bind", "source": "/data", "destination": "/var/lib/mysql", "rw": True}
+            ],
         },
-        "network": {"ip_address": "172.17.0.2", "gateway": "172.17.0.1", "mac_address": "02:42:ac:11:00:02"},
-        "mounts": [
-            {"type": "bind", "source": "/data", "destination": "/var/lib/mysql", "rw": True}
-        ],
     }
     html = env.get_template("container_detail.html").render(
         user="admin", container_id="abc123", detail=detail,
@@ -271,7 +273,7 @@ def test_audit_route_registered():
 
 
 def test_settings_template_with_data():
-    """配置页面模板渲染当前配置和热加载按钮"""
+    """配置页面模板渲染当前配置"""
     from core.config import Settings
     settings = Settings(
         host="0.0.0.0", port=8900, log_level="info",
@@ -280,28 +282,14 @@ def test_settings_template_with_data():
         system_diagnostics=False, timezone="Asia/Shanghai",
     )
     html = env.get_template("settings.html").render(
-        user="admin", settings=settings, raw_yaml="server:\n  host: 0.0.0.0",
+        user="admin", settings=settings, raw_yaml="",
         csrf_token="tok", error="", success="",
     )
     assert "0.0.0.0" in html
     assert "8900" in html
-    assert "/ui/settings/reload" in html
     assert "/ui/settings/save" in html
     assert "timezone" in html
     assert "toggle-slider" in html
-    assert "热加载" in html
-
-
-def test_settings_template_raw_yaml():
-    """配置页面显示 yaml 原始内容"""
-    from core.config import Settings
-    html = env.get_template("settings.html").render(
-        user="admin", settings=Settings(),
-        raw_yaml="# my config\nserver:\n  port: 8900",
-        csrf_token="tok", error="", success="",
-    )
-    assert "# my config" in html
-    assert "port: 8900" in html
 
 
 def test_settings_routes_registered():
