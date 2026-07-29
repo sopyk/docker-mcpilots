@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.0.3] - 2026-07-25
+
+### Fixed
+- **exec_container Docker API Compatibility**: Removed `demux` parameter, added `_demux_frames()` to manually decode multiplexed byte streams, compatible with Docker API < 1.42 (Synology NAS Docker v20.x)
+- **list_containers Image Truncation**: Untagged images no longer show a truncated `sha256:abc` hash; now uses the standard `short_id`
+- **Template-Test Alignment**: Fixed 3 test cases in `test_web_routes.py` that were out of sync after template refactoring (container detail mock nesting, removed settings assertions)
+
+### Added
+- **UI Test Infrastructure**: Introduced `project-audit-init`, includes Playwright E2E configuration, BackstopJS visual diff, and `scripts/audit.sh` one-click audit
+
 ## [v2.0.2] - 2026-07-09
 
 ### Added
