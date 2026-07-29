@@ -16,13 +16,13 @@ echo "  项目: $PROJECT_ROOT"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # 1. 确保依赖
-pip install -q pytest-playwright 2>/dev/null || true
+pip3 install -q pytest-playwright 2>/dev/null || true
 playwright install chromium --with-deps 2>/dev/null || true
 
 # 2. E2E 交互测试
 echo ""
 echo "→ E2E 交互测试..."
-python -m pytest tests/e2e/ -v --strict-markers "$@"
+python3 -m pytest tests/e2e/ -v --strict-markers "$@"
 E2E_EXIT=$?
 
 # 3. 视觉审计（如果配置了 ui-visual-check.json）
