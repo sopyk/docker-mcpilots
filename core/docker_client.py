@@ -80,6 +80,36 @@ def _change_kind_str(kind: int) -> str:
     return {0: "modified", 1: "added", 2: "deleted"}.get(kind, f"unknown({kind})")
 
 
+def _demux_frames(data: bytes) -> tuple[bytes, bytes]:
+    """解析 Docker 多路复用字节流为 (stdout, stderr)。
+
+    Docker exec API 在 demux 不可用时（API < 1.42），
+    返回的是 8 字节头 + 帧载荷交替的字节流：
+      - 1 byte: stream_id（1=stdout, 2=stderr）
+      - 3 bytes: 填充
+      - 4 bytes: 帧长度（大端序）
+      - N bytes: 帧数据
+    """
+    stdout_parts: list[bytes] = []
+    stderr_parts: list[bytes] = []
+    i = 0
+    while i < len(data):
+        if i + 8 > len(data):
+            break
+        stream_id = data[i]
+        frame_len = int.from_bytes(data[i + 4:i + 8], "big")
+        i += 8
+        if i + frame_len > len(data):
+            break
+        frame = data[i:i + frame_len]
+        i += frame_len
+        if stream_id == 1:
+            stdout_parts.append(frame)
+        elif stream_id == 2:
+            stderr_parts.append(frame)
+    return b"".join(stdout_parts), b"".join(stderr_parts)
+
+
 class DockerClient:
     """Docker 客户端封装（延迟连接，首次调用时才连接 Docker daemon）
 
@@ -462,15 +492,20 @@ class DockerClient:
                 "cmd": command,
                 "stdout": True,
                 "stderr": True,
-                "demux": True,
             }
             if workdir:
                 exec_kwargs["workdir"] = workdir
             if environment:
                 exec_kwargs["environment"] = environment
             exec_id = container.client.api.exec_create(container.id, **exec_kwargs)
-            result = container.client.api.exec_start(exec_id, demux=True)
-            stdout, stderr = result if isinstance(result, tuple) else (result, b"")
+            raw = container.client.api.exec_start(exec_id)
+            # 兼容处理：
+            #   docker-py >= 7.x + Docker API >= 1.42 → 返回 (stdout, stderr) 元组
+            #   docker-py 旧版 / API < 1.42 → 返回多路复用原始字节流
+            if isinstance(raw, tuple):
+                stdout, stderr = raw
+            else:
+                stdout, stderr = _demux_frames(raw)
             inspect = container.client.api.exec_inspect(exec_id)
             return {
                 "success": True,
@@ -576,7 +611,7 @@ class DockerClient:
             "id": container.short_id,
             "name": container.name,
             "status": container.status,
-            "image": container.image.tags[0] if container.image.tags else str(container.image.id[:12]),
+            "image": container.image.tags[0] if container.image.tags else container.image.short_id,
         }
 
     @staticmethod
@@ -590,7 +625,7 @@ class DockerClient:
             "id": container.short_id,
             "name": container.name,
             "status": container.status,
-            "image": container.image.tags[0] if container.image.tags else str(container.image.id[:12]),
+            "image": container.image.tags[0] if container.image.tags else container.image.short_id,
             "created": attrs.get("Created", ""),
             "labels": container.labels,
             "state": {

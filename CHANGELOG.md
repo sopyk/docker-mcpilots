@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.0.3] - 2026-07-25
+
+### 修复
+- **exec_container Docker API 兼容性**：去掉 `demux` 参数，新增 `_demux_frames()` 手动解码多路复用字节流，兼容 Docker API < 1.42（群晖 NAS Docker v20.x）
+- **list_containers Image 字段截断**：无标签的镜像不再显示截断哈希 `sha256:abc`，改为标准的 `short_id`
+- **模板-测试对齐**：修复 `test_web_routes.py` 中 3 个因模板重构未同步的用例（容器详情 mock 数据嵌套结构、settings 断言已删除的重载按钮）
+
+### 新增
+- **UI 测试基础设施**: 引入 `project-audit-init`，包含 Playwright E2E 配置、BackstopJS 视觉对比、`scripts/audit.sh` 一键审计
+
 ## [v2.0.2] - 2026-07-09
 
 ### 新增
