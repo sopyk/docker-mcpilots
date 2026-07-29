@@ -214,6 +214,17 @@
                 <button type="submit" class="btn btn-blue">更新账号</button>
             </div>
         </form>
+        <div class="setting-note">
+            <strong>⚠️ 密码持久化说明：</strong>
+            通过本页面设置的密码会持久保存在 <code>secrets/admin.yaml</code> 文件中，
+            即使容器重启也不会被 <code>docker-compose.yml</code> 中的 <code>ADMIN_PASSWORD</code> 覆盖。
+            如需恢复为 <code>docker-compose.yml</code> 中设定的默认密码，请按以下步骤操作：
+            <ol style="margin:6px 0 0 20px;padding:0;font-size:13px;line-height:1.6;">
+                <li>在宿主机上删除 <code>secrets/admin.yaml</code> 文件</li>
+                <li>执行 <code>docker compose restart docker-mcpilots</code> 重启容器</li>
+                <li>系统会自动重新从 <code>ADMIN_PASSWORD</code> 环境变量生成密码</li>
+            </ol>
+        </div>
     </div>
 </main>
 {% endblock %}

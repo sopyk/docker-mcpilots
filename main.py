@@ -228,9 +228,15 @@ def _init_config_files() -> None:
         current_config = None
 
     if admin_password and admin_password.strip():
-        # 如果密码不为空，设置/更新密码
-        admin_auth.set_password(admin_username, admin_password.strip())
-        logger.info(f"Set admin password from environment: {admin_file}")
+        # 如果已有非空密码（比如通过 UI 设置过），跳过环境变量覆盖
+        if current_config and current_config.password_hash:
+            logger.info(
+                f"Admin password already configured (hash present), "
+                f"skipping env override. To reset, delete {admin_file} and restart."
+            )
+        else:
+            admin_auth.set_password(admin_username, admin_password.strip())
+            logger.info(f"Set admin password from environment: {admin_file}")
     else:
         # 如果没有密码（无论是新文件还是旧文件密码为空），都检查一下
         if current_config and not current_config.password_hash:
@@ -295,7 +301,7 @@ def create_app() -> FastMCP:
     mcp = FastMCP(
         name="Docker-MCPilotS",
         instructions="Docker container and image management server with system diagnostics for Synology NAS.",
-        version="2.0.4",
+        version="2.1.0",
     )
 
     # 注册认证中间件
@@ -320,7 +326,7 @@ def create_app() -> FastMCP:
     @mcp.custom_route("/health", methods=["GET"])
     async def health_check(request):
         from starlette.responses import JSONResponse
-        return JSONResponse({"status": "ok", "version": "2.0.4"})
+        return JSONResponse({"status": "ok", "version": "2.1.0"})
 
     # Web UI 初始化
     admin_yaml = SECRETS_DIR / "admin.yaml"

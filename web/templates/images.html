@@ -5,7 +5,7 @@
 <main class="content">
     <h1>镜像管理</h1>
     {% if error %}<div class="error">{{ error }}</div>{% endif %}
-    <table class="data-table">
+    <div class="table-wrap"><table class="data-table">
         <thead>
             <tr>
                 <th>镜像</th>
@@ -27,6 +27,6 @@
         <tr><td colspan="4" class="empty-row">暂无镜像</td></tr>
         {% endif %}
         </tbody>
-    </table>
+    </table></div>
 </main>
 {% endblock %}

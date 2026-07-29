@@ -6,6 +6,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.1.0] - 2026-07-29
+
+### Added
+- **Web UI mobile adaptation**: Pure CSS responsive layout (`mobile.css`), zero impact on desktop
+  - Hamburger menu for navigation collapse
+  - `.table-wrap` horizontal scroll for long tables
+  - Container operations → `<select>` dropdown + execute button on mobile
+  - Settings, login, about pages all adapted
+  - Touch-friendly (`touch-action`, `min-height` buttons)
+  - Inline fallback CSS for JS failure resilience
+- **Batch bar enhancement**: "Select All" / "Deselect All" on separate line + duplicate batch bar at table bottom
+- **API Key copy button**: Copy button next to each key input on users page, shows "Copied!" on click
+- **Password persistence guard**: UI-set password no longer overwritten by ADMIN_PASSWORD env var on restart
+- **Settings page hint**: Added persistence explanation and password reset instructions
+
+### Optimized
+- **Build speed**: Added `.dockerignore`, excludes `.opencode/`, `.git/`, `docs/`, `tests/`, etc. Build context reduced from ~70MB to ~1MB
+
+### Fixed
+- **Docker SDK compat**: Fixed `images.list()` unsupported `limit` parameter
+- **Mobile dropdown width**: Container action select `max-width: 90px` → `min-width: 120px`
+- **Users page role select**: Added `min-width: 80px` on mobile
+
 ## [v2.0.4] - 2026-07-29
 
 ### Added

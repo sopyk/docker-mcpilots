@@ -26,16 +26,16 @@
     <h1>欢迎，{{ user }}</h1>
 
     {% if not docker_available %}
-    <div class="error-box" style="background: #fee2e2; border: 1px solid #f87171; border-radius: 8px; padding: 16px; margin: 16px 0;">
-        <h3 style="margin:0 0 8px 0; color:#991b1b;">⚠️ Docker 连接失败</h3>
-        <p style="margin:0; color:#7f1d1d;">请检查：
-        <ul style="margin: 8px 0 0 0; padding-left: 20px;">
+    <div class="alert alert-error" style="background:rgba(239,83,80,0.1);border-color:rgba(239,83,80,0.3);">
+        <strong style="color:var(--red);">⚠️ Docker 连接失败</strong>
+        <p style="margin:8px 0 0 0;color:var(--text);font-size:13px;">请检查：
+        <ul style="margin: 8px 0 0 0; padding-left: 20px;color:var(--text);font-size:12px;">
             <li>Docker socket 是否正确挂载：<code>/var/run/docker.sock</code></li>
             <li>PUID/PGID 设置是否正确（群晖一般是 1026/100）</li>
             <li>查看容器日志：<code>docker logs docker-mcpilots</code></li>
         </ul>
         {% if docker_error %}
-        <p style="margin: 8px 0 0 0; color:#7f1d1d; font-family: monospace; font-size: 12px;">
+        <p style="margin: 8px 0 0 0; color:var(--red); font-family: var(--font-mono); font-size: 12px;">
             错误详情：{{ docker_error }}
         </p>
         {% endif %}
@@ -68,7 +68,7 @@
 
     <div class="section">
         <h2>最近活动</h2>
-        <table class="data-table">
+        <div class="table-wrap"><table class="data-table">
             <thead>
                 <tr>
                     <th>时间</th>
@@ -92,7 +92,7 @@
             <tr><td colspan="5">暂无记录</td></tr>
             {% endif %}
             </tbody>
-        </table>
+        </table></div>
     </div>
 </main>
 {% endblock %}
