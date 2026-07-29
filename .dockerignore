@@ -1,0 +1,40 @@
+# Python cache & virtual env
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Test & CI
+.pytest_cache/
+tests/
+scripts/
+pytest.ini
+
+# Documentation
+docs/
+CHANGELOG.md
+CHANGELOG_EN.md
+README.md
+README_EN.md
+ROADMAP.md
+LICENSE
+*.tar
+*.tar.gz
+
+# IDE / dev tooling
+.opencode/
+.git/
+.gitignore
+.gitattributes
+.dockerignore
+
+# Local secrets & config (mounted at runtime via volume)
+.env
+config/settings.yaml
+secrets/auth.yaml
+dev-config/
+dev-secrets/
+
+# Other
+ui-visual-check.json

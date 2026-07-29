@@ -6,6 +6,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.1.0] - 2026-07-29
+
+### 新增
+- **Web UI 手机端适配**：响应式布局纯 CSS（`mobile.css`），桌面版零影响
+  - 汉堡菜单折叠导航
+  - `.table-wrap` 水平滚动支持长表格
+  - 容器操作切换为 `<select>` 下拉 + 执行按钮
+  - 设置页、登录页、关于页全部适配
+  - 触控友好（`touch-action`、`min-height` 按钮）
+  - JS 加载失败内联备用 CSS 兜底
+- **批量栏功能增强**：容器页批量栏「全选/全部不选」独立一行 + **表格底部复制相同批量栏**
+- **API Key 复制按钮**：用户页每个 Key 输入框旁加复制按钮，点按变「已复制!」
+- **密码持久化保护**：通过 UI 设置密码后容器重启不会被 `ADMIN_PASSWORD` 环境变量覆盖
+- **设置页说明**：新增密码持久化说明及恢复默认密码操作步骤
+
+### 优化
+- **构建速度**：新增 `.dockerignore`，排除 `.opencode/`、`.git/`、`docs/`、`tests/` 等，构建上下文从 ~70MB 降至 ~1MB
+
+### 修复
+- **Docker SDK 兼容性**：修复 `images.list()` 不支持 `limit` 参数的兼容问题
+- **移动端下拉宽度**：容器操作下拉菜单 `max-width: 90px` → `min-width: 120px`
+- **用户页角色下拉**：手机端 `select[name="role"]` 添加 `min-width: 80px`
+
 ## [v2.0.4] - 2026-07-29
 
 ### 新增
