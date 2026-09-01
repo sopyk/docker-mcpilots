@@ -6,12 +6,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [v2.1.1] - 2026-07-30
+## [v2.1.1] - 2026-09-01
 
 ### Fixed
 - **About page**: Removed "No exec capability" (exec is supported, enable in settings)
 - **About page**: Added exec to feature list
-- **About page**: Updated AI client list to Hermes, OpenClaw, Workbuddy, Trae, Cursor, Claude Code
 - **Menu "审计" → "操作日志"**: More intuitive naming, distinguishes from container logs
 
 ### Improved

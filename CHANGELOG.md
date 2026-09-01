@@ -6,12 +6,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [v2.1.1] - 2026-07-30
+## [v2.1.1] - 2026-09-01
 
 ### 修正
 - **关于页**：删除"不提供 exec 能力"（exec 已支持，设置中开启即可）
 - **关于页**：功能列表补充 exec 说明
-- **关于页**：AI 客户端列表更新为 Hermes、OpenClaw、Workbuddy、Trae、Cursor、Claude Code
 - **菜单"审计"→"操作日志"**：更直观的命名，与容器日志区分
 
 ### 改进
