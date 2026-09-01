@@ -3,6 +3,7 @@
 html, body { height: 100%; }
 body {
   font-family: var(--font-sans);
+  font-size: 14px;
   background-color: var(--bg);
   color: var(--text);
   min-height: 100vh;
