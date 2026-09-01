@@ -326,7 +326,7 @@ def create_app() -> FastMCP:
     @mcp.custom_route("/health", methods=["GET"])
     async def health_check(request):
         from starlette.responses import JSONResponse
-            return JSONResponse({"status": "ok", "version": "2.1.1"})
+        return JSONResponse({"status": "ok", "version": "2.1.1"})
 
     # Web UI 初始化
     admin_yaml = SECRETS_DIR / "admin.yaml"
