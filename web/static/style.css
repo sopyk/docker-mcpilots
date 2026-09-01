@@ -92,7 +92,7 @@ body {
 .nav-links .version-tag {
   color: var(--text-muted);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 14px;
   padding: 2px 8px;
   background-color: var(--bg);
   border: 1px solid var(--border);
@@ -146,7 +146,7 @@ body {
 }
 .stat-card h3 {
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -162,7 +162,7 @@ body {
 }
 .stat-label {
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-muted);
 }
 
@@ -202,12 +202,12 @@ body {
   fill: var(--text);
 }
 .ring-percent {
-  font-size: 13px;
+  font-size: 14px;
   fill: var(--text-muted);
 }
 .ring-sublabel {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   fill: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -244,12 +244,12 @@ body {
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--border);
   text-align: left;
-  font-size: 13px;
+  font-size: 14px;
 }
 .data-table th {
   background-color: var(--bg-card-hover);
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--text-muted);
@@ -297,7 +297,7 @@ body {
 .form-group { margin-bottom: var(--space-4); }
 .form-group label {
   display: block;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   margin-bottom: var(--space-1);
   font-family: var(--font-sans);
@@ -309,7 +309,7 @@ body {
   padding: var(--space-2) var(--space-3);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 14px;
   width: 100%;
 }
 .form-group input:focus, .form-group select:focus {
@@ -325,7 +325,7 @@ body {
   cursor: pointer;
   border-radius: var(--radius);
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   width: 100%;
   transition: opacity var(--transition);
@@ -334,7 +334,7 @@ body {
 .error {
   color: var(--red);
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 14px;
   margin-bottom: var(--space-3);
 }
 
@@ -347,13 +347,13 @@ body {
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius);
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 14px;
   text-decoration: none;
   cursor: pointer;
   transition: border-color var(--transition), background-color var(--transition);
 }
 .btn:hover { border-color: var(--border-active); }
-.btn-sm { padding: var(--space-1) var(--space-2); font-size: 11px; }
+.btn-sm { padding: var(--space-1) var(--space-2); font-size: 13px; }
 .btn-green { background-color: rgba(102,187,106,0.15); color: var(--green); border-color: rgba(102,187,106,0.3); }
 .btn-green:hover { border-color: var(--green); }
 .btn-amber { background-color: rgba(255,167,38,0.15); color: var(--amber); border-color: rgba(255,167,38,0.3); }
@@ -376,7 +376,7 @@ body {
   padding: var(--space-1) var(--space-2);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 14px;
   width: 100%;
 }
 .data-table input:focus,
@@ -400,7 +400,7 @@ body {
 .key-input-wrap .key-input {
   min-width: 220px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
 }
 .key-input-wrap .key-input-actions {
   display: flex;
@@ -408,7 +408,7 @@ body {
   flex-shrink: 0;
 }
 .btn-copy {
-  font-size: 11px;
+  font-size: 13px;
   padding: var(--space-1) var(--space-2);
   min-width: 52px;
   text-align: center;
@@ -421,7 +421,7 @@ body {
   gap: var(--space-1);
 }
 .scope-inputs input {
-  font-size: 11px;
+  font-size: 13px;
 }
 
 /* 横向表单（新增区域） */
@@ -437,7 +437,7 @@ body {
 }
 .form-create label {
   display: block;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   margin-bottom: var(--space-1);
   font-family: var(--font-sans);
@@ -450,7 +450,7 @@ body {
   padding: var(--space-2) var(--space-3);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 14px;
   min-width: 160px;
 }
 .form-create .key-row input {
@@ -460,8 +460,8 @@ body {
 /* 链接 */
 .link { color: var(--blue); text-decoration: none; }
 .link:hover { text-decoration: underline; }
-.text-muted { color: var(--text-muted); font-size: 12px; }
-.mono { font-family: "SF Mono", "Menlo", "Consolas", monospace; font-size: 13px; }
+.text-muted { color: var(--text-muted); font-size: 14px; }
+.mono { font-family: "SF Mono", "Menlo", "Consolas", monospace; font-size: 14px; }
 .empty-row { text-align: center; color: var(--text-dim); }
 
 /* 状态徽章 */
@@ -470,7 +470,7 @@ body {
   align-items: center;
   gap: var(--space-1);
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 13px;
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-full);
   border: 1px solid var(--border);
@@ -516,7 +516,7 @@ body {
 }
 .detail-section h3 {
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -532,7 +532,7 @@ body {
   padding: var(--space-2) var(--space-3);
   border-bottom: 1px solid var(--border);
   text-align: left;
-  font-size: 12px;
+  font-size: 14px;
   font-family: var(--font-mono);
 }
 .kv-table th {
@@ -549,7 +549,7 @@ body {
   border-radius: var(--radius);
   padding: var(--space-3);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 14px;
   color: var(--green);
   max-height: 480px;
   overflow-y: auto;
@@ -572,7 +572,7 @@ body {
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius);
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 14px;
   margin-bottom: var(--space-4);
   border: 1px solid;
 }
@@ -589,7 +589,7 @@ body {
 .perm-tag {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-muted);
   background-color: var(--bg-card-hover);
   border: 1px solid var(--border);
@@ -627,7 +627,7 @@ body {
 }
 .batch-bar .batch-count {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   margin-right: var(--space-2);
 }
@@ -673,7 +673,7 @@ body {
 }
 .settings-group h3 {
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -682,13 +682,13 @@ body {
   border-bottom: 1px solid var(--border);
 }
 .setting-hint {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   margin: 0 0 var(--space-3) 0;
   line-height: 1.5;
 }
 .setting-note {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text);
   background-color: rgba(255, 193, 7, 0.08);
   border: 1px solid rgba(255, 193, 7, 0.3);
@@ -698,7 +698,7 @@ body {
   line-height: 1.6;
 }
 .setting-note code {
-  font-size: 12px;
+  font-size: 14px;
   background-color: var(--bg-card-hover);
   padding: 1px 6px;
   border-radius: var(--radius);
@@ -727,14 +727,14 @@ body {
 }
 .setting-name {
   display: block;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--text);
   margin-bottom: 2px;
 }
 .setting-desc {
   display: block;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-muted);
   font-family: var(--font-sans);
 }
@@ -751,7 +751,7 @@ body {
   padding: var(--space-2) var(--space-3);
   color: var(--text);
   font-family: var(--font-sans);
-  font-size: 13px;
+  font-size: 14px;
   min-width: 160px;
 }
 .setting-control input:focus,
@@ -832,7 +832,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 4px;
   padding: 4px 10px;
-  font-size: 12px;
+  font-size: 14px;
   cursor: pointer;
   color: var(--text);
   z-index: 1;
@@ -845,7 +845,7 @@ body {
   margin: 0;
   color: var(--text);
   font-family: monospace;
-  font-size: 13px;
+  font-size: 14px;
   overflow-x: auto;
 }
 
