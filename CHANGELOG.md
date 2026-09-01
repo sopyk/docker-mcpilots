@@ -8,8 +8,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [v2.1.1] - 2026-07-30
 
-> 本次更新仅为 UI 文字修正与测试增强，**无程序逻辑修改**，v2.1.0 用户可选择不升级。
-
 ### 修正
 - **关于页**：删除"不提供 exec 能力"（exec 已支持，设置中开启即可）
 - **关于页**：功能列表补充 exec 说明
@@ -17,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - **菜单"审计"→"操作日志"**：更直观的命名，与容器日志区分
 
 ### 改进
+- **优化了桌面版和手机端的 UI**：嵌入 Noto Sans SC 中文字体（去除 Google Fonts CDN 依赖）、统一 UI 元素字号（body 14px，最小 13px）、手机端登录框居中
 - **集成测试增强**：`test_version_consistency` 新增对 `base.html` 和 `about.html` 版本号的检查，防止改版本漏改模板
 
 ## [v2.1.0] - 2026-07-29

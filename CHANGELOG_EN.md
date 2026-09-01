@@ -8,8 +8,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [v2.1.1] - 2026-07-30
 
-> This update is UI text fixes and test enhancements only. **No program logic changes**. v2.1.0 users may skip this upgrade.
-
 ### Fixed
 - **About page**: Removed "No exec capability" (exec is supported, enable in settings)
 - **About page**: Added exec to feature list
@@ -17,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - **Menu "审计" → "操作日志"**: More intuitive naming, distinguishes from container logs
 
 ### Improved
+- **Desktop and mobile UI optimization**: Embedded Noto Sans SC Chinese font (removed Google Fonts CDN dependency), unified UI element font sizes (body 14px, minimum 13px), mobile login card centering
 - **Integration test**: `test_version_consistency` now checks version numbers in `base.html` and `about.html` to prevent version mismatches
 
 ## [v2.1.0] - 2026-07-29
