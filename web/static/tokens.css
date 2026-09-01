@@ -24,7 +24,7 @@
 
   /* 字体 */
   --font-mono: "JetBrains Mono", "SF Mono", "Fira Code", Consolas, monospace;
-  --font-sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Noto Sans SC", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   /* 圆角 */
   --radius: 6px;

@@ -32,6 +32,7 @@
                     <li>💾 数据卷清单</li>
                     <li>🖥️ 系统诊断（CPU/内存/磁盘）</li>
                     <li>🔐 权限控制（三种角色）</li>
+                    <li>⚡ exec 容器内执行命令（需在设置中开启）</li>
                 </ul>
             </div>
             <div class="stat-card">
@@ -39,7 +40,6 @@
                 <ul style="margin-left: 24px; line-height: 1.8;">
                     <li>🚫 不支持 Compose 项目管理</li>
                     <li>🚫 不支持构建镜像</li>
-                    <li>🚫 不提供 exec 能力</li>
                     <li>🚫 不支持修改网络配置</li>
                 </ul>
             </div>
@@ -48,7 +48,7 @@
 
     <div class="section">
         <h2>🚀 如何在 Agent APP 里配置 MCP</h2>
-        <p>在你的 AI 客户端（Trae、Cursor、Claude Code、OpenClaw 等）的 MCP 配置里添加下面这段代码即可：</p>
+        <p>在你的 AI 客户端（Hermes、OpenClaw、Workbuddy、Trae、Cursor、Claude Code 等）的 MCP 配置里添加下面这段代码即可：</p>
         <div class="code-block-wrap">
             <button type="button" class="copy-btn" onclick="copyMcpConfig(this)" aria-label="复制配置代码">📋 复制</button>
             <pre id="mcp-config-code" class="code-block-pre">
@@ -85,7 +85,7 @@
     <div class="section">
         <h2>📄 版本与协议</h2>
         <div style="color: var(--text-muted); font-family: monospace;">
-            <p><strong>版本：</strong> v2.1.0</p>
+            <p><strong>版本：</strong> v2.1.1</p>
             <p><strong>作者：</strong> SopyK</p>
             <p><strong>协议：</strong> MIT License</p>
         </div>

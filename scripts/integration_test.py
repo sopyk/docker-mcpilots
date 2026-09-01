@@ -121,6 +121,30 @@ def test_version_consistency():
     else:
         r.fail(f"版本不一致! main.py={main_version}, health={health_version}")
 
+    # 检查 HTML 模板版本号
+    base_html = (PROJECT_ROOT / "web" / "templates" / "base.html").read_text()
+    about_html = (PROJECT_ROOT / "web" / "templates" / "about.html").read_text()
+
+    base_version = None
+    m = re.search(r'version-tag">v([^<]+)<', base_html)
+    if m:
+        base_version = m.group(1)
+
+    about_version = None
+    m = re.search(r'版本：.*?v([^<]+)<', about_html)
+    if m:
+        about_version = m.group(1)
+
+    if main_version and base_version and main_version == base_version:
+        r.ok(f"base.html 版本一致: v{base_version}")
+    else:
+        r.fail(f"base.html 版本不一致! main.py={main_version}, base.html={base_version}")
+
+    if main_version and about_version and main_version == about_version:
+        r.ok(f"about.html 版本一致: v{about_version}")
+    else:
+        r.fail(f"about.html 版本不一致! main.py={main_version}, about.html={about_version}")
+
     return r
 
 
