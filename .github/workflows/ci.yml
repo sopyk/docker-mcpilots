@@ -30,6 +30,7 @@ jobs:
           context: .
           file: docker/Dockerfile
           push: false
+          load: true
           tags: docker-mcpilots:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
