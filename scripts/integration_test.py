@@ -317,7 +317,7 @@ def test_entrypoint_permissions():
     print("\n[5/5] 检查 entrypoint.sh 权限...")
     r = TestResult()
 
-    entrypoint = PROJECT_ROOT / "entrypoint.sh"
+    entrypoint = PROJECT_ROOT / "docker" / "entrypoint.sh"
     if not entrypoint.exists():
         r.fail("entrypoint.sh 不存在")
         return r

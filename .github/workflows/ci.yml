@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest
+      - name: Run unit tests
+        run: pytest tests/ -v --tb=short
+
+  docker-build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: false
+          tags: docker-mcpilots:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: MCP initialize smoke test
+        run: |
+          docker run -d --name dm-test -p 18900:8900 \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            docker-mcpilots:test
+
+          # Wait for health check
+          echo "Waiting for container..."
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:18900/health > /dev/null 2>&1; then
+              echo "Health check passed"
+              break
+            fi
+            sleep 1
+          done
+
+          # MCP initialize — the check that v2.1.1 would have caught
+          echo "Testing MCP initialize..."
+          RESP=$(curl -sf -X POST http://localhost:18900/mcp \
+            -H 'Content-Type: application/json' \
+            -H 'Accept: application/json, text/event-stream' \
+            -H 'Authorization: Bearer sk-dm-CHANGE-THIS-KEY-IMMEDIATELY' \
+            -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"ci","version":"1"}}}')
+
+          if echo "$RESP" | grep -q "serverInfo"; then
+            echo "MCP initialize OK"
+          else
+            echo "FAIL: MCP initialize did not return serverInfo"
+            echo "Response: $RESP"
+            docker logs dm-test
+            exit 1
+          fi
+
+          docker rm -f dm-test

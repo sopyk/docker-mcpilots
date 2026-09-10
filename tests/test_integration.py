@@ -2,11 +2,18 @@
 import sys
 from unittest.mock import patch, MagicMock
 
+# 确保真实第三方模块已导入（fastmcp 4.x 用 lazy import，mcp 不会自动进入 sys.modules）
+import psutil  # noqa: F401
+import fastmcp  # noqa: F401
+import mcp  # noqa: F401
+import starlette  # noqa: F401
+
 # Mock 未安装的第三方模块（必须在导入 core/main 之前注入）
-if 'psutil' not in sys.modules:
+# 注意：fastmcp 4.x 用 lazy import，需要先显式导入真实模块再检查
+if 'psutil' not in sys.modules or isinstance(sys.modules.get('psutil'), MagicMock):
     sys.modules['psutil'] = MagicMock()
 
-if 'fastmcp' not in sys.modules:
+if 'fastmcp' not in sys.modules or isinstance(sys.modules.get('fastmcp'), MagicMock):
     _mock_fastmcp = MagicMock()
     _mock_fastmcp.FastMCP = MagicMock
     _mock_fastmcp.server = MagicMock()
@@ -19,12 +26,12 @@ if 'fastmcp' not in sys.modules:
     sys.modules['fastmcp.server.middleware'] = _mock_fastmcp.server.middleware
     sys.modules['fastmcp.server.dependencies'] = _mock_fastmcp.server.dependencies
 
-if 'mcp' not in sys.modules:
+if 'mcp' not in sys.modules or isinstance(sys.modules.get('mcp'), MagicMock):
     _mock_mcp = MagicMock()
     sys.modules['mcp'] = _mock_mcp
     sys.modules['mcp.types'] = MagicMock()
 
-if 'starlette' not in sys.modules:
+if 'starlette' not in sys.modules or isinstance(sys.modules.get('starlette'), MagicMock):
     _mock_starlette = MagicMock()
     sys.modules['starlette'] = _mock_starlette
     sys.modules['starlette.responses'] = MagicMock()

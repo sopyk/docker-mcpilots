@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.1.2] - 2026-09-10
+
+### 修复
+- **MCP 接口全部不可用（Critical）**：v2.1.1 构建时 `fastmcp>=3.0.0` 未锁上界，pip 解析到 fastmcp 4.x，后者依赖 mcp SDK 2.x。mcp 2.0 将 `McpError` 重命名为 `MCPError`，导致所有 MCP 协议请求在应用层报 `cannot import name 'McpError' from 'mcp'`。**现象**：容器 healthy、端口监听正常、健康检查返回 200，但每个 MCP 工具调用都返回错误，服务完全不可用。本次锁定 fastmcp>=4.0.0 + mcp>=2.0.0 并完成 SDK v2 迁移。
+- **依赖未锁定**：所有依赖（fastmcp/docker/psutil 等）均无版本上界，pip 可在构建时解析到不兼容的大版本。本次为所有依赖添加主版本上界约束，防止未来滚动构建被上游 breaking change 打崩。
+
+### 改进
+- **MCP SDK v2 迁移**：适配 fastmcp 4.x — `McpError`→`MCPError`、`CurrentContext` 导入路径更新、auth 中间件从 session 缓存改为每请求认证（适配 sessionless 协议）
+- **CI 流水线**：新增 GitHub Actions，含 pytest + Docker 构建 + MCP initialize 冒烟测试，防止"容器活着但服务不可用"的版本再次发布
+
 ## [v2.1.1] - 2026-09-01
 
 ### 修正

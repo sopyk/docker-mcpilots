@@ -47,25 +47,19 @@ class AuthMiddleware(Middleware):
     async def on_request(self, context: MiddlewareContext, call_next):
         ctx = context.fastmcp_context
         if ctx and ctx.request_context:
-            # 尝试从 session state 获取已认证的 key（同一会话内缓存）
-            cached = await ctx.get_state("auth_key_config")
-            if cached is not None:
-                return await call_next(context)
-
-            # 从 HTTP 请求头提取 API Key
-            # 注意：get_http_headers() 默认会过滤 authorization，必须显式 include
+            # 每请求认证（fastmcp 4.x sessionless 协议无跨请求 session state）
             try:
                 from fastmcp.server.dependencies import get_http_headers
                 headers = get_http_headers(include={"authorization"})
                 auth_header = headers.get("authorization", "")
                 if not auth_header.startswith("Bearer "):
-                    from mcp import McpError
-                    from mcp.types import ErrorData
-                    raise McpError(ErrorData(code=-32001, message="Missing or invalid authorization header. Format: Bearer <api_key>"))
+                    from mcp import MCPError
+                    raise MCPError(code=-32001, message="Missing or invalid authorization header. Format: Bearer <api_key>")
 
                 api_key = auth_header[7:]
                 key_config = self._app_state.permission_checker.authenticate(api_key)
-                await ctx.set_state("auth_key_config", key_config)
+                # serializable=False: 请求级作用域，同一请求内 on_call_tool 可读取
+                await ctx.set_state("auth_key_config", key_config, serializable=False)
 
             except AuthenticationError as e:
                 if self._app_state.audit_logger:
@@ -78,9 +72,8 @@ class AuthMiddleware(Middleware):
                         detail={},
                         success=False,
                     ))
-                from mcp import McpError
-                from mcp.types import ErrorData
-                raise McpError(ErrorData(code=-32001, message=str(e)))
+                from mcp import MCPError
+                raise MCPError(code=-32001, message=str(e))
 
         return await call_next(context)
 
@@ -301,7 +294,7 @@ def create_app() -> FastMCP:
     mcp = FastMCP(
         name="Docker-MCPilotS",
         instructions="Docker container and image management server with system diagnostics for Synology NAS.",
-        version="2.1.1",
+        version="2.1.2",
     )
 
     # 注册认证中间件
@@ -326,7 +319,7 @@ def create_app() -> FastMCP:
     @mcp.custom_route("/health", methods=["GET"])
     async def health_check(request):
         from starlette.responses import JSONResponse
-        return JSONResponse({"status": "ok", "version": "2.1.1"})
+        return JSONResponse({"status": "ok", "version": "2.1.2"})
 
     # Web UI 初始化
     admin_yaml = SECRETS_DIR / "admin.yaml"

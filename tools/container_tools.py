@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from fastmcp import FastMCP
-from fastmcp.server.dependencies import CurrentContext
+from fastmcp.dependencies import CurrentContext
 from fastmcp.server.context import Context
 
 from core.docker_client import DockerClient

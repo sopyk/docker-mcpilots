@@ -6,6 +6,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.1.2] - 2026-09-10
+
+### Fixed
+- **MCP interface completely broken (Critical)**: v2.1.1 build had `fastmcp>=3.0.0` without an upper bound, so pip resolved to fastmcp 4.x which depends on mcp SDK 2.x. mcp 2.0 renamed `McpError` to `MCPError`, causing all MCP protocol requests to fail with `cannot import name 'McpError' from 'mcp'`. **Symptom**: container healthy, port listening, health check returns 200, but every MCP tool call returns an error — service completely unavailable. Pinned fastmcp>=4.0.0 + mcp>=2.0.0 and completed SDK v2 migration.
+- **Dependencies unpinned**: All dependencies (fastmcp/docker/psutil etc.) had no upper version bound, allowing pip to resolve to incompatible major versions at build time. Added major-version upper bounds to all dependencies to prevent future rolling builds from being broken by upstream changes.
+
+### Improved
+- **MCP SDK v2 migration**: Adapted for fastmcp 4.x — `McpError`→`MCPError`, `CurrentContext` import path updated, auth middleware changed from session caching to per-request authentication (sessionless protocol compatible)
+- **CI pipeline**: Added GitHub Actions with pytest + Docker build + MCP initialize smoke test, preventing "container alive but service unavailable" versions from being published
+
 ## [v2.1.1] - 2026-09-01
 
 ### Fixed
