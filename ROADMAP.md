@@ -21,3 +21,11 @@
 - **目标**: 使管理面板在手机浏览器上可用（响应式布局、触控友好）
 - **策略**: 纯 CSS（`mobile.css`）+ 约 30 行 JS 汉堡菜单，桌面版零影响
 - **覆盖页面**: 仪表盘、容器管理、容器详情、镜像管理、用户管理、审计日志、设置、关于、登录
+
+## 5. 关于页「复制」按钮在 HTTP 局域访问下无效（待修复）
+
+- **文件**: `web/templates/about.html`（`copyMcpConfig()`）
+- **现象**: 通过 `http://<NAS内网IP>:8900/ui/about` 访问时，点「📋 复制」没有任何反应（按钮文字不变，剪贴板无内容）。
+- **根因**: `navigator.clipboard` 只在安全上下文（HTTPS / `localhost`）存在。内网 HTTP 访问时它是 `undefined`，`navigator.clipboard.writeText(...)` 同步抛 `TypeError: Cannot read properties of undefined (reading 'writeText')`，走不到 `.catch()`，因此 `document.execCommand('copy')` 兜底逻辑从未执行。
+- **复现**（Playwright + 内网 HTTP）: `isSecureContext === false`、`typeof navigator.clipboard === 'undefined'`，点击后页面报上述 TypeError，按钮仍显示「📋 复制」；同一页面在 `localhost` 下点击正常显示「✅ 已复制」。
+- **修复方案**: 参照 `web/templates/users.html` 的 `copyKey()`，先判断 `navigator.clipboard && navigator.clipboard.writeText` 再调用，并把兜底包在 try/catch 中；兜底 textarea 补 `readonly` 以兼容 iOS。同时补一条 E2E 用例（可用 `Object.defineProperty(navigator, 'clipboard', {value: undefined})` 模拟非安全上下文）。
