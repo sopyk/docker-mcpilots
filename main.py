@@ -18,6 +18,7 @@ from core.app_state import AppState
 from core.audit import AuditLogger, AuditEntry
 from core.admin_auth import AdminAuth, SessionManager
 from core.csrf import CSRFProtection
+from core.version import VERSION
 from tools.container_tools import register_container_tools
 from tools.image_tools import register_image_tools
 from tools.diag_tools import register_diag_tools
@@ -294,7 +295,7 @@ def create_app() -> FastMCP:
     mcp = FastMCP(
         name="Docker-MCPilotS",
         instructions="Docker container and image management server with system diagnostics for Synology NAS.",
-        version="2.1.2",
+        version=VERSION,
     )
 
     # 注册认证中间件
@@ -319,7 +320,7 @@ def create_app() -> FastMCP:
     @mcp.custom_route("/health", methods=["GET"])
     async def health_check(request):
         from starlette.responses import JSONResponse
-        return JSONResponse({"status": "ok", "version": "2.1.2"})
+        return JSONResponse({"status": "ok", "version": VERSION})
 
     # Web UI 初始化
     admin_yaml = SECRETS_DIR / "admin.yaml"

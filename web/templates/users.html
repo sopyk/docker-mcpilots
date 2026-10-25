@@ -131,31 +131,29 @@ function genKey(btn) {
     input.value = generateKey();
 }
 
+function showKeyCopyResult(btn, ok) {
+    if (!btn.dataset.origText) btn.dataset.origText = btn.textContent;
+    btn.textContent = ok ? '已复制!' : '复制失败';
+    btn.disabled = ok;
+    clearTimeout(btn._copyTimer);
+    btn._copyTimer = setTimeout(function() {
+        btn.textContent = btn.dataset.origText;
+        btn.disabled = false;
+    }, 1500);
+}
+
 function copyKey(btn) {
     const wrap = btn.closest('.key-input-wrap');
     const input = wrap.querySelector('input[name="key"]');
     const key = input.value;
     if (!key) return;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(key).then(function() {
-            const orig = btn.textContent;
-            btn.textContent = '已复制!';
-            btn.disabled = true;
-            setTimeout(function() {
-                btn.textContent = orig;
-                btn.disabled = false;
-            }, 1500);
-        });
-    } else {
-        // fallback
-        input.select();
-        document.execCommand('copy');
-        const orig = btn.textContent;
-        btn.textContent = '已复制!';
-        setTimeout(function() {
-            btn.textContent = orig;
-        }, 1500);
+    if (typeof copyToClipboard !== 'function') {
+        showKeyCopyResult(btn, false);
+        return;
     }
+    copyToClipboard(key).then(function(ok) {
+        showKeyCopyResult(btn, ok);
+    });
 }
 
 function genKeyFor(inputId) {

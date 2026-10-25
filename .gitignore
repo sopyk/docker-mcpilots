@@ -21,3 +21,6 @@ dev-secrets/
 set-admin-pass.py
 .venv/
 venv/
+
+# BackstopJS 视觉审计产物
+backstop_data/

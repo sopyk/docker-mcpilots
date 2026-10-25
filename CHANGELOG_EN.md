@@ -6,6 +6,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Fixed
+- **About page copy button broken over LAN HTTP**: `navigator.clipboard` only exists in secure contexts (HTTPS / localhost), so accessing `http://<NAS-IP>:8900` made it `undefined` and the old implementation threw a synchronous `TypeError`, so the fallback never ran. Added `web/static/clipboard.js` (capability check + `execCommand` fallback + never rejects); the about page and users page now share it and show a "copy failed" message on failure.
+- **Static file route path traversal (security)**: `/ui/static/{path}` did not normalize the path, so encoded `..%2f` could read arbitrary repository files (e.g. `secrets/auth.yaml`). The path is now resolved and must stay inside the static directory; otherwise 404.
+
+### Improved
+- **Single source of truth for the version number**: added `core/version.py`; `main.py` (FastMCP metadata, `/health`) and Web templates (`{{ app_version }}`) all reference it instead of hardcoding, with consistency tests to prevent missed bumps.
+
 ## [v2.1.2] - 2026-09-10
 
 ### Fixed
