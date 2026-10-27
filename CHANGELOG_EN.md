@@ -6,7 +6,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [v2.1.3-rc.1] - 2026-10-27
+
+> Release candidate for testing the copy button over LAN HTTP and the single-source version number.
 
 ### Fixed
 - **About page copy button broken over LAN HTTP**: `navigator.clipboard` only exists in secure contexts (HTTPS / localhost), so accessing `http://<NAS-IP>:8900` made it `undefined` and the old implementation threw a synchronous `TypeError`, so the fallback never ran. Added `web/static/clipboard.js` (capability check + `execCommand` fallback + never rejects); the about page and users page now share it and show a "copy failed" message on failure.

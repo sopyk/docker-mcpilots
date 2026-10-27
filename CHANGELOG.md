@@ -6,7 +6,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [v2.1.3-rc.1] - 2026-10-27
+
+> 测试版（Release Candidate），用于实测内网 HTTP 下的复制按钮与版本号单一数据源。
 
 ### 修复
 - **关于页「复制」按钮在内网 HTTP 下失效**：`navigator.clipboard` 仅在安全上下文（HTTPS / localhost）存在，内网 `http://<NAS-IP>:8900` 访问时为 `undefined`，原实现同步抛 `TypeError` 导致兜底逻辑从未执行。新增 `web/static/clipboard.js`（能力检测 + `execCommand` 兜底 + 永不 reject），关于页与用户页统一调用，失败时给出「复制失败」提示。

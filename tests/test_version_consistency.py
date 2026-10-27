@@ -18,8 +18,10 @@ TEMPLATE_DIR = ROOT / "web" / "templates"
 WEB_DIR = ROOT / "web"
 MAIN_PY = ROOT / "main.py"
 
-# 匹配 x.y.z / vx.y.z，但排除 IP 地址（如 0.0.0.0）
-VERSION_RE = re.compile(r"(?<![\d.])v?\d+\.\d+\.\d+(?![\d.])")
+# 匹配 x.y.z / vx.y.z，支持 -rc.1 之类预发布后缀，但排除 IP 地址（如 0.0.0.0）
+VERSION_RE = re.compile(
+    r"(?<![\d.])v?\d+\.\d+\.\d+(?:-[0-9A-Za-z]+(?:\.[0-9A-Za-z]+)*)?(?![\d.])"
+)
 
 
 def test_version_format():
