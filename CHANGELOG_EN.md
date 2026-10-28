@@ -6,14 +6,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [v2.1.3-rc.2] - 2026-10-28
+## [v2.1.3-rc.3] - 2026-10-28
 
-> Release candidate for testing the copy button over LAN HTTP, the single-source version number, and initial API key initialization.
+> Release candidate for testing the copy button over LAN HTTP, the single-source version number, initial API key idempotent update, and the MCP HTTP request timeout.
 
 ### Fixed
 - **About page copy button broken over LAN HTTP**: `navigator.clipboard` only exists in secure contexts (HTTPS / localhost), so accessing `http://<NAS-IP>:8900` made it `undefined` and the old implementation threw a synchronous `TypeError`, so the fallback never ran. Added `web/static/clipboard.js` (capability check + `execCommand` fallback + never rejects); the about page and users page now share it and show a "copy failed" message on failure.
 - **Static file route path traversal (security)**: `/ui/static/{path}` did not normalize the path, so encoded `..%2f` could read arbitrary repository files (e.g. `secrets/auth.yaml`). The path is now resolved and must stay inside the static directory; otherwise 404.
 - **Initial API key idempotent update**: when an existing key name is supplied via `INITIAL_API_KEYS`, the value is now applied as an idempotent initialization (override) instead of being silently skipped.
+- **MCP HTTP request timeout wiring fix**: `mcp.run()` now injects the `RequestTimeoutMiddleware` via the Starlette `Middleware` wrapper (timeout default 60s, override via `MCP_HTTP_REQUEST_TIMEOUT`); on timeout it returns 503 — the half-dead server now fails fast instead of leaving clients hanging.
 
 ### Improved
 - **Single source of truth for the version number**: added `core/version.py`; `main.py` (FastMCP metadata, `/health`) and Web templates (`{{ app_version }}`) all reference it instead of hardcoding, with consistency tests to prevent missed bumps.
