@@ -185,4 +185,5 @@ sudo systemctl restart docker-mcpilots
 | Startup reports `Permission denied: /var/run/docker.sock` | The runtime user is not in the docker group; run `sudo usermod -aG docker $USER && newgrp docker` |
 | Tool call returns 401 | API Key mismatch; check `secrets/auth.yaml` |
 | Tool call returns `container not found` | Verify the container name; use `docker ps` to inspect |
+| Client reports `transport session expired` / empty tool list | Ensure the image is ≥ v2.1.3-rc.5 (`docker image inspect ... --format '{{index .Config.Labels "org.opencontainers.image.version"}}'`); the startup log should contain `core.mcp_session: MCP HTTP 会话空闲超时：已关闭（会话永不过期）`. If `Rejected request with unknown or expired session ID` appears right after a restart, that is normal — the client re-initialises |
 | systemd fails to start | Check logs with `journalctl -u docker-mcpilots -f` |

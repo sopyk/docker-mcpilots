@@ -185,4 +185,5 @@ sudo systemctl restart docker-mcpilots
 | 启动报 `Permission denied: /var/run/docker.sock` | 运行用户没在 docker 组，`sudo usermod -aG docker $USER && newgrp docker` |
 | 工具调用返回 401 | API Key 不匹配，检查 `secrets/auth.yaml` |
 | 工具调用返回 `container not found` | 检查容器名是否正确，`docker ps` 查看 |
+| 客户端报 `transport session expired` / tools 列表为空 | 确认镜像 ≥ v2.1.3-rc.5（`docker image inspect ... --format '{{index .Config.Labels "org.opencontainers.image.version"}}'`）；启动日志应有 `core.mcp_session: MCP HTTP 会话空闲超时：已关闭（会话永不过期）`。若日志出现 `Rejected request with unknown or expired session ID` 且紧跟在服务重启之后，属正常：客户端会重新 initialize |
 | systemd 启动失败 | `journalctl -u docker-mcpilots -f` 查看日志 |
