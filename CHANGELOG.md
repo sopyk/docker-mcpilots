@@ -6,6 +6,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.1.3-rc.5] - 2026-10-28
+
+> 测试版（Release Candidate），修复 rc.4 实景发现的 **MCP 客户端会话过期**（`transport session expired` / tools 为空）。
+
+### 修复
+- **MCP HTTP 会话空闲过期（Critical）**：`fastmcp` 4.1.0 起，Streamable HTTP 会话默认空闲 **1800 秒**即销毁（4.0.x 是永不过期）。由于依赖只做了范围锁定，rc.4 镜像装到 fastmcp 4.1.4，v2.1.2 镜像装到 4.0.3——**代码没改、行为变了**。长连接客户端（Hermes 等）空闲后会收到 `404 Session not found`，表现为 `transport session expired`、`outcome_uncertain`、tools 列表为空、反复重连。新增 `core/mcp_session.py`，默认把 `http_session_idle_timeout` 设为 `None`（恢复 4.0.x 行为）；可用 `MCP_SESSION_IDLE_TIMEOUT=<秒数|none>` 覆盖（如需内存有界可设 `86400`）。
+- **依赖锁定到传递依赖**：`requirements.txt` 改为精确版本（`fastmcp==4.1.4`、`mcp==2.3.0`、`docker==7.2.0` 等），新增 `requirements.lock`（全部 71 个包锁定），Docker 构建改用 lock。此前 starlette（1.6.0 → 1.10.0）、uvicorn（0.52.4 → 0.54.0）等传递依赖会随构建时间漂移。
+
+### 说明
+- `Missing session ID`（400）是 MCP 规范行为，v2.1.2 使用的 mcp 2.2.0 同样如此，非本次回归；客户端必须保存 `mcp-session-id` 并在后续请求携带。
+- 查看容器日志请用 `get_container_logs(container_id, tail, since)`（底层 `docker logs`），不要 `exec cat /proc/1/fd/1`——后者会阻塞并拖死 SSE 流。
+
 ## [v2.1.3-rc.4] - 2026-10-28
 
 > 测试版（Release Candidate），用于实测内网 HTTP 下的复制按钮、版本号单一数据源、`INITIAL_API_KEYS` 初始化；MCP HTTP 会话挂死问题定位修复（本次移除请求级超时中间件接线，恢复至 rc.2 行为）。

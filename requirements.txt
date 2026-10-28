@@ -1,8 +1,10 @@
-fastmcp>=4.0.0,<5.0.0
-mcp>=2.0.0,<3.0.0
-docker>=7.0.0,<8.0.0
-psutil>=7.0.0,<8.0.0
-pyyaml>=6.0,<7.0
-bcrypt>=4.0.0,<5.0.0
-itsdangerous>=2.1.0,<3.0.0
-jinja2>=3.1.0,<4.0.0
+# 直接依赖：精确锁定版本，避免"代码没改、行为变了"。
+# 完整传递依赖见 requirements.lock（Docker 构建使用 lock）。
+fastmcp==4.1.4
+mcp==2.3.0
+docker==7.2.0
+psutil==7.2.2
+pyyaml==6.0.3
+bcrypt==4.3.0
+itsdangerous==2.2.0
+jinja2==3.1.6

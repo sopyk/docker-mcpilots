@@ -6,6 +6,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.1.3-rc.5] - 2026-10-28
+
+> Release candidate fixing the **MCP client session expiry** (`transport session expired` / empty tools) found in real-scenario testing of rc.4.
+
+### Fixed
+- **MCP HTTP session idle expiry (Critical)**: starting with `fastmcp` 4.1.0, Streamable HTTP sessions are destroyed after **1800 seconds** of idleness by default (4.0.x never expired). Because dependencies were only range-pinned, the rc.4 image resolved fastmcp 4.1.4 while the v2.1.2 image resolved 4.0.3 — **same code, different behavior**. Long-lived clients (Hermes) received `404 Session not found` after idling, showing up as `transport session expired`, `outcome_uncertain`, empty tool lists, and repeated reconnects. Added `core/mcp_session.py`, which sets `http_session_idle_timeout` to `None` by default (restoring 4.0.x behavior); override with `MCP_SESSION_IDLE_TIMEOUT=<seconds|none>` (e.g. `86400` for bounded memory).
+- **Dependencies pinned transitively**: `requirements.txt` now uses exact versions (`fastmcp==4.1.4`, `mcp==2.3.0`, `docker==7.2.0`, ...) and a new `requirements.lock` pins all 71 packages; the Docker build installs from the lock. Previously transitive dependencies such as starlette (1.6.0 -> 1.10.0) and uvicorn (0.52.4 -> 0.54.0) drifted with build time.
+
+### Notes
+- `Missing session ID` (400) is mandated by the MCP spec and was already present in mcp 2.2.0 used by v2.1.2 — not a regression. Clients must store `mcp-session-id` and send it on subsequent requests.
+- Use `get_container_logs(container_id, tail, since)` (backed by `docker logs`) to read container logs instead of `exec cat /proc/1/fd/1`, which blocks and stalls the SSE stream.
+
 ## [v2.1.3-rc.4] - 2026-10-28
 
 > Release candidate for testing the copy button over LAN HTTP, the single-source version number, initial API key idempotent update, and the MCP HTTP request timeout; regression fix for the session hang (middleware unwired, back to rc.2 behavior).

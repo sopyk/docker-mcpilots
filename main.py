@@ -19,6 +19,7 @@ from core.audit import AuditLogger, AuditEntry
 from core.admin_auth import AdminAuth, SessionManager
 from core.csrf import CSRFProtection
 from core.version import VERSION
+from core.mcp_session import configure_session_idle_timeout
 from tools.container_tools import register_container_tools
 from tools.image_tools import register_image_tools
 from tools.diag_tools import register_diag_tools
@@ -352,6 +353,9 @@ def create_app() -> FastMCP:
 if __name__ == "__main__":
     mcp = create_app()
     settings = Settings.from_yaml(str(CONFIG_DIR / "settings.yaml"))
+    # 必须在 mcp.run() 之前设置：fastmcp 4.1.x 默认空闲 1800s 就销毁会话，
+    # 会让长连接客户端（Hermes）在空闲后拿到 404 Session not found。
+    configure_session_idle_timeout()
     mcp.run(
         transport="http",
         host=settings.host,
