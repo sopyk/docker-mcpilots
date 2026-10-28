@@ -19,8 +19,6 @@ from core.audit import AuditLogger, AuditEntry
 from core.admin_auth import AdminAuth, SessionManager
 from core.csrf import CSRFProtection
 from core.version import VERSION
-from core.http_middleware import RequestTimeoutMiddleware, get_request_timeout_seconds
-from starlette.middleware import Middleware as StarletteMiddleware
 from tools.container_tools import register_container_tools
 from tools.image_tools import register_image_tools
 from tools.diag_tools import register_diag_tools
@@ -359,7 +357,4 @@ if __name__ == "__main__":
         host=settings.host,
         port=settings.port,
         uvicorn_config={"forwarded_allow_ips": "*", "proxy_headers": False},
-        middleware=[
-            StarletteMiddleware(RequestTimeoutMiddleware, timeout_seconds=get_request_timeout_seconds())
-        ],
     )
