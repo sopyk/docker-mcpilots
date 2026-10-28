@@ -6,7 +6,7 @@ WORKDIR /app
 RUN apk add --no-cache build-base libffi-dev openssl-dev
 
 # 安装 Python 依赖（从 lock 安装，保证传递依赖版本不漂移）
-COPY requirements.txt requirements.lock ./
+COPY requirements.lock ./
 RUN pip install --no-cache-dir --prefix=/install -r requirements.lock && \
     # 清理 Python 的 pyc 缓存，减小体积
     find /install -type d -name __pycache__ -prune -exec rm -rf {} + && \

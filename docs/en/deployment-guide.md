@@ -43,6 +43,7 @@ Suitable for Synology/QNAP NAS, regular Linux servers — works out of the box.
 | `ADMIN_USERNAME` | Web UI admin username | `admin` |
 | `ADMIN_PASSWORD` | Web UI admin password (set on first start) | Randomly generated with warning |
 | `INITIAL_API_KEYS` | Initial API Key list, format: `name1:key1:role1,name2:key2:role2` | None |
+| `MCP_SESSION_IDLE_TIMEOUT` | MCP HTTP session idle timeout. `none` = never expire (same as 2.1.2); a number (e.g. `86400`) reclaims orphaned sessions | `none` |
 | `MCP_CONFIG_DIR` | Config file directory | `/app/config` |
 | `MCP_SECRETS_DIR` | Sensitive file directory | `/app/secrets` |
 

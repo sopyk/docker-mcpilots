@@ -33,3 +33,6 @@ services:
       - ADMIN_PASSWORD=change-me
       # 初始 API Key（格式：name1:key1:role1,name2:key2:role2，可选）
       # - INITIAL_API_KEYS=default-admin:sk-dm-your-key:admin
+      # MCP 会话空闲超时：none = 永不过期（默认，与 2.1.2 一致）
+      # 长期运行想回收孤儿会话可设 86400（24 小时）
+      # - MCP_SESSION_IDLE_TIMEOUT=none
