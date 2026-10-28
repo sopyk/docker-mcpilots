@@ -242,7 +242,7 @@ class DockerClient:
     def get_container_logs(
         self,
         container_id: str,
-        tail: int | None = None,
+        tail: int | str | None = None,
         since: str | None = None,
         until: str | None = None,
         timestamps: bool = False,
@@ -254,7 +254,20 @@ class DockerClient:
             container = self._client.containers.get(container_id)
             kwargs = {"stdout": True, "stderr": True, "timestamps": timestamps}
             if tail is not None:
-                kwargs["tail"] = str(tail)
+                if isinstance(tail, str):
+                    if tail.strip().lower() == "all":
+                        kwargs["tail"] = "all"
+                    elif tail.strip().isdigit():
+                        kwargs["tail"] = int(tail.strip())
+                    else:
+                        kwargs["tail"] = tail
+                elif isinstance(tail, int):
+                    if tail < 0:
+                        kwargs["tail"] = "all"
+                    else:
+                        kwargs["tail"] = tail
+                else:
+                    kwargs["tail"] = tail
             if since:
                 parsed = _parse_since_until(since)
                 if parsed is not None:
@@ -264,10 +277,26 @@ class DockerClient:
                 if parsed is not None:
                     kwargs["until"] = parsed
             logs = container.logs(**kwargs)
+            log_text = logs.decode("utf-8", errors="replace") if isinstance(logs, bytes) else str(logs)
+            # 防止 SSE 超过 httpx2 的 1MB 限制（Server-sent event exceeded the 1048576 byte limit）
+            # 如果日志过大，保留最后 512KB 并提示
+            if len(log_text.encode("utf-8")) > 900_000:
+                # 按字节截断，优先保留结尾（最新日志最有用）
+                encoded = log_text.encode("utf-8")
+                truncated = encoded[-900_000:]
+                # 尽量从换行处截断，避免乱码
+                try:
+                    if b"\n" in truncated:
+                        idx = truncated.index(b"\n")
+                        truncated = truncated[idx + 1:]
+                except ValueError:
+                    pass
+                log_text = truncated.decode("utf-8", errors="replace")
+                log_text = f"[警告：日志过长（超过 ~900KB），已截断只显示最后部分。建议使用 tail、since 或 until 缩小范围]\n\n{log_text}"
             return {
                 "success": True,
                 "container_id": container_id,
-                "logs": logs.decode("utf-8", errors="replace") if isinstance(logs, bytes) else str(logs),
+                "logs": log_text,
             }
         except DockerNotFound:
             return {"success": False, "logs": "", "error": f"Container '{container_id}' not found"}
