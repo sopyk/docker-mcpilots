@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### 说明
 - `Missing session ID`（400）是 MCP 规范行为，v2.1.2 使用的 mcp 2.2.0 同样如此，非本次回归；客户端必须保存 `mcp-session-id` 并在后续请求携带。
 - **容器重启会让所有 MCP 会话失效**：会话表保存在服务端内存中，重启后客户端带着旧 `mcp-session-id` 请求会收到一次 `404 Session not found`，服务端日志为 `Rejected request with unknown or expired session ID: <id>`，客户端自动重新 `initialize` 即恢复。**这属于预期行为，不是故障**；rc.4 → rc.5 切换时看到的该行日志正是重启导致，而非 1800 秒空闲过期。重启后需重新初始化是 MCP stateful 模式的固有特性。
-- **`MCP_SESSION_IDLE_TIMEOUT` 的覆盖已验证有效**：设为 `2` 的容器空闲 5 秒后 `tools/list` 返回 `404`；默认容器空闲 65 秒仍 `200`；只设 fastmcp 原生 `FASTMCP_HTTP_SESSION_IDLE_TIMEOUT=5`（不设本项目变量）的容器空闲 20 秒仍 `200`——说明本项目的显式覆盖生效且优先级更高。设为 `86400` 时只会回收**既无在途请求、也无打开的 GET/SSE 流**的会话，回收时记 INFO 日志 `Session <id> idle timeout`；并发会话另有 SDK 默认上限 10000（超出时 WARNING `Refusing to open a new session`）。详见部署指南「MCP 会话生命周期」。
+- **`MCP_SESSION_IDLE_TIMEOUT` 的覆盖已验证有效**：设为 `2` 的容器空闲 5 秒后 `tools/list` 返回 `404`；默认容器空闲 65 秒仍 `200`；只设 fastmcp 原生 `FASTMCP_HTTP_SESSION_IDLE_TIMEOUT=5`（不设本项目变量）的容器空闲 20 秒仍 `200`——说明本项目的显式覆盖生效且优先级更高。设为 `86400` 时只会回收**既无在途请求、也无打开的 GET/SSE 流**的会话，回收时记 INFO 日志 `Session <id> idle timeout`（已实测：`MCP_SESSION_IDLE_TIMEOUT=5` 的容器在空闲 ~9 秒后该行出现，随后同一 session 的请求返回 404）；并发会话另有 SDK 默认上限 10000（超出时 WARNING `Refusing to open a new session`）。详见部署指南「MCP 会话生命周期」。
 - 查看容器日志请用 `get_container_logs(container_id, tail, since)`（底层 `docker logs`），不要 `exec cat /proc/1/fd/1`——后者会阻塞并拖死 SSE 流。
 
 ## [v2.1.3-rc.4] - 2026-10-28
