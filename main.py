@@ -175,16 +175,19 @@ def _init_config_files() -> None:
             parts = pair.strip().split(":")
             if len(parts) == 3:
                 name, key, role = parts[0], parts[1], parts[2]
-                # 检查是否已存在同名 key
+                # 检查是否已存在同名 key；已存在则以本次初始化值幂等地更新（key/role），
+                # 而不是静默跳过——INITIAL_API_KEYS 应覆盖同名 key
                 existing = next((k for k in auth_config.keys if k.name == name), None)
-                if existing:
-                    logger.warning(f"API key '{name}' already exists, skipping")
-                    continue
-                # 添加新 key
-                auth_config.keys.append(
-                    AuthConfig.Key(name=name, key=key, role=role)
-                )
-                logger.info(f"Created API key from environment: {name} (role: {role})")
+                if existing is not None:
+                    existing.key = key
+                    existing.role = role
+                    logger.info(f"Updated API key from environment: {name} (role: {role})")
+                else:
+                    # 添加新 key
+                    auth_config.keys.append(
+                        AuthConfig.Key(name=name, key=key, role=role)
+                    )
+                    logger.info(f"Created API key from environment: {name} (role: {role})")
         auth_config.to_yaml(str(auth_file))
         logger.info(f"Updated auth config with initial API keys: {auth_file}")
 

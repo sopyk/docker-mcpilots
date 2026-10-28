@@ -24,8 +24,10 @@ if "fastmcp" in sys.modules:
 import pytest
 from starlette.testclient import TestClient
 
+import main
 from core.admin_auth import AdminAuth
 from core.version import VERSION
+from core.config import AuthConfig
 
 
 @pytest.fixture()
@@ -219,6 +221,30 @@ class TestAboutPage:
         r = web_client.get("/health")
         assert r.status_code == 200
         assert r.json()["version"] == VERSION
+
+
+class TestInitialApiKeys:
+    """INITIAL_API_KEYS 幂等初始化"""
+
+    def test_initial_api_keys_updates_existing_key(self, tmp_path, monkeypatch):
+        """已有同名 key 时应被 INITIAL_API_KEYS 的值覆盖，而不是静默跳过"""
+        config_dir = tmp_path / "config"
+        secrets_dir = tmp_path / "secrets"
+        config_dir.mkdir()
+        secrets_dir.mkdir()
+
+        monkeypatch.setattr(main, "CONFIG_DIR", config_dir)
+        monkeypatch.setattr(main, "SECRETS_DIR", secrets_dir)
+        monkeypatch.setenv("INITIAL_API_KEYS", "default-admin:sk-dm-rc-999:admin")
+        main.create_app()
+
+        auth_yaml = secrets_dir / "auth.yaml"
+        auth_cfg = AuthConfig.from_yaml(str(auth_yaml))
+
+        # 新 key 已生效
+        assert auth_cfg.find_key("sk-dm-rc-999") is not None
+        # 旧 key 已被覆盖
+        assert auth_cfg.find_key("sk-dm-CHANGE-THIS-KEY-IMMEDIATELY") is None
 
 
 class TestButtonActions:

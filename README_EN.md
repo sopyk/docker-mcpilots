@@ -89,4 +89,4 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 - 📦 Images:
   - Docker Hub: `sopyk/docker-mcpilots`
   - GHCR: `ghcr.io/sopyk/docker-mcpilots`
-  - Release candidate: `ghcr.io/sopyk/docker-mcpilots:v2.1.3-rc.1` (rolling tag `:rc`)
+  - Release candidate: `ghcr.io/sopyk/docker-mcpilots:v2.1.3-rc.2` (rolling tag `:rc`)
