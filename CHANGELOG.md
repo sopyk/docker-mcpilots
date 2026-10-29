@@ -15,11 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - **关于页「复制」按钮在内网 HTTP 下失效**：`navigator.clipboard` 仅在安全上下文（HTTPS / localhost）存在，内网 `http://<NAS-IP>:8900` 访问时为 `undefined`，原实现同步抛 `TypeError` 导致兜底逻辑从未执行。新增 `web/static/clipboard.js`（能力检测 + `execCommand` 兜底 + 永不 reject），关于页与用户页统一调用，失败时给出「复制失败」提示。
 - **静态文件路由路径穿越（安全）**：`/ui/static/{path}` 未做归一化校验，编码后的 `..%2f` 可越界读取仓库内任意文件（如 `secrets/auth.yaml`）。现已 `resolve()` 后校验必须位于 static 目录内，越界一律 404。
 - **INITIAL_API_KEYS 幂等更新**：已存在同名 key 时应以环境变量中的 `name:key:role` 覆盖为本次初始化值，而不是静默跳过（此前设置同名 key（如 `default-admin`）完全不生效）。
-- **容器日志 `get_container_logs`（`tail` 失效 + SSE 超限）**：`docker-py` 7.x 仅在 `tail` 为 `int` 时才按行截取，此前传字符串会被**静默**降级为全量日志，导致 `tail` 完全不生效。现已按 `int` 传参（并兼容 `"all"` 与负数）。另外，当日志超过约 900KB 时自动保留末尾并附加提示，避免触发 `Server-sent event exceeded the 1048576 byte limit` 让整个调用失败。
+- **容器日志 `get_container_logs`（`tail` 失效 + SSE 超限）**：`docker-py` 7.x 仅在 `tail` 为 `int` 时才按行截取，此前传字符串会被**静默**降级为全量日志，导致 `tail` 完全不生效。现已按 `int` 传参（并兼容 `"all"` 与负数）。另外，返回体积超过客户端上限时自动保留末尾约 350KB 并附加提示（FastMCP 会把结果同时放进 `content` 与 `structuredContent`，响应体积约为文本的 2 倍，故按最终响应体积控制），避免触发 `Server-sent event exceeded the 1048576 byte limit` 让整个调用失败。
 - **MCP 请求级超时中间件导致会话挂死**：从 `mcp.run()` 移除 `middleware` 注入，恢复此前行为，避免请求级超时打断长连接（SSE）会话。
 
 ### 改进
 - **依赖锁定到传递依赖**：`requirements.txt` 改为精确版本（`fastmcp==4.1.4`、`mcp==2.3.0`、`docker==7.2.0` 等），新增 `requirements.lock`（全部 71 个包锁定），Docker 构建改用 lock。此前 starlette（1.6.0 → 1.10.0）、uvicorn（0.52.4 → 0.54.0）等传递依赖会随构建时间漂移。
+- **基础镜像按 digest 固定**：`docker/Dockerfile` 由浮动的 `FROM python:3.11-alpine` 改为 `FROM python:3.11-alpine@sha256:79440cc1...`（manifest list，含 amd64 + arm64）。上游重新发布同名 tag 不再影响构建结果，与 `requirements.lock` 一起构成「可复现构建」的上下两层。
 - **版本号单一数据源**：新增 `core/version.py`，`main.py`（FastMCP 元信息、`/health`）与 Web 模板（`{{ app_version }}`）统一引用，不再硬编码。
 - **新增守卫测试**：`tests/test_mcp_session.py`（解析矩阵 + `None` 语义真实内省 + 接线守卫）、`tests/test_requirements_lock.py`（`requirements.txt` 与 lock 一致性 + Dockerfile 必须从 lock 安装）、版本号一致性测试。
 

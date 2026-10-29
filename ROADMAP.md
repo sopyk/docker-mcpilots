@@ -39,10 +39,4 @@
 - **目标**: 用 `docker buildx build --platform linux/amd64,linux/arm64` 发布 manifest list，并校验两个架构都能通过 `/health` + MCP `initialize`。
 - **注意**: `psutil` / `cryptography` 在 arm64 需要编译工具链（builder 阶段已装 `build-base`），需实机验证。
 
-### 7. 基础镜像 digest 固定
-
-- **现状**: `docker/Dockerfile` 使用浮动标签 `FROM python:3.11-alpine`。上游重新发布同名 tag 会改变基础镜像（Python 补丁级别、alpine、openssl），导致**同一个 commit 在不同时间构建出的镜像不一致**。
-- **目标**: 改为 `FROM python:3.11-alpine@sha256:<digest>`（tag + digest 双写，兼顾可读性与不可变性）；升级基础镜像时显式替换 digest 并跑全量测试。
-- **收益**: 与 `requirements.lock` 一起构成「可复现构建」的上下两层——上层锁 OS/运行时，下层锁 pip 包，避免再次出现"代码没改、行为变了"。
-
 > 说明：测试/CI 类改进（`scripts/audit.sh` 视觉基线修通或移除、CI 增加 E2E 用例、发布流程自动化）不属于使用者可见的产品能力，不在本 Roadmap 中跟踪。

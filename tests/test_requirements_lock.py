@@ -7,7 +7,8 @@
 现在 Docker 构建从 requirements.lock 安装，本测试确保：
 1. requirements.txt 里声明的每个直接依赖，都以相同版本出现在 lock 中；
 2. lock 没有重复包；
-3. Dockerfile 确实从 lock 安装（而不是退回 requirements.txt）。
+3. Dockerfile 确实从 lock 安装（而不是退回 requirements.txt）；
+4. 基础镜像按 digest 固定（可复现构建的上层）。
 """
 from __future__ import annotations
 
@@ -86,3 +87,19 @@ def test_dockerfile_installs_from_lock():
     assert "-r requirements.txt" not in dockerfile, (
         "Dockerfile 不应再从未锁定的 requirements.txt 安装"
     )
+
+
+def test_dockerfile_pins_base_image_by_digest():
+    """基础镜像必须按 digest 固定（防止上游重发同名 tag 改变构建结果）
+
+    与 requirements.lock 配合构成可复现构建的上下两层：
+    上层锁 OS/运行时，下层锁 pip 包。
+    """
+    froms = [
+        line.strip()
+        for line in DOCKERFILE.read_text(encoding="utf-8").splitlines()
+        if line.strip().upper().startswith("FROM ")
+    ]
+    assert froms, "Dockerfile 中未找到 FROM 指令"
+    for line in froms:
+        assert "@sha256:" in line, f"基础镜像必须按 digest 固定（FROM ...@sha256:...）：{line}"
