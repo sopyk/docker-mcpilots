@@ -89,4 +89,4 @@ MIT License - 详见 [LICENSE](LICENSE) 文件。
 - 📦 镜像地址：
   - Docker Hub：`sopyk/docker-mcpilots`
   - GHCR：`ghcr.io/sopyk/docker-mcpilots`
-  - 稳定版：`ghcr.io/sopyk/docker-mcpilots:2.1.3`（滚动标签 `:latest`）
+  - 稳定版：`ghcr.io/sopyk/docker-mcpilots:v2.1.3`（滚动标签 `:latest`）
