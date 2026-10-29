@@ -330,7 +330,7 @@ docker-mcpilots/
 | `stop_container` | `container_id` | `{"success", "container"}` |
 | `restart_container` | `container_id` | `{"success", "container"}` |
 | `remove_container` | `container_id, force` | `{"success", "removed"}` |
-| `get_container_logs` | `container_id, tail?, since?, until?, timestamps` | `{"success", "container_id", "logs"}` |
+| `get_container_logs` | `container_id, tail?, since?, until?, timestamps` | `{"success", "container_id", "logs", "truncated", "bytes_total"}` |
 | `get_container_stats` | `container_id` | CPU/内存/网络统计（单次采样） |
 
 ##### 容器诊断方法
