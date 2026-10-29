@@ -6,32 +6,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [v2.1.3-rc.5] - 2026-10-28
+## [v2.1.3] - 2026-10-29
 
-> Release candidate fixing the **MCP client session expiry** (`transport session expired` / empty tools) found in real-scenario testing of rc.4.
-
-### Fixed
-- **MCP HTTP session idle expiry (Critical)**: starting with `fastmcp` 4.1.0, Streamable HTTP sessions are destroyed after **1800 seconds** of idleness by default (4.0.x never expired). Because dependencies were only range-pinned, the rc.4 image resolved fastmcp 4.1.4 while the v2.1.2 image resolved 4.0.3 — **same code, different behavior**. Long-lived clients (Hermes) received `404 Session not found` after idling, showing up as `transport session expired`, `outcome_uncertain`, empty tool lists, and repeated reconnects. Added `core/mcp_session.py`, which sets `http_session_idle_timeout` to `None` by default (restoring 4.0.x behavior); override with `MCP_SESSION_IDLE_TIMEOUT=<seconds|none>` (e.g. `86400` for bounded memory).
-- **Dependencies pinned transitively**: `requirements.txt` now uses exact versions (`fastmcp==4.1.4`, `mcp==2.3.0`, `docker==7.2.0`, ...) and a new `requirements.lock` pins all 71 packages; the Docker build installs from the lock. Previously transitive dependencies such as starlette (1.6.0 -> 1.10.0) and uvicorn (0.52.4 -> 0.54.0) drifted with build time.
-
-### Notes
-- `Missing session ID` (400) is mandated by the MCP spec and was already present in mcp 2.2.0 used by v2.1.2 — not a regression. Clients must store `mcp-session-id` and send it on subsequent requests.
-- **A container restart invalidates every MCP session**: the session table lives in server memory, so after a restart a client sending its old `mcp-session-id` gets one `404 Session not found`, logged as `Rejected request with unknown or expired session ID: <id>`, then recovers by re-`initialize`ing. **This is expected behaviour, not a fault** — the line seen while switching rc.4 → rc.5 came from the restart, not from the 1800s idle expiry. Re-initialising after a restart is inherent to MCP stateful mode.
-- **The `MCP_SESSION_IDLE_TIMEOUT` override is verified**: a container with `2` returned `404` on `tools/list` after 5s idle; the default container stayed `200` after 65s idle; a container with only fastmcp's native `FASTMCP_HTTP_SESSION_IDLE_TIMEOUT=5` (this project's variable unset) still returned `200` after 20s — proving this project's explicit override applies and takes precedence. With `86400`, only sessions with **no request in flight and no open GET/SSE stream** are reaped, logging `Session <id> idle timeout` at INFO (verified: a container with `MCP_SESSION_IDLE_TIMEOUT=5` logged that line after ~9s idle and the next request on the same session returned 404); the SDK also caps concurrent sessions at 10000 by default (WARNING `Refusing to open a new session` beyond that). See "MCP session lifecycle" in the deployment guide.
-- Use `get_container_logs(container_id, tail, since)` (backed by `docker logs`) to read container logs instead of `exec cat /proc/1/fd/1`, which blocks and stalls the SSE stream.
-
-## [v2.1.3-rc.4] - 2026-10-28
-
-> Release candidate for testing the copy button over LAN HTTP, the single-source version number, initial API key idempotent update, and the MCP HTTP request timeout; regression fix for the session hang (middleware unwired, back to rc.2 behavior).
+> This release focuses on **MCP connection stability**: it fixes client sessions expiring after long idle periods (`transport session expired` / empty tool lists) and pins dependencies down to transitive ones. It also fixes the copy button over LAN HTTP, a static-file path traversal, `INITIAL_API_KEYS` idempotent updates, and the broken `tail` parameter of `get_container_logs`.
 
 ### Fixed
+- **MCP HTTP session idle expiry (Critical)**: starting with `fastmcp` 4.1.0, Streamable HTTP sessions are destroyed after **1800 seconds** of idleness by default (4.0.x never expired). Because dependencies were only range-pinned, the same commit could resolve different fastmcp versions (4.0.3 / 4.1.4) depending on build time — **same code, different behavior**. Long-lived clients (Hermes) received `404 Session not found` after idling, showing up as `transport session expired`, `outcome_uncertain`, empty tool lists, and repeated reconnects. Added `core/mcp_session.py`, which sets `http_session_idle_timeout` to `None` by default (never expire); override with `MCP_SESSION_IDLE_TIMEOUT=<seconds|none>` (e.g. `86400` for bounded memory).
 - **About page copy button broken over LAN HTTP**: `navigator.clipboard` only exists in secure contexts (HTTPS / localhost), so accessing `http://<NAS-IP>:8900` made it `undefined` and the old implementation threw a synchronous `TypeError`, so the fallback never ran. Added `web/static/clipboard.js` (capability check + `execCommand` fallback + never rejects); the about page and users page now share it and show a "copy failed" message on failure.
 - **Static file route path traversal (security)**: `/ui/static/{path}` did not normalize the path, so encoded `..%2f` could read arbitrary repository files (e.g. `secrets/auth.yaml`). The path is now resolved and must stay inside the static directory; otherwise 404.
 - **Initial API key idempotent update**: when an existing key name is supplied via `INITIAL_API_KEYS`, the value is now applied as an idempotent initialization (override) instead of being silently skipped.
-- **MCP HTTP session hang regression**: removed the `middleware` injection from `mcp.run()` (back to rc.2 behavior, no longer injecting `RequestTimeoutMiddleware`); tagged v2.1.3-rc.4, pending real-scenario verification of session stability.
+- **Container logs `get_container_logs` (`tail` ignored + SSE size limit)**: `docker-py` 7.x only honours `tail` when it is an `int`; passing a string silently fell back to fetching all logs, so `tail` never worked. It is now passed as `int` (also accepting `"all"` and negative values). Additionally, output larger than ~900KB is truncated to the tail with a notice, preventing `Server-sent event exceeded the 1048576 byte limit` from failing the whole call.
+- **MCP request-level timeout middleware hanging sessions**: removed the `middleware` injection from `mcp.run()`, restoring the previous behavior so request timeouts cannot tear down long-lived (SSE) sessions.
 
 ### Improved
-- **Single source of truth for the version number**: added `core/version.py`; `main.py` (FastMCP metadata, `/health`) and Web templates (`{{ app_version }}`) all reference it instead of hardcoding, with consistency tests to prevent missed bumps.
+- **Dependencies pinned transitively**: `requirements.txt` now uses exact versions (`fastmcp==4.1.4`, `mcp==2.3.0`, `docker==7.2.0`, ...) and a new `requirements.lock` pins all 71 packages; the Docker build installs from the lock. Previously transitive dependencies such as starlette (1.6.0 -> 1.10.0) and uvicorn (0.52.4 -> 0.54.0) drifted with build time.
+- **Single source of truth for the version number**: added `core/version.py`; `main.py` (FastMCP metadata, `/health`) and Web templates (`{{ app_version }}`) all reference it instead of hardcoding.
+- **New guard tests**: `tests/test_mcp_session.py` (parsing matrix + real introspection of `None` semantics + wiring guard), `tests/test_requirements_lock.py` (`requirements.txt`/lock consistency + Dockerfile must install from the lock), plus version consistency tests.
+
+### Notes
+- `Missing session ID` (400) is mandated by the MCP spec and was already present in mcp 2.2.0 — not a regression. Clients must store `mcp-session-id` and send it on subsequent requests.
+- **A container restart invalidates every MCP session**: the session table lives in server memory, so after a restart a client sending its old `mcp-session-id` gets one `404 Session not found`, logged as `Rejected request with unknown or expired session ID: <id>`, then recovers by re-`initialize`ing. **This is expected behaviour, not a fault**; re-initialising after a restart is inherent to MCP stateful mode.
+- **The `MCP_SESSION_IDLE_TIMEOUT` override is verified**: a container with `2` returned `404` on `tools/list` after 5s idle; the default container stayed `200` after 65s idle; a container with only fastmcp's native `FASTMCP_HTTP_SESSION_IDLE_TIMEOUT=5` (this project's variable unset) still returned `200` after 20s — proving this project's explicit override applies and takes precedence. With `86400`, only sessions with **no request in flight and no open GET/SSE stream** are reaped, logging `Session <id> idle timeout` at INFO (verified: a container with `MCP_SESSION_IDLE_TIMEOUT=5` logged that line after ~9s idle and the next request on the same session returned 404); the SDK also caps concurrent sessions at 10000 by default (WARNING `Refusing to open a new session` beyond that). See "MCP session lifecycle" in the deployment guide.
+- Use `get_container_logs(container_id, tail, since)` (backed by `docker logs`) to read container logs instead of `exec cat /proc/1/fd/1`, which blocks and stalls the SSE stream.
 
 ## [v2.1.2] - 2026-09-10
 

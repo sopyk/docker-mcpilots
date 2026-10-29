@@ -43,11 +43,11 @@ Suitable for Synology/QNAP NAS, regular Linux servers — works out of the box.
 | `ADMIN_USERNAME` | Web UI admin username | `admin` |
 | `ADMIN_PASSWORD` | Web UI admin password (set on first start) | Randomly generated with warning |
 | `INITIAL_API_KEYS` | Initial API Key list, format: `name1:key1:role1,name2:key2:role2` | None |
-| `MCP_SESSION_IDLE_TIMEOUT` | MCP HTTP session idle timeout. `none` = never expire (same as 2.1.2); a number (e.g. `86400`) reclaims orphaned sessions | `none` |
+| `MCP_SESSION_IDLE_TIMEOUT` | MCP HTTP session idle timeout. `none` = never expire (same as previous releases); a number (e.g. `86400`) reclaims orphaned sessions | `none` |
 | `MCP_CONFIG_DIR` | Config file directory | `/app/config` |
 | `MCP_SECRETS_DIR` | Sensitive file directory | `/app/secrets` |
 
-### MCP session lifecycle (v2.1.3-rc.5+)
+### MCP session lifecycle (v2.1.3+)
 
 MCP Streamable HTTP sessions live **in server memory**. The rules:
 
@@ -58,7 +58,7 @@ MCP Streamable HTTP sessions live **in server memory**. The rules:
 - **Confirm the setting took effect**: the startup log contains
   `core.mcp_session: MCP HTTP 会话空闲超时：已关闭（会话永不过期）` (or `...：86400 秒`).
 
-> Background: `fastmcp` 4.1.0 changed the default idle timeout to 1800s (4.0.x never expired), which caused `transport session expired` / empty tool lists in rc.4. rc.5 restores "never expire" by default and pins every dependency in `requirements.lock`.
+> Background: `fastmcp` 4.1.0 changed the default idle timeout to 1800s (4.0.x never expired), which used to cause `transport session expired` / empty tool lists. Since v2.1.3 the default is "never expire" again, and every dependency is pinned in `requirements.lock`.
 
 ## Option 2: Build from Source (Developers)
 

@@ -1,11 +1,11 @@
 """MCP HTTP 会话生命周期配置。
 
-背景（v2.1.3-rc.4 实景问题）：
+背景（实景问题）：
 fastmcp 4.1.0 起，Streamable HTTP 的会话默认空闲 1800 秒（30 分钟）后就销毁
 （4.0.x 是"永不过期"）。长时间挂着会话的客户端（Hermes 等）在空闲后会拿到
 ``404 Session not found``，表现为 ``transport session expired`` / tools 列表为空。
-由于 ``requirements.txt`` 之前只做了范围锁定，v2.1.2 镜像装到 fastmcp 4.0.3，
-rc.4 镜像装到 4.1.4，导致"代码没改、行为变了"。
+由于 ``requirements.txt`` 之前只做了范围锁定，同一个 commit 在不同时间构建会装到
+不同 fastmcp 版本（4.0.3 / 4.1.4），导致"代码没改、行为变了"。
 
 这里把默认恢复为与 4.0.x 一致的"永不过期"，同时保留环境变量覆盖能力：
 

@@ -6,32 +6,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [v2.1.3-rc.5] - 2026-10-28
+## [v2.1.3] - 2026-10-29
 
-> 测试版（Release Candidate），修复 rc.4 实景发现的 **MCP 客户端会话过期**（`transport session expired` / tools 为空）。
-
-### 修复
-- **MCP HTTP 会话空闲过期（Critical）**：`fastmcp` 4.1.0 起，Streamable HTTP 会话默认空闲 **1800 秒**即销毁（4.0.x 是永不过期）。由于依赖只做了范围锁定，rc.4 镜像装到 fastmcp 4.1.4，v2.1.2 镜像装到 4.0.3——**代码没改、行为变了**。长连接客户端（Hermes 等）空闲后会收到 `404 Session not found`，表现为 `transport session expired`、`outcome_uncertain`、tools 列表为空、反复重连。新增 `core/mcp_session.py`，默认把 `http_session_idle_timeout` 设为 `None`（恢复 4.0.x 行为）；可用 `MCP_SESSION_IDLE_TIMEOUT=<秒数|none>` 覆盖（如需内存有界可设 `86400`）。
-- **依赖锁定到传递依赖**：`requirements.txt` 改为精确版本（`fastmcp==4.1.4`、`mcp==2.3.0`、`docker==7.2.0` 等），新增 `requirements.lock`（全部 71 个包锁定），Docker 构建改用 lock。此前 starlette（1.6.0 → 1.10.0）、uvicorn（0.52.4 → 0.54.0）等传递依赖会随构建时间漂移。
-
-### 说明
-- `Missing session ID`（400）是 MCP 规范行为，v2.1.2 使用的 mcp 2.2.0 同样如此，非本次回归；客户端必须保存 `mcp-session-id` 并在后续请求携带。
-- **容器重启会让所有 MCP 会话失效**：会话表保存在服务端内存中，重启后客户端带着旧 `mcp-session-id` 请求会收到一次 `404 Session not found`，服务端日志为 `Rejected request with unknown or expired session ID: <id>`，客户端自动重新 `initialize` 即恢复。**这属于预期行为，不是故障**；rc.4 → rc.5 切换时看到的该行日志正是重启导致，而非 1800 秒空闲过期。重启后需重新初始化是 MCP stateful 模式的固有特性。
-- **`MCP_SESSION_IDLE_TIMEOUT` 的覆盖已验证有效**：设为 `2` 的容器空闲 5 秒后 `tools/list` 返回 `404`；默认容器空闲 65 秒仍 `200`；只设 fastmcp 原生 `FASTMCP_HTTP_SESSION_IDLE_TIMEOUT=5`（不设本项目变量）的容器空闲 20 秒仍 `200`——说明本项目的显式覆盖生效且优先级更高。设为 `86400` 时只会回收**既无在途请求、也无打开的 GET/SSE 流**的会话，回收时记 INFO 日志 `Session <id> idle timeout`（已实测：`MCP_SESSION_IDLE_TIMEOUT=5` 的容器在空闲 ~9 秒后该行出现，随后同一 session 的请求返回 404）；并发会话另有 SDK 默认上限 10000（超出时 WARNING `Refusing to open a new session`）。详见部署指南「MCP 会话生命周期」。
-- 查看容器日志请用 `get_container_logs(container_id, tail, since)`（底层 `docker logs`），不要 `exec cat /proc/1/fd/1`——后者会阻塞并拖死 SSE 流。
-
-## [v2.1.3-rc.4] - 2026-10-28
-
-> 测试版（Release Candidate），用于实测内网 HTTP 下的复制按钮、版本号单一数据源、`INITIAL_API_KEYS` 初始化；MCP HTTP 会话挂死问题定位修复（本次移除请求级超时中间件接线，恢复至 rc.2 行为）。
+> 本版聚焦 **MCP 连接稳定性**：修复长时间空闲后客户端会话过期（`transport session expired` / tools 为空），并把依赖锁死到传递依赖；同时修复内网 HTTP 下的复制按钮、静态文件路径穿越、`INITIAL_API_KEYS` 幂等更新，以及 `get_container_logs` 的 `tail` 失效。
 
 ### 修复
+- **MCP HTTP 会话空闲过期（Critical）**：`fastmcp` 4.1.0 起，Streamable HTTP 会话默认空闲 **1800 秒**即销毁（4.0.x 是永不过期）。由于依赖此前只做范围锁定，同一个 commit 在不同时间构建会装到不同 fastmcp 版本（4.0.3 / 4.1.4）——**代码没改、行为变了**。长连接客户端（Hermes 等）空闲后会收到 `404 Session not found`，表现为 `transport session expired`、`outcome_uncertain`、tools 列表为空、反复重连。新增 `core/mcp_session.py`，默认把 `http_session_idle_timeout` 设为 `None`（恢复永不过期）；可用 `MCP_SESSION_IDLE_TIMEOUT=<秒数|none>` 覆盖（如需内存有界可设 `86400`）。
 - **关于页「复制」按钮在内网 HTTP 下失效**：`navigator.clipboard` 仅在安全上下文（HTTPS / localhost）存在，内网 `http://<NAS-IP>:8900` 访问时为 `undefined`，原实现同步抛 `TypeError` 导致兜底逻辑从未执行。新增 `web/static/clipboard.js`（能力检测 + `execCommand` 兜底 + 永不 reject），关于页与用户页统一调用，失败时给出「复制失败」提示。
 - **静态文件路由路径穿越（安全）**：`/ui/static/{path}` 未做归一化校验，编码后的 `..%2f` 可越界读取仓库内任意文件（如 `secrets/auth.yaml`）。现已 `resolve()` 后校验必须位于 static 目录内，越界一律 404。
 - **INITIAL_API_KEYS 幂等更新**：已存在同名 key 时应以环境变量中的 `name:key:role` 覆盖为本次初始化值，而不是静默跳过（此前设置同名 key（如 `default-admin`）完全不生效）。
-- **MCP HTTP 会话挂死回归定位**：本次从 `mcp.run()` 中移除 `middleware` 注入（恢复至 rc.2 行为，即不再注入 `RequestTimeoutMiddleware`），作为 v2.1.3-rc.4 的定位修复；待 rc.4 实景复测确认会话是否恢复稳定。
+- **容器日志 `get_container_logs`（`tail` 失效 + SSE 超限）**：`docker-py` 7.x 仅在 `tail` 为 `int` 时才按行截取，此前传字符串会被**静默**降级为全量日志，导致 `tail` 完全不生效。现已按 `int` 传参（并兼容 `"all"` 与负数）。另外，当日志超过约 900KB 时自动保留末尾并附加提示，避免触发 `Server-sent event exceeded the 1048576 byte limit` 让整个调用失败。
+- **MCP 请求级超时中间件导致会话挂死**：从 `mcp.run()` 移除 `middleware` 注入，恢复此前行为，避免请求级超时打断长连接（SSE）会话。
 
 ### 改进
-- **版本号单一数据源**：新增 `core/version.py`，`main.py`（FastMCP 元信息、`/health`）与 Web 模板（`{{ app_version }}`）统一引用，不再硬编码；新增一致性测试防止发版漏改。
+- **依赖锁定到传递依赖**：`requirements.txt` 改为精确版本（`fastmcp==4.1.4`、`mcp==2.3.0`、`docker==7.2.0` 等），新增 `requirements.lock`（全部 71 个包锁定），Docker 构建改用 lock。此前 starlette（1.6.0 → 1.10.0）、uvicorn（0.52.4 → 0.54.0）等传递依赖会随构建时间漂移。
+- **版本号单一数据源**：新增 `core/version.py`，`main.py`（FastMCP 元信息、`/health`）与 Web 模板（`{{ app_version }}`）统一引用，不再硬编码。
+- **新增守卫测试**：`tests/test_mcp_session.py`（解析矩阵 + `None` 语义真实内省 + 接线守卫）、`tests/test_requirements_lock.py`（`requirements.txt` 与 lock 一致性 + Dockerfile 必须从 lock 安装）、版本号一致性测试。
+
+### 说明
+- `Missing session ID`（400）是 MCP 规范行为，mcp 2.2.0 同样如此，非回归；客户端必须保存 `mcp-session-id` 并在后续请求携带。
+- **容器重启会让所有 MCP 会话失效**：会话表保存在服务端内存中，重启后客户端带着旧 `mcp-session-id` 请求会收到一次 `404 Session not found`，服务端日志为 `Rejected request with unknown or expired session ID: <id>`，客户端自动重新 `initialize` 即恢复。**这属于预期行为，不是故障**；重启后需重新初始化是 MCP stateful 模式的固有特性。
+- **`MCP_SESSION_IDLE_TIMEOUT` 的覆盖已验证有效**：设为 `2` 的容器空闲 5 秒后 `tools/list` 返回 `404`；默认容器空闲 65 秒仍 `200`；只设 fastmcp 原生 `FASTMCP_HTTP_SESSION_IDLE_TIMEOUT=5`（不设本项目变量）的容器空闲 20 秒仍 `200`——说明本项目的显式覆盖生效且优先级更高。设为 `86400` 时只会回收**既无在途请求、也无打开的 GET/SSE 流**的会话，回收时记 INFO 日志 `Session <id> idle timeout`（已实测：`MCP_SESSION_IDLE_TIMEOUT=5` 的容器在空闲 ~9 秒后该行出现，随后同一 session 的请求返回 404）；并发会话另有 SDK 默认上限 10000（超出时 WARNING `Refusing to open a new session`）。详见部署指南「MCP 会话生命周期」。
+- 查看容器日志请用 `get_container_logs(container_id, tail, since)`（底层 `docker logs`），不要 `exec cat /proc/1/fd/1`——后者会阻塞并拖死 SSE 流。
 
 ## [v2.1.2] - 2026-09-10
 
