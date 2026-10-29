@@ -18,6 +18,8 @@ from core.app_state import AppState
 from core.audit import AuditLogger, AuditEntry
 from core.admin_auth import AdminAuth, SessionManager
 from core.csrf import CSRFProtection
+from core.version import VERSION
+from core.mcp_session import configure_session_idle_timeout
 from tools.container_tools import register_container_tools
 from tools.image_tools import register_image_tools
 from tools.diag_tools import register_diag_tools
@@ -174,16 +176,19 @@ def _init_config_files() -> None:
             parts = pair.strip().split(":")
             if len(parts) == 3:
                 name, key, role = parts[0], parts[1], parts[2]
-                # 检查是否已存在同名 key
+                # 检查是否已存在同名 key；已存在则以本次初始化值幂等地更新（key/role），
+                # 而不是静默跳过——INITIAL_API_KEYS 应覆盖同名 key
                 existing = next((k for k in auth_config.keys if k.name == name), None)
-                if existing:
-                    logger.warning(f"API key '{name}' already exists, skipping")
-                    continue
-                # 添加新 key
-                auth_config.keys.append(
-                    AuthConfig.Key(name=name, key=key, role=role)
-                )
-                logger.info(f"Created API key from environment: {name} (role: {role})")
+                if existing is not None:
+                    existing.key = key
+                    existing.role = role
+                    logger.info(f"Updated API key from environment: {name} (role: {role})")
+                else:
+                    # 添加新 key
+                    auth_config.keys.append(
+                        AuthConfig.Key(name=name, key=key, role=role)
+                    )
+                    logger.info(f"Created API key from environment: {name} (role: {role})")
         auth_config.to_yaml(str(auth_file))
         logger.info(f"Updated auth config with initial API keys: {auth_file}")
 
@@ -294,7 +299,7 @@ def create_app() -> FastMCP:
     mcp = FastMCP(
         name="Docker-MCPilotS",
         instructions="Docker container and image management server with system diagnostics for Synology NAS.",
-        version="2.1.2",
+        version=VERSION,
     )
 
     # 注册认证中间件
@@ -319,7 +324,7 @@ def create_app() -> FastMCP:
     @mcp.custom_route("/health", methods=["GET"])
     async def health_check(request):
         from starlette.responses import JSONResponse
-        return JSONResponse({"status": "ok", "version": "2.1.2"})
+        return JSONResponse({"status": "ok", "version": VERSION})
 
     # Web UI 初始化
     admin_yaml = SECRETS_DIR / "admin.yaml"
@@ -348,6 +353,9 @@ def create_app() -> FastMCP:
 if __name__ == "__main__":
     mcp = create_app()
     settings = Settings.from_yaml(str(CONFIG_DIR / "settings.yaml"))
+    # 必须在 mcp.run() 之前设置：fastmcp 4.1.x 默认空闲 1800s 就销毁会话，
+    # 会让长连接客户端（Hermes）在空闲后拿到 404 Session not found。
+    configure_session_idle_timeout()
     mcp.run(
         transport="http",
         host=settings.host,

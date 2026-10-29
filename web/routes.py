@@ -11,6 +11,7 @@ from starlette.responses import Response, RedirectResponse
 from core.app_state import AppState
 from core.admin_auth import AdminAuth, SessionManager
 from core.csrf import CSRFProtection
+from core.version import VERSION
 from core.audit import AuditEntry
 from tools.user_mgmt_tools import list_api_keys, create_api_key, update_api_key, delete_api_key, batch_delete_api_keys
 from tools.settings_tools import update_settings_from_form, change_admin_password
@@ -21,6 +22,7 @@ from core.admin_auth import AdminConfig
 TEMPLATE_DIR = Path(__file__).parent / "templates"
 STATIC_DIR = Path(__file__).parent / "static"
 env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)), autoescape=True)
+env.globals["app_version"] = VERSION
 env.filters["urlencode"] = quote
 env.filters["tz"] = lambda s, tz: _convert_to_tz(s, tz)
 
@@ -724,13 +726,19 @@ def register_web_routes(
     @mcp.custom_route("/ui/static/{path:path}", methods=["GET"])
     async def static_file(request):
         path = request.path_params["path"]
-        f = STATIC_DIR / path
+        # 防路径穿越：解析后必须仍位于 STATIC_DIR 内
+        try:
+            static_root = STATIC_DIR.resolve()
+            f = (static_root / path).resolve()
+            f.relative_to(static_root)
+        except (ValueError, OSError):
+            return Response("Not Found", status_code=404)
         if not f.exists() or not f.is_file():
             return Response("Not Found", status_code=404)
         ext = f.suffix.lower()
         media_map = {
-            ".css": "text/css",
-            ".js": "application/javascript",
+            ".css": "text/css; charset=utf-8",
+            ".js": "application/javascript; charset=utf-8",
             ".svg": "image/svg+xml",
             ".jpg": "image/jpeg",
             ".jpeg": "image/jpeg",

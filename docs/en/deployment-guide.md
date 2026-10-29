@@ -43,8 +43,22 @@ Suitable for Synology/QNAP NAS, regular Linux servers — works out of the box.
 | `ADMIN_USERNAME` | Web UI admin username | `admin` |
 | `ADMIN_PASSWORD` | Web UI admin password (set on first start) | Randomly generated with warning |
 | `INITIAL_API_KEYS` | Initial API Key list, format: `name1:key1:role1,name2:key2:role2` | None |
+| `MCP_SESSION_IDLE_TIMEOUT` | MCP HTTP session idle timeout. `none` = never expire (same as previous releases); a number (e.g. `86400`) reclaims orphaned sessions | `none` |
 | `MCP_CONFIG_DIR` | Config file directory | `/app/config` |
 | `MCP_SECRETS_DIR` | Sensitive file directory | `/app/secrets` |
+
+### MCP session lifecycle (v2.1.3+)
+
+MCP Streamable HTTP sessions live **in server memory**. The rules:
+
+- **Default `MCP_SESSION_IDLE_TIMEOUT=none`**: no idle reaping. A session is destroyed only when the client disconnects (`DELETE`) or the server process exits (container/service restart).
+- **Set to a number of seconds** (e.g. `86400`): only sessions with **no request in flight and no open GET/SSE stream** are reaped; each reaped session logs `Session <id> idle timeout` at INFO. Useful for long-running deployments where many clients reconnect and leave orphaned sessions.
+- **A restart invalidates every session**: the session table is in memory, so after a container restart a client still sending its old `mcp-session-id` gets one `404 Session not found`, logged as `Rejected request with unknown or expired session ID: <id>`. The client re-`initialize`s and recovers — expected behaviour, not a fault.
+- **Concurrent session cap**: the SDK allows 10000 sessions by default; beyond that new sessions are refused with WARNING `Refusing to open a new session: N sessions are already open`. Normal usage never hits this; if it does, clients are leaking sessions — configure an idle timeout.
+- **Confirm the setting took effect**: the startup log contains
+  `core.mcp_session: MCP HTTP 会话空闲超时：已关闭（会话永不过期）` (or `...：86400 秒`).
+
+> Background: `fastmcp` 4.1.0 changed the default idle timeout to 1800s (4.0.x never expired), which used to cause `transport session expired` / empty tool lists. Since v2.1.3 the default is "never expire" again, and every dependency is pinned in `requirements.lock`.
 
 ## Option 2: Build from Source (Developers)
 

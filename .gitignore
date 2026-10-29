@@ -21,3 +21,9 @@ dev-secrets/
 set-admin-pass.py
 .venv/
 venv/
+
+# BackstopJS 视觉审计产物（参考基线 bitmaps_reference 需要提交）
+backstop_data/bitmaps_test/
+backstop_data/html_report/
+backstop_data/json_report/
+backstop_data/ci_report/

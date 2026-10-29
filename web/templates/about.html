@@ -85,7 +85,7 @@
     <div class="section">
         <h2>📄 版本与协议</h2>
         <div style="color: var(--text-muted); font-family: monospace;">
-            <p><strong>版本：</strong> v2.1.2</p>
+            <p><strong>版本：</strong> v{{ app_version }}</p>
             <p><strong>作者：</strong> SopyK</p>
             <p><strong>协议：</strong> MIT License</p>
         </div>
@@ -95,26 +95,22 @@
 </main>
 
 <script>
-function showCopySuccess(btn) {
-    const orig = btn.textContent;
-    btn.textContent = '✅ 已复制';
-    setTimeout(() => btn.textContent = orig, 2000);
+function showCopyResult(btn, ok) {
+    if (!btn.dataset.origText) btn.dataset.origText = btn.textContent;
+    btn.textContent = ok ? '✅ 已复制' : '❌ 复制失败';
+    clearTimeout(btn._copyTimer);
+    btn._copyTimer = setTimeout(() => {
+        btn.textContent = btn.dataset.origText;
+    }, 2000);
 }
 
 function copyMcpConfig(btn) {
     const code = document.getElementById('mcp-config-code').textContent.trim();
-    navigator.clipboard.writeText(code).then(() => showCopySuccess(btn)).catch(() => {
-        // fallback for older browsers
-        const ta = document.createElement('textarea');
-        ta.value = code;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        const ok = document.execCommand('copy');
-        document.body.removeChild(ta);
-        if (ok) showCopySuccess(btn);
-    });
+    if (typeof copyToClipboard !== 'function') {
+        showCopyResult(btn, false);
+        return;
+    }
+    copyToClipboard(code).then(ok => showCopyResult(btn, ok));
 }
 </script>
 {% endblock %}

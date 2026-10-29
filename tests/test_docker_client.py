@@ -99,7 +99,7 @@ class TestContainerLogs:
         client = DockerClient()
         result = client.get_container_logs("web-server", tail=10)
 
-        mock_container.logs.assert_called_with(tail="10", stdout=True, stderr=True, timestamps=False)
+        mock_container.logs.assert_called_with(tail=10, stdout=True, stderr=True, timestamps=False)
         assert result["success"] is True
         assert result["logs"] == "line1\nline2\n"
 
@@ -219,3 +219,75 @@ class TestExecContainer:
         call_kwargs = mock_docker_sdk.api.exec_create.call_args
         assert call_kwargs[1]["workdir"] == "/tmp"
         assert result["success"] is True
+
+
+class TestContainerLogs:
+    """get_container_logs：tail 传参类型 + 超大日志体积控制
+
+    历史 bug：tail 以字符串传给 docker-py 会被静默降级成 "all"；
+    超大日志会让 MCP 响应超过客户端 1 MiB 的 SSE 单事件上限。
+    """
+
+    def _make(self, mock_docker_sdk, payload: bytes):
+        container = MagicMock()
+        container.logs.return_value = payload
+        mock_docker_sdk.containers.get.return_value = container
+        return DockerClient(), container
+
+    @pytest.mark.parametrize(
+        ("tail", "expected"),
+        [(50, 50), ("50", 50), (0, 0), ("all", "all"), (-1, "all")],
+    )
+    def test_tail_is_passed_as_int(self, mock_docker_sdk, tail, expected):
+        """docker-py 7.x 只在 tail 是 int 时生效，字符串会被静默降级为 all"""
+        client, container = self._make(mock_docker_sdk, b"line1\n")
+        client.get_container_logs("c", tail=tail)
+        kwargs = container.logs.call_args.kwargs
+        assert kwargs["tail"] == expected
+        if isinstance(expected, int):
+            assert isinstance(kwargs["tail"], int)
+
+    def test_small_log_is_not_truncated(self, mock_docker_sdk):
+        payload = b"a\nb\nc\n"
+        client, _ = self._make(mock_docker_sdk, payload)
+        result = client.get_container_logs("c", tail=10)
+        assert result["success"] is True
+        assert result["truncated"] is False
+        assert result["bytes_total"] == len(payload)
+        assert result["logs"] == payload.decode()
+
+    def test_huge_log_keeps_tail_with_notice(self, mock_docker_sdk):
+        """超大日志：保留末尾、带提示、体积远小于客户端 1 MiB 上限"""
+        lines = [f"line-{i}-" + "x" * 60 for i in range(40000)]
+        payload = ("\n".join(lines) + "\n").encode()
+        client, _ = self._make(mock_docker_sdk, payload)
+
+        result = client.get_container_logs("c")
+
+        assert result["success"] is True
+        assert result["truncated"] is True
+        assert result["bytes_total"] == len(payload)
+        assert "已截断" in result["logs"]
+        assert "line-39999-" in result["logs"]      # 末尾保留
+        assert "line-0-" not in result["logs"]      # 开头丢弃
+        assert len(result["logs"].encode()) <= 360_000
+
+    def test_estimated_mcp_response_stays_under_limit(self, mock_docker_sdk):
+        """估算的 MCP 响应（content + structuredContent）必须低于 1 MiB"""
+        payload = ("\n".join(f"line-{i}-" + "y" * 60 for i in range(40000)) + "\n").encode()
+        client, _ = self._make(mock_docker_sdk, payload)
+        result = client.get_container_logs("c")
+
+        from core.docker_client import MAX_MCP_RESPONSE_BYTES, _estimate_mcp_response_bytes
+
+        estimate = _estimate_mcp_response_bytes(result)
+        assert estimate <= MAX_MCP_RESPONSE_BYTES < 1_048_576
+
+    def test_single_gigantic_line_does_not_crash(self, mock_docker_sdk):
+        """没有换行的超长单行也要能截断"""
+        payload = b"x" * 2_000_000
+        client, _ = self._make(mock_docker_sdk, payload)
+        result = client.get_container_logs("c")
+        assert result["success"] is True
+        assert result["truncated"] is True
+        assert len(result["logs"].encode()) <= 360_000

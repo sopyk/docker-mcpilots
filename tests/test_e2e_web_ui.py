@@ -24,7 +24,10 @@ if "fastmcp" in sys.modules:
 import pytest
 from starlette.testclient import TestClient
 
+import main
 from core.admin_auth import AdminAuth
+from core.version import VERSION
+from core.config import AuthConfig
 
 
 @pytest.fixture()
@@ -177,6 +180,71 @@ class TestAuthenticatedPages:
         """不存在的静态文件 → 404"""
         r = web_client.get("/ui/static/nonexistent.css")
         assert r.status_code == 404
+
+    def test_static_clipboard_js(self, web_client):
+        """剪贴板工具脚本可访问（关于页/用户页复制依赖它）"""
+        r = web_client.get("/ui/static/clipboard.js")
+        assert r.status_code == 200
+        assert "javascript" in r.headers.get("content-type", "")
+        assert "copyToClipboard" in r.text
+
+    def test_static_path_traversal_blocked(self, web_client):
+        """静态路由不得越出 static 目录（防任意文件读取）"""
+        r = web_client.get("/ui/static/%2e%2e/templates/base.html")
+        assert r.status_code == 404
+        assert "app_version" not in r.text
+
+    def test_static_nested_asset_served(self, web_client):
+        """正对照：`{path:path}` 子目录仍能正常提供文件（防止守卫把功能一起禁掉）"""
+        r = web_client.get("/ui/static/assets/logo.jpg")
+        assert r.status_code == 200
+        assert r.headers.get("content-type", "").startswith("image/")
+        assert len(r.content) > 0
+
+    def test_static_traversal_to_existing_file_blocked(self, web_client):
+        """越界指向真实存在的仓库文件（main.py）时必须 404，且不泄露其内容"""
+        r = web_client.get("/ui/static/..%2fmain.py")
+        assert r.status_code == 404
+        assert r.text == "Not Found", "守卫应直接返回 404，而不是回落到文件内容"
+        assert "FastMCP" not in r.text and "VERSION" not in r.text
+
+
+class TestAboutPage:
+    """关于页版本号（单一数据源）"""
+
+    def test_about_page_shows_version(self, web_client):
+        r = web_client.get("/ui/about")
+        assert r.status_code == 200
+        assert f"v{VERSION}" in r.text, "关于页未显示当前版本号"
+
+    def test_health_reports_version(self, web_client):
+        r = web_client.get("/health")
+        assert r.status_code == 200
+        assert r.json()["version"] == VERSION
+
+
+class TestInitialApiKeys:
+    """INITIAL_API_KEYS 幂等初始化"""
+
+    def test_initial_api_keys_updates_existing_key(self, tmp_path, monkeypatch):
+        """已有同名 key 时应被 INITIAL_API_KEYS 的值覆盖，而不是静默跳过"""
+        config_dir = tmp_path / "config"
+        secrets_dir = tmp_path / "secrets"
+        config_dir.mkdir()
+        secrets_dir.mkdir()
+
+        monkeypatch.setattr(main, "CONFIG_DIR", config_dir)
+        monkeypatch.setattr(main, "SECRETS_DIR", secrets_dir)
+        monkeypatch.setenv("INITIAL_API_KEYS", "default-admin:sk-dm-rc-999:admin")
+        main.create_app()
+
+        auth_yaml = secrets_dir / "auth.yaml"
+        auth_cfg = AuthConfig.from_yaml(str(auth_yaml))
+
+        # 新 key 已生效
+        assert auth_cfg.find_key("sk-dm-rc-999") is not None
+        # 旧 key 已被覆盖
+        assert auth_cfg.find_key("sk-dm-CHANGE-THIS-KEY-IMMEDIATELY") is None
 
 
 class TestButtonActions:

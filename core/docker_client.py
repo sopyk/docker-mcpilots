@@ -1,6 +1,7 @@
 """Docker SDK for Python 封装 - 统一 Docker 容器和镜像操作的接口层"""
 from __future__ import annotations
 
+import json
 from datetime import datetime, timedelta, timezone
 
 try:
@@ -37,6 +38,40 @@ def _parse_since_until(value: str) -> datetime | None:
         return dt
     except ValueError:
         return None
+
+
+# ── 日志输出体积控制 ──
+# 背景：MCP 客户端（httpx2）单个 SSE 事件上限 1 MiB，超了会直接报
+# "Server-sent event exceeded the 1048576 byte limit"，整个调用失败。
+# 而 FastMCP 返回工具结果时会同时写入 content(text) 与 structuredContent，
+# 实测响应体积约为日志文本的 2 倍，所以文本上限必须明显小于 1 MiB。
+MAX_MCP_RESPONSE_BYTES = 800_000   # 估算的响应体积上限（留出 1 MiB 的余量）
+MAX_LOG_TEXT_BYTES = 350_000       # 日志文本字节上限（约 5000 行普通日志）
+
+
+def _trim_log_text(text: str, max_bytes: int) -> tuple[str, bool]:
+    """按字节截断，保留**末尾**（最新日志最有用），并尽量从行首开始。"""
+    raw = text.encode("utf-8")
+    if len(raw) <= max_bytes:
+        return text, False
+    trimmed = raw[-max_bytes:]
+    newline = trimmed.find(b"\n")
+    if newline != -1:
+        trimmed = trimmed[newline + 1:]
+    return trimmed.decode("utf-8", errors="replace"), True
+
+
+def _truncation_notice(total_bytes: int, kept_bytes: int) -> str:
+    return (
+        f"[警告：日志共 {total_bytes} 字节，超过单次返回上限，"
+        f"已截断为最后约 {kept_bytes} 字节。建议用 tail=N、since 或 until 缩小范围]"
+    )
+
+
+def _estimate_mcp_response_bytes(result: dict) -> int:
+    """估算 FastMCP 实际发出的响应体积（content + structuredContent 各一份）。"""
+    inner = json.dumps(result, ensure_ascii=False)
+    return len(inner.encode("utf-8")) * 2 + 4096
 
 
 def _extract_mounts(attrs: dict) -> list[dict]:
@@ -242,7 +277,7 @@ class DockerClient:
     def get_container_logs(
         self,
         container_id: str,
-        tail: int | None = None,
+        tail: int | str | None = None,
         since: str | None = None,
         until: str | None = None,
         timestamps: bool = False,
@@ -254,7 +289,20 @@ class DockerClient:
             container = self._client.containers.get(container_id)
             kwargs = {"stdout": True, "stderr": True, "timestamps": timestamps}
             if tail is not None:
-                kwargs["tail"] = str(tail)
+                if isinstance(tail, str):
+                    if tail.strip().lower() == "all":
+                        kwargs["tail"] = "all"
+                    elif tail.strip().isdigit():
+                        kwargs["tail"] = int(tail.strip())
+                    else:
+                        kwargs["tail"] = tail
+                elif isinstance(tail, int):
+                    if tail < 0:
+                        kwargs["tail"] = "all"
+                    else:
+                        kwargs["tail"] = tail
+                else:
+                    kwargs["tail"] = tail
             if since:
                 parsed = _parse_since_until(since)
                 if parsed is not None:
@@ -264,11 +312,23 @@ class DockerClient:
                 if parsed is not None:
                     kwargs["until"] = parsed
             logs = container.logs(**kwargs)
-            return {
+            log_text = logs.decode("utf-8", errors="replace") if isinstance(logs, bytes) else str(logs)
+            total_bytes = len(log_text.encode("utf-8"))
+            log_text, truncated = _trim_log_text(log_text, MAX_LOG_TEXT_BYTES)
+            result = {
                 "success": True,
                 "container_id": container_id,
-                "logs": logs.decode("utf-8", errors="replace") if isinstance(logs, bytes) else str(logs),
+                "logs": log_text,
+                "truncated": truncated,
+                "bytes_total": total_bytes,
             }
+            if truncated:
+                result["logs"] = _truncation_notice(total_bytes, len(log_text.encode("utf-8"))) + "\n\n" + log_text
+            # 安全网：MCP 响应同时携带 content(text) 与 structuredContent，体积约为文本的 2 倍，
+            # 超过客户端 1MB 上限会直接报 "Server-sent event exceeded the 1048576 byte limit"。
+            while _estimate_mcp_response_bytes(result) > MAX_MCP_RESPONSE_BYTES and len(result["logs"]) > 1024:
+                result["logs"] = _trim_log_text(result["logs"], int(len(result["logs"].encode("utf-8")) * 0.7))[0]
+            return result
         except DockerNotFound:
             return {"success": False, "logs": "", "error": f"Container '{container_id}' not found"}
         except DockerAPIError as e:
