@@ -20,14 +20,21 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/sopyk/docker-mcpilots
+          images: |
+            ghcr.io/sopyk/docker-mcpilots
+            docker.io/sopyk/docker-mcpilots
           tags: |
             type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}
+            type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest
       - name: Build and push multi-arch image (linux/amd64 + linux/arm64)
         uses: docker/build-push-action@v5
