@@ -11,7 +11,7 @@ jobs:
   mirror_code:
     runs-on: ubuntu-latest
     steps:
-      - uses: Yikun/hub-mirror-action@v1
+      - uses: Yikun/hub-mirror-action@v1.5
         with:
           src: github/${{ secrets.GH_USERNAME }}
           dst: gitee/${{ secrets.GITEE_USERNAME }}
@@ -20,6 +20,7 @@ jobs:
           static_list: "${{ github.event.repository.name }}"
           clone_style: https
           force_update: true
+          blacklist: false
 
   sync_release:
     if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
