@@ -6,6 +6,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.1.4] - 2026-11-04
+
+> This release delivers multi-architecture image support (linux/arm64), enabling users to pull amd64 or arm64 as needed.
+> Application code unchanged; only added CI arm64 building, release workflow multi-platform publishing, guard tests, and related documentation updates.
+
+### Fixed
+- **Multi-architecture image delivery**: added `docker-build-arm64` CI job (`ubuntu-24.04-arm`, building + `/health` + MCP `initialize` smoke test); added `release.yml` workflow (buildx multi-platform publishing `linux/amd64,linux/arm64`, semver tag `v2.1.4` + `latest`). Users auto-match architecture when pulling from `ghcr.io/sopyk/docker-mcpilots`.
+
+### Improved
+- **Single source for version number**: `core/version.py`'s `VERSION` now 2.1.4; `main.py` (FastMCP metadata, `/health`), Web templates (`{{ app_version }}`) automatically sync; version consistency guard `tests/test_version_consistency.py` prevents further drift.
+
+### Notes
+- **Multi-arch images**: `ghcr.io/sopyk/docker-mcpilots:v2.1.4` provides amd64 + arm64 manifest list; `docker pull` auto-selects matching architecture.
+- Application code unchanged; only delivery pipeline enhancements added.
+
 ## [v2.1.3] - 2026-10-29
 
 > This release focuses on **MCP connection stability**: it fixes client sessions expiring after long idle periods (`transport session expired` / empty tool lists) and pins dependencies down to transitive ones. It also fixes the copy button over LAN HTTP, a static-file path traversal, `INITIAL_API_KEYS` idempotent updates, and the broken `tail` parameter of `get_container_logs`.

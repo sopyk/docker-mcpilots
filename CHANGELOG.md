@@ -6,6 +6,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [v2.1.4] - 2026-11-04
+
+> 发布多架构镜像支持（linux/arm64），用户按需 `docker pull` 自动匹配 amd64 或 arm64 架构。
+> 应用代码无变化，仅新增 CI arm64 构建、release workflow 多平台发布、守卫测试 + 相关文档更新。
+
+### 修复
+- **多架构镜像交付**：新增 `docker-build-arm64` CI job (`ubuntu-24.04-arm`，构建 + `/health` + MCP `initialize` smoke test)；新增 `release.yml` workflow（buildx 多平台发布 `linux/amd64,linux/arm64`，semver tag `v2.1.4` + `latest`）。通过 github.container.registry 自动拉取对应架构版本。
+
+### 改进
+- **版本号单一数据源**：`core/version.py` 中 `VERSION` 统一到 2.1.4，`main.py`（FastMCP 元信息、`/health`）、Web 模板 (`{{ app_version }}`) 自动同步；版本一致性守卫 `tests/test_version_consistency.py` 防止再漏改。
+
+### 说明
+- **Multi-arch images：** `ghcr.io/sopyk/docker-mcpilots:v2.1.4` 同时提供 amd64 + arm64 manifest list；`docker pull` 会自动拉取匹配的架构。
+- 应用代码未变，只新增构建/发布流程的自动化。
+
 ## [v2.1.3] - 2026-10-29
 
 > 本版聚焦 **MCP 连接稳定性**：修复长时间空闲后客户端会话过期（`transport session expired` / tools 为空），并把依赖锁死到传递依赖；同时修复内网 HTTP 下的复制按钮、静态文件路径穿越、`INITIAL_API_KEYS` 幂等更新，以及 `get_container_logs` 的 `tail` 失效。

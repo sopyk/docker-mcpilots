@@ -33,9 +33,10 @@
 
 ## 后续计划（产品 / 发布向）
 
-### 6. 多架构镜像（linux/arm64）
+### 6. 多架构镜像（linux/arm64）✅ 已完成
 
-- **现状**: 仅构建 `linux/amd64`，ARM 架构 NAS（部分群晖/威联通型号、树莓派）无法直接运行。
+- **完成**: `docker/Dockerfile` 基础镜像已按 multi-arch digest 固定（`python:3.11-alpine@sha256:79440cc1...`，manifest list 含 amd64 + arm64）；CI 新增 `docker-build-arm64` job（`ubuntu-24.04-arm` 原生 runner，构建 + `/health` + MCP `initialize` smoke test）；发布链路新增 `release` workflow（`docker buildx build --platform linux/amd64,linux/arm64` 发布 manifest list，semver tag + `latest`）。
+- **现状**: 镜像发布后，用户按需 `docker pull` 即可自动匹配架构（amd64 / arm64）。
 - **目标**: 用 `docker buildx build --platform linux/amd64,linux/arm64` 发布 manifest list，并校验两个架构都能通过 `/health` + MCP `initialize`。
 - **注意**: `psutil` / `cryptography` 在 arm64 需要编译工具链（builder 阶段已装 `build-base`），需实机验证。
 

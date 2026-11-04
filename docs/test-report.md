@@ -202,3 +202,85 @@ OUTSIDE static (guard blocks): .../web/templates/base.html
   Web 层版本号守卫与静态路由正对照共 8 个用例。
 - 遗留低覆盖区（`web/routes.py` 的变更类 POST 路由、`tools/*`、`core/docker_client.py`）
   与本次修复无关，属既有缺口；如需提升建议后续为 users/settings 的增删改路由补 TestClient 用例。
+
+---
+
+# 测试报告 — 多架构镜像发布流程守卫（ROADMAP #6 / linux/arm64）
+
+日期：2026-10-31
+范围：ROADMAP #6「多架构镜像（linux/arm64）✅ 已完成」—— CI `docker-build-arm64` job、
+新增 `release` workflow（buildx multi-arch）、ROADMAP 状态更新；本次任务新增守卫测试
+`tests/test_multiarch_release.py`。
+
+---
+
+## 1. 执行的命令
+
+```bash
+# 新增守卫测试 + 既有守卫测试（一次性验证）
+/tmp/opencode/venv/bin/python -m pytest tests/test_multiarch_release.py tests/test_requirements_lock.py tests/test_version_consistency.py -v --tb=short
+
+# 回归有效性验证（临时改 workflow / ROADMAP → 期望失败 → 还原）
+sed -i 's|platforms: linux/arm64|platforms: linux/amd64|' .github/workflows/ci.yml
+sed -i 's|platforms: linux/amd64,linux/arm64|platforms: linux/amd64|' .github/workflows/release.yml
+sed -i 's|### 6. 多架构镜像（linux/arm64）✅ 已完成|### 6. 多架构镜像（linux/arm64）|' ROADMAP.md
+python3 -m pytest tests/test_multiarch_release.py -q --tb=no   # 期望：FAIL x3
+
+# 还原
+cp /tmp/opencode/ci.yml.bak .github/workflows/ci.yml
+cp /tmp/opencode/release.yml.bak .github/workflows/release.yml
+cp /tmp/opencode/ROADMAP.md.bak ROADMAP.md
+
+# 全量回归
+/tmp/opencode/venv/bin/python -m pytest tests/ -v --tb=short
+```
+
+## 2. 测试结果
+
+| 阶段 | 结果 |
+| --- | --- |
+| 新增守卫 + 既有守卫（`test_multiarch_release.py` / `test_requirements_lock.py` / `test_version_consistency.py`） | **20 passed**（8 新 + 6 需求锁 + 6 版本一致） |
+| 全量回归（`pytest tests/`） | **206 passed, 1 skipped**（skipped = `tests/e2e/test_about_copy.py` 缺 `playwright` 模块，环境性跳过） |
+| 失败 / 报错 | **0** |
+
+## 3. 新增测试（`tests/test_multiarch_release.py`，8 个用例）
+
+| 用例 | 验证内容 |
+| --- | --- |
+| `test_ci_docker_build_arm64_job_exists` | CI 存在 `docker-build-arm64` job，runner 为 `ubuntu-24.04-arm`，`needs: test` |
+| `test_ci_docker_build_arm64_builds_linux_arm64_only` | 构建 `platforms: linux/arm64`、`push: false`、`load: true`、`tags: docker-mcpilots:arm64-test`、context/file 正确 |
+| `test_ci_docker_build_arm64_smoke_tests_health_and_mcp_initialize` | smoke test 针对 `dm-test-arm`，校验 `/health` + MCP `initialize`（`serverInfo`） |
+| `test_release_build_multi_arch_job` | release job `build-multi-arch` 在 `ubuntu-latest`，permissions `contents: read` + `packages: write` |
+| `test_release_build_multi_arch_platforms_m_and_qemu_order` | buildx + QEMU 步骤存在且 QEMU 先于 buildx；`platforms: linux/amd64,linux/arm64`、`push: true` |
+| `test_release_metadata_publishes_semver_and_latest` | metadata 发布 `ghcr.io/sopyk/docker-mcpilots`，semver version / major.minor + `latest` |
+| `test_dockerfile_base_image_is_multiarch_digest` | Dockerfile FROM 均 `@sha256:` 固定，文本体现 amd64 + arm64 |
+| `test_roadmap_multiarch_marked_completed` | ROADMAP #6 标题含 `✅ 已完成`，不再残留"仅构建 linux/amd64" |
+
+既有守卫（未改动）：
+- `tests/test_requirements_lock.py`（6 passed）—— Dockerfile 仍 `-r requirements.lock` + `@sha256:` digest pin，与本次改动兼容；
+- `tests/test_version_consistency.py`（6 passed）—— 版本号单一数据源，与本次改动无关但全量回归验证。
+
+## 4. 回归有效性验证（断言是否能捕获回归）
+
+通过临时改动验证守卫非恒真：
+
+1. `ci.yml` 中 `docker-build-arm64` 的 `platforms` 改为 `linux/amd64` →
+   `test_ci_docker_build_arm64_builds_linux_arm64_only` **FAILED** ✅ 捕获。
+2. `release.yml` 的 `platforms` 改为 `linux/amd64` →
+   `test_release_build_multi_arch_platforms_m_and_qemu_order` **FAILED** ✅ 捕获。
+3. `ROADMAP.md` 标题改为未完成口径 → `test_roadmap_multiarch_marked_completed` **FAILED** ✅ 捕获。
+
+全部还原后（`cp` 备份 + `sha256` 校验）测试恢复通过；**未改动任何业务代码**。
+
+## 5. 环境说明
+
+- 测试环境：`python3.12` venv（`/tmp/opencode/venv`）内安装 `requirements.txt` + `pytest`（系统 Python 受 PEP 668 托管，故用 venv）。
+- workflow 解析使用 `yaml.safe_load`（pyyaml 6.0.x，requirements 直接依赖），jobs 结构经解析验证可用
+  （注意 YAML 1.1 下 `on:` 键解析为布尔 `True`，守卫只依赖 `jobs` 键）。
+
+## 6. 结论
+
+- 新增 8 个多架构发布守卫测试全部通过；全量 206 passed / 1 skipped / 0 failed，无回归。
+- CI arm64 job、release multi-arch workflow、ROADMAP 状态三处守卫均经**负向验证**确认可捕获回归。
+- 未执行 Docker 构建 / release 发布命令；未执行任何 git push（本环境无 GitHub 认证，push 失败）。
+
