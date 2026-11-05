@@ -34,7 +34,7 @@ jobs:
             ghcr.io/sopyk/docker-mcpilots
             docker.io/sopyk/docker-mcpilots
           tags: |
-            type=semver,pattern={{version}}
+            type=semver,pattern=v{{major}}.{{minor}}.{{patch}}
             type=semver,pattern={{major}}.{{minor}}.{{patch}}
             type=raw,value=latest
       - name: Build and push multi-arch image (linux/amd64 + linux/arm64)
