@@ -1,6 +1,6 @@
 name: Sync Release to Gitee
 
-on:
+"on":
   release:
     types: [published]
   workflow_dispatch:
