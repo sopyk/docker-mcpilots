@@ -32,17 +32,9 @@ jobs:
         env:
           GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
         run: |
-          set -x
-          echo "=== Gitee remote URL ==="
-          git remote -v
-          echo "=== Testing Gitee token ==="
-          curl -s -H "Authorization: token ${GITEE_TOKEN}" https://gitee.com/api/v5/user | jq .login
-          echo "=== Pushing branches ==="
           # 同步指定分支（fast-forward，不 force）
           for branch in main dev; do
-            echo "Pushing $branch..."
-            git push gitee "refs/heads/$branch:refs/heads/$branch" 2>&1 || true
+            git push gitee "refs/heads/$branch:refs/heads/$branch"
           done
           # 同步所有 tags（包含 release tag）
-          echo "Pushing tags..."
-          git push gitee --tags 2>&1 || true
+          git push gitee --tags
