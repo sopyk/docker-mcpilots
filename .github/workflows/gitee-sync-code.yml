@@ -1,0 +1,40 @@
+name: Sync Code to Gitee
+
+on:
+  push:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source (GitHub)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Add Gitee remote
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+        run: |
+          git remote add gitee https://oauth2:${GITEE_TOKEN}@gitee.com/sopyk/docker-mcpilots.git
+
+      - name: Push branches to Gitee
+        env:
+          GITEE_TOKEN: ${{ secrets.GITEE_TOKEN }}
+        run: |
+          # 同步指定分支（fast-forward，不 force）
+          for branch in main dev; do
+            git push gitee "refs/heads/$branch:refs/heads/$branch"
+          done
+          # 同步所有 tags（包含 release tag）
+          git push gitee --tags
