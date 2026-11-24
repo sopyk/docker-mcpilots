@@ -22,6 +22,8 @@ class Settings:
     exec_enabled: bool = False
     timezone: str = "Asia/Shanghai"
     web: dict = None  # type: ignore # web 配置段，默认 None
+    # 网络绑定配置 — 允许绑定多个监听地址/网段，空字符串表示绑定所有接口
+    bind_addresses: list[str] = None  # type: ignore
 
     @classmethod
     def from_yaml(cls, path: str) -> Settings:
@@ -40,6 +42,9 @@ class Settings:
         features = data.get("features", {})
         web = data.get("web")
 
+        bind_addrs = server.get("bind_addresses", cls.bind_addresses)
+        if bind_addrs is None:
+            bind_addrs = cls.bind_addresses
         return cls(
             host=server.get("host", cls.host),
             port=int(server.get("port", cls.port)),
@@ -50,7 +55,8 @@ class Settings:
             system_diagnostics=features.get("system_diagnostics", True),
             exec_enabled=features.get("exec_enabled", False),
             timezone=data.get("timezone", cls.timezone),
-            web=web
+            web=web,
+            bind_addresses=bind_addrs if isinstance(bind_addrs, list) else (bind_addrs.split(",") if bind_addrs else [])
         )
 
     def get(self, key: str, default=None):
@@ -74,6 +80,8 @@ class Settings:
             return self.web if self.web else {}
         if key == "timezone":
             return self.timezone
+        if key == "bind_addresses":
+            return self.bind_addresses if self.bind_addresses else []
         return default
 
 

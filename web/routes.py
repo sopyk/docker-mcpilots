@@ -655,7 +655,7 @@ def register_web_routes(
         settings_yaml = app_state.settings_yaml_path or str(Path("dev-config") / "settings.yaml")
 
         form_dict: dict[str, Any] = {}
-        for key in ["host", "port", "log_level", "socket_path", "timezone"]:
+        for key in ["host", "port", "log_level", "socket_path", "timezone", "bind_addresses"]:
             val = form.get(key)
             if val is not None:
                 form_dict[key] = val

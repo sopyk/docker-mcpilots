@@ -320,6 +320,11 @@ def create_app() -> FastMCP:
         register_exec_tools(mcp, docker_client, app_state)
         logger.info("Exec tools enabled (high risk — use with scope restrictions)")
 
+    # 审计日志工具（始终注册，便于前端页面和 MCP 调用查询）
+    from tools.audit_tools import register_audit_tools
+    register_audit_tools(mcp, app_state)
+    logger.info("Audit tools registered")
+
     # 健康检查端点
     @mcp.custom_route("/health", methods=["GET"])
     async def health_check(request):

@@ -36,6 +36,15 @@
                 </div>
                 <div class="setting-row">
                     <div class="setting-info">
+                        <span class="setting-name">绑定网段</span>
+                        <span class="setting-desc">逗号分隔的多个监听地址，留空表示绑定所有接口</span>
+                    </div>
+                    <div class="setting-control">
+                        <input type="text" name="bind_addresses" value="{{ ','.join(settings.bind_addresses) if settings.bind_addresses else '' }}">
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-info">
                         <span class="setting-name">端口</span>
                         <span class="setting-desc">HTTP 服务监听端口</span>
                     </div>

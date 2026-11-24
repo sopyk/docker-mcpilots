@@ -5,6 +5,9 @@ server:
   host: "0.0.0.0"
   port: 8900
   log_level: "info"  # debug / info / warning / error
+  # 网络绑定地址 — 多个用逗号分隔，例如 "0.0.0.0,127.0.0.1,192.168.1.100"
+  # 留空或 "0.0.0.0" 表示绑定所有接口
+  bind_addresses: "0.0.0.0"
 
 docker:
   socket_path: "/var/run/docker.sock"  # 通常不需要修改
