@@ -26,7 +26,8 @@
         <span class="status-dot"></span>
         Docker-MCPilotS
     </a>
-    <button class="hamburger" id="hamburger" aria-label="导航菜单">☰</button>
+    <button class="hamburger" id="hamburger" aria-label="导航菜单"><span class="ham-bar"></span><span class="ham-bar"></span><span class="ham-bar"></span></button>
+    <button class="theme-toggle" id="theme-toggle" aria-label="切换主题">🌙</button>
     <div class="nav-links" id="nav-links">
         {% if user %}
             <a href="/ui/">仪表盘</a>
@@ -64,13 +65,59 @@
         btn.addEventListener('click', function(e) {
             e.stopPropagation();
             nav.classList.toggle('open');
+            btn.classList.toggle('active');
         });
         document.addEventListener('click', function(e) {
             if (!nav.contains(e.target) && e.target !== btn) {
                 nav.classList.remove('open');
+                btn.classList.remove('active');
             }
         });
     }
+})();
+
+// 主题切换（白天/夜晚）
+(function() {
+    var btn = document.getElementById('theme-toggle');
+    var html = document.documentElement;
+    var saved = localStorage.getItem('theme');
+    if (saved === 'light') {
+        html.setAttribute('data-theme', 'light');
+        btn.textContent = '☀️';
+    } else if (saved === 'dark') {
+        html.removeAttribute('data-theme');
+        btn.textContent = '🌙';
+    } else {
+        // 按系统偏好
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            html.setAttribute('data-theme', 'light');
+            btn.textContent = '☀️';
+        }
+    }
+    btn.addEventListener('click', function() {
+        var isLight = html.getAttribute('data-theme') === 'light';
+        if (isLight) {
+            html.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'dark');
+            btn.textContent = '🌙';
+        } else {
+            html.setAttribute('data-theme', 'light');
+            localStorage.setItem('theme', 'light');
+            btn.textContent = '☀️';
+        }
+    });
+    // 系统主题变化时自动跟随（仅当用户未手动选择时）
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('theme')) {
+            if (e.matches) {
+                html.setAttribute('data-theme', 'light');
+                btn.textContent = '☀️';
+            } else {
+                html.removeAttribute('data-theme');
+                btn.textContent = '🌙';
+            }
+        }
+    });
 })();
 
 </script>

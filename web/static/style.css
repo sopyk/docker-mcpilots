@@ -75,6 +75,69 @@ body {
   display: flex;
   gap: var(--space-5);
 }
+
+/* 主题切换按钮 */
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 18px;
+  padding: var(--space-1) var(--space-2);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: var(--space-3);
+  transition: border-color var(--transition), color var(--transition);
+}
+.theme-toggle:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+/* 汉堡菜单三条杠（替代 ☰ 字符，确保垂直居中） */
+.hamburger {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--transition);
+}
+.hamburger:hover {
+  border-color: var(--blue);
+}
+.ham-bar {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background-color: var(--text);
+  border-radius: 1px;
+  margin: 4px 0;
+  transition: transform var(--transition-fast), opacity var(--transition-fast), background-color var(--transition-fast);
+}
+.hamburger:hover .ham-bar {
+  background-color: var(--blue);
+}
+
+/* 活动状态：三条杠变成 X */
+.hamburger.active .ham-bar:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+.hamburger.active .ham-bar:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.active .ham-bar:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
 .nav-links a {
   color: var(--text-muted);
   text-decoration: none;
