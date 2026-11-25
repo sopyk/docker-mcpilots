@@ -27,7 +27,14 @@
         Docker-MCPilotS
     </a>
     <button class="hamburger" id="hamburger" aria-label="导航菜单"><span class="ham-bar"></span><span class="ham-bar"></span><span class="ham-bar"></span></button>
-    <button class="theme-toggle" id="theme-toggle" aria-label="切换主题">🌙</button>
+    <div class="theme-select" id="theme-select">
+        <button class="theme-toggle" id="theme-toggle" aria-label="主题设置" type="button">🌓</button>
+        <div class="theme-dropdown" id="theme-dropdown">
+            <div class="theme-option" data-theme="system">跟随系统</div>
+            <div class="theme-option" data-theme="light">浅色</div>
+            <div class="theme-option" data-theme="dark">深色</div>
+        </div>
+    </div>
     <div class="nav-links" id="nav-links">
         {% if user %}
             <a href="/ui/">仪表盘</a>
@@ -76,46 +83,74 @@
     }
 })();
 
-// 主题切换（白天/夜晚）
+// 主题切换（跟随系统 / 白天 / 黑夜）
 (function() {
-    var btn = document.getElementById('theme-toggle');
+    var toggle = document.getElementById('theme-toggle');
+    var dropdown = document.getElementById('theme-dropdown');
     var html = document.documentElement;
-    var saved = localStorage.getItem('theme');
-    if (saved === 'light') {
-        html.setAttribute('data-theme', 'light');
-        btn.textContent = '☀️';
-    } else if (saved === 'dark') {
-        html.removeAttribute('data-theme');
-        btn.textContent = '🌙';
-    } else {
-        // 按系统偏好
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    var options = dropdown.querySelectorAll('.theme-option');
+    var media = window.matchMedia('(prefers-color-scheme: light)');
+
+    // 应用主题
+    function applyTheme(mode) {
+        if (mode === 'light') {
             html.setAttribute('data-theme', 'light');
-            btn.textContent = '☀️';
-        }
-    }
-    btn.addEventListener('click', function() {
-        var isLight = html.getAttribute('data-theme') === 'light';
-        if (isLight) {
+            toggle.textContent = '☀️';
+        } else if (mode === 'dark') {
             html.removeAttribute('data-theme');
-            localStorage.setItem('theme', 'dark');
-            btn.textContent = '🌙';
+            toggle.textContent = '🌙';
         } else {
-            html.setAttribute('data-theme', 'light');
-            localStorage.setItem('theme', 'light');
-            btn.textContent = '☀️';
-        }
-    });
-    // 系统主题变化时自动跟随（仅当用户未手动选择时）
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function(e) {
-        if (!localStorage.getItem('theme')) {
-            if (e.matches) {
+            // system：按系统偏好
+            if (media.matches) {
                 html.setAttribute('data-theme', 'light');
-                btn.textContent = '☀️';
+                toggle.textContent = '☀️';
             } else {
                 html.removeAttribute('data-theme');
-                btn.textContent = '🌙';
+                toggle.textContent = '🌙';
             }
+        }
+        // 高亮当前选中项
+        options.forEach(function(opt) {
+            if (opt.getAttribute('data-theme') === mode) {
+                opt.classList.add('active');
+            } else {
+                opt.classList.remove('active');
+            }
+        });
+    }
+
+    // 初始化：读取本地存储，没有则默认 system
+    var saved = localStorage.getItem('theme') || 'system';
+    applyTheme(saved);
+
+    // 系统主题变化时，仅在 system 模式下自动跟随
+    media.addEventListener('change', function(e) {
+        if (localStorage.getItem('theme') === 'system' || !localStorage.getItem('theme')) {
+            applyTheme('system');
+        }
+    });
+
+    // 点击按钮打开/关闭下拉
+    toggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        dropdown.classList.toggle('open');
+    });
+
+    // 点击选项
+    options.forEach(function(opt) {
+        opt.addEventListener('click', function(e) {
+            e.stopPropagation();
+            var mode = opt.getAttribute('data-theme');
+            localStorage.setItem('theme', mode);
+            applyTheme(mode);
+            dropdown.classList.remove('open');
+        });
+    });
+
+    // 点击页面其他地方关闭下拉
+    document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target) && e.target !== toggle) {
+            dropdown.classList.remove('open');
         }
     });
 })();
