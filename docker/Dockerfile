@@ -40,5 +40,9 @@ RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 8900
 
+# 健康检查：无论通过 docker run 还是 docker compose up 启动，均会生效
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=15s \
+  CMD python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8900/health', timeout=5)"
+
 ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["python", "main.py"]

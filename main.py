@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import secrets
 import shutil
 import logging
 from pathlib import Path
@@ -334,15 +335,27 @@ def create_app() -> FastMCP:
     # Web UI 初始化
     admin_yaml = SECRETS_DIR / "admin.yaml"
     web_cfg = settings.get("web", {})
+    # CSRF/会话密钥：优先环境变量 CSRF_SECRET，其次 settings.yaml web.csrf_secret，
+    # 否则随机生成并警告（避免使用不安全的默认值 change-me）
+    csrf_secret = (
+        os.environ.get("CSRF_SECRET")
+        or web_cfg.get("csrf_secret")
+        or secrets.token_urlsafe(32)
+    )
+    if not os.environ.get("CSRF_SECRET") and not web_cfg.get("csrf_secret"):
+        logger.warning(
+            "CSRF_SECRET 未设置且 settings.yaml 未配置 web.csrf_secret，"
+            "已自动生成随机密钥。容器重启后密钥会变更，所有现有会话将失效。"
+        )
     admin_auth = AdminAuth(
         admin_yaml=str(admin_yaml),
-        session_secret=web_cfg.get("csrf_secret", "change-me"),
+        session_secret=csrf_secret,
     )
     session_mgr = SessionManager(
-        secret=web_cfg.get("csrf_secret", "change-me"),
+        secret=csrf_secret,
         timeout=web_cfg.get("session_timeout", 28800),
     )
-    csrf = CSRFProtection(secret=web_cfg.get("csrf_secret", "change-me"))
+    csrf = CSRFProtection(secret=csrf_secret)
 
     from web.routes import register_web_routes
     register_web_routes(mcp, app_state, admin_auth, session_mgr, csrf)
