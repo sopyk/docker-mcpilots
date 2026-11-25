@@ -6,20 +6,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [v2.1.4] - 2026-11-04
+## [v2.1.5] - 2026-11-25
 
-> 发布多架构镜像支持（linux/arm64），用户按需 `docker pull` 自动匹配 amd64 或 arm64 架构。
-> 应用代码无变化，仅新增 CI arm64 构建、release workflow 多平台发布、守卫测试 + 相关文档更新。
+> 本版聚焦 **服务稳定性与安全加固**：修复事件循环阻塞导致的服务假死根因，给 exec 加硬超时，添加容器健康检查，审计日志持久化与权限校验，CSRF 密钥不再使用不安全默认值。
 
 ### 修复
-- **多架构镜像交付**：新增 `docker-build-arm64` CI job (`ubuntu-24.04-arm`，构建 + `/health` + MCP `initialize` smoke test)；新增 `release.yml` workflow（buildx 多平台发布 `linux/amd64,linux/arm64`，semver tag `v2.1.4` + `latest`）。通过 github.container.registry 自动拉取对应架构版本。
+- **事件循环阻塞（P0，Critical）**：所有 `async` MCP 工具若直接调同步 `docker_client` 方法，会阻塞 uvicorn 单线程事件循环，导致全站停摆。现已将 `exec_tools`、`image_tools`、`container_tools`、`docker_diag_tools` 中的同步调用均扔进 `asyncio.to_thread()`，单个慢调用不再拖死事件循环。实测 `exec_container(sleep 15)` 期间 `/health` 仍能 0 秒响应。
+- **exec 工具无超时（P1）**：`core/docker_client.py` `exec_container` 新增 `timeout` 参数，上层 `asyncio.wait_for` 硬超时控制，默认 30 秒，超时返回错误而非永久挂起。
+- **无健康检查（P2）**：`docker/Dockerfile` 新增 `HEALTHCHECK` 指令，`docker/docker-compose.yml` 新增 `healthcheck` 配置，容器假死时 Docker 能自动重启，Portainer/告警可见。
+- **审计不持久化**：`core/audit.py` `query()` 仅读内存 `deque`，容器重启后历史审计全丢。现已改为优先从磁盘 `audit.log` 读取历史记录，合并内存记录，重启后历史可追溯。
+- **审计工具权限声明与实现不符**：`list_audit_logs` docstring 写"仅 admin 角色可调用"但函数体无权限检查。现已添加 `audit:read` 权限校验，`admin`/`observer` 角色默认补全该权限。
+- **CSRF/会话密钥默认值不安全**：`csrf_secret` 默认为 `change-me`，可自签 admin session。现已改为优先环境变量 `CSRF_SECRET`，其次 `settings.yaml` `web.csrf_secret`，否则随机生成，容器重启后密钥会变更（已做警告日志）。
+- **Web 设置页多余输入框**：原"监听地址"与"绑定网段"两个输入框易混淆，且 `bind_addresses` 不被 uvicorn 实际绑定。现已移除 `bind_addresses` 输入框，只保留单个"监听地址"。
 
 ### 改进
-- **版本号单一数据源**：`core/version.py` 中 `VERSION` 统一到 2.1.4，`main.py`（FastMCP 元信息、`/health`）、Web 模板 (`{{ app_version }}`) 自动同步；版本一致性守卫 `tests/test_version_consistency.py` 防止再漏改。
+- **版本号单一数据源**：`core/version.py` 中 `VERSION` 统一到 2.1.5，`main.py`（FastMCP 元信息、`/health`）、Web 模板 (`{{ app_version }}`) 自动同步；版本一致性守卫 `tests/test_version_consistency.py` 防止再漏改。
 
 ### 说明
-- **Multi-arch images：** `ghcr.io/sopyk/docker-mcpilots:v2.1.4` 同时提供 amd64 + arm64 manifest list；`docker pull` 会自动拉取匹配的架构。
-- 应用代码未变，只新增构建/发布流程的自动化。
+- **Multi-arch images：** `ghcr.io/sopyk/docker-mcpilots:v2.1.5` 同时提供 amd64 + arm64 manifest list；`docker pull` 会自动拉取匹配的架构。
+- `tests/test_version_consistency.py` 会验证版本号格式与 tag 一致，发版时只需改 `core/version.py` 一处。
 
 ## [v2.1.3] - 2026-10-29
 
