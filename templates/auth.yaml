@@ -13,6 +13,7 @@ roles:
       - "volume:*"
       - "system:*"
       - "exec:*"
+      - "audit:read"
   operator:
     description: "标准管理权限"
     permissions:
@@ -39,6 +40,7 @@ roles:
       - "network:list"
       - "volume:list"
       - "system:*"
+      - "audit:read"
 
 # --- API Key 绑定 ---
 # 每个Key包含: key(密钥), name(标识), role(角色名), scope(可选，容器级限制)

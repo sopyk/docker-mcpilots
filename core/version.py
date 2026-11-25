@@ -5,4 +5,4 @@
 """
 from __future__ import annotations
 
-VERSION = "2.1.5-rc1"
+VERSION = "2.1.5-rc2"

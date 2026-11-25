@@ -157,6 +157,7 @@ class AuthConfig:
                     "volume:*",
                     "system:*",
                     "exec:*",
+                    "audit:read",
                 ],
             },
             "operator": {
@@ -187,6 +188,7 @@ class AuthConfig:
                     "network:list",
                     "volume:list",
                     "system:*",
+                    "audit:read",
                 ],
             },
         },
