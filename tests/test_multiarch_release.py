@@ -135,8 +135,8 @@ def test_release_metadata_publishes_semver_and_latest():
     images = with_.get("images") or ""
     assert "ghcr.io/sopyk/docker-mcpilots" in images
     tags = with_.get("tags") or ""
-    assert "type=semver,pattern={{version}}" in tags, f"metadata tags 缺少 semver version tag: {tags!r}"
-    assert "type=semver,pattern={{major}}.{{minor}" in tags, f"metadata tags 缺少 semver major.minor tag: {tags!r}"
+    assert "type=semver,pattern=v{{major}}.{{minor}}.{{patch}}" in tags, f"metadata tags 缺少 semver v{{major}}.{{minor}}.{{patch}} tag: {tags!r}"
+    assert "type=semver,pattern={{major}}.{{minor}}.{{patch}}" in tags, f"metadata tags 缺少 semver {{major}}.{{minor}}.{{patch}} tag: {tags!r}"
     assert "type=raw,value=latest" in tags, f"metadata tags 缺少 latest tag: {tags!r}"
 
 
