@@ -530,6 +530,7 @@ class DockerClient:
         command: str,
         workdir: str | None = None,
         environment: dict[str, str] | None = None,
+        timeout: int | None = None,
     ) -> dict:
         """在容器内执行命令（需要 exec:run 权限）。
 
@@ -561,7 +562,7 @@ class DockerClient:
             if environment:
                 exec_kwargs["environment"] = environment
             exec_id = container.client.api.exec_create(container.id, **exec_kwargs)
-            raw = container.client.api.exec_start(exec_id, demux=True)
+            raw = container.client.api.exec_start(exec_id, demux=True, timeout=timeout)
             # demux=True 是 docker-py 客户端侧的纯 Python 实现（_demux_data），
             # 不依赖 Docker API 版本，始终生效。
             # 保留 isinstance 判断作为兜底，兼容上游实现变化。

@@ -37,3 +37,9 @@ services:
       # 长期运行想回收孤儿会话可设 86400（24 小时，仅回收无在途请求/无打开的 GET 流的会话）
       # 注意：会话表在内存中，重启容器会让所有客户端会话失效（客户端会自动重新 initialize）
       # - MCP_SESSION_IDLE_TIMEOUT=none
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8900/health', timeout=5)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s

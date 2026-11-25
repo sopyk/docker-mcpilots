@@ -1,6 +1,8 @@
 """镜像管理 MCP Tools"""
 from __future__ import annotations
 
+import asyncio
+
 from fastmcp import FastMCP
 from fastmcp.dependencies import CurrentContext
 from fastmcp.server.context import Context
@@ -32,7 +34,9 @@ def register_image_tools(mcp: FastMCP, docker_client: DockerClient, app_state: A
             app_state.permission_checker.check(key_config, "image:list")
         except PermissionDeniedError as e:
             return [{"success": False, "error": str(e)}]
-        return docker_client.list_images(name_filter=name_filter)
+        return await asyncio.to_thread(
+            docker_client.list_images, name_filter=name_filter
+        )
 
     @mcp.tool
     async def inspect_image(
@@ -53,7 +57,9 @@ def register_image_tools(mcp: FastMCP, docker_client: DockerClient, app_state: A
             app_state.permission_checker.check(key_config, "image:inspect")
         except PermissionDeniedError as e:
             return {"success": False, "error": str(e)}
-        return docker_client.inspect_image(image_name)
+        return await asyncio.to_thread(
+            docker_client.inspect_image, image_name
+        )
 
     @mcp.tool
     async def pull_image(
@@ -74,7 +80,9 @@ def register_image_tools(mcp: FastMCP, docker_client: DockerClient, app_state: A
             app_state.permission_checker.check(key_config, "image:pull")
         except PermissionDeniedError as e:
             return {"success": False, "error": str(e)}
-        return docker_client.pull_image(image_name, tag=tag)
+        return await asyncio.to_thread(
+            docker_client.pull_image, image_name, tag=tag
+        )
 
     @mcp.tool
     async def remove_image(
@@ -95,4 +103,6 @@ def register_image_tools(mcp: FastMCP, docker_client: DockerClient, app_state: A
             app_state.permission_checker.check(key_config, "image:remove")
         except PermissionDeniedError as e:
             return {"success": False, "error": str(e)}
-        return docker_client.remove_image(image_name, force=force)
+        return await asyncio.to_thread(
+            docker_client.remove_image, image_name, force=force
+        )

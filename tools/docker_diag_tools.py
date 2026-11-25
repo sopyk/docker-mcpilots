@@ -1,6 +1,8 @@
 """Docker 资源诊断 MCP Tools（网络、卷等）"""
 from __future__ import annotations
 
+import asyncio
+
 from fastmcp import FastMCP
 from fastmcp.dependencies import CurrentContext
 from fastmcp.server.context import Context
@@ -28,7 +30,9 @@ def register_docker_diag_tools(mcp: FastMCP, docker_client: DockerClient, app_st
             app_state.permission_checker.check(key_config, "network:list")
         except PermissionDeniedError as e:
             return [{"success": False, "error": str(e)}]
-        return docker_client.list_networks()
+        return await asyncio.to_thread(
+            docker_client.list_networks
+        )
 
     @mcp.tool
     async def list_volumes(
@@ -45,4 +49,6 @@ def register_docker_diag_tools(mcp: FastMCP, docker_client: DockerClient, app_st
             app_state.permission_checker.check(key_config, "volume:list")
         except PermissionDeniedError as e:
             return [{"success": False, "error": str(e)}]
-        return docker_client.list_volumes()
+        return await asyncio.to_thread(
+            docker_client.list_volumes
+        )

@@ -45,16 +45,53 @@ class AuditLogger:
         items = list(self._memory)
         return items[-n:] if n else items
 
+    def _load_from_disk(self) -> list[AuditEntry]:
+        """从磁盘 JSONL 文件加载所有审计日志"""
+        items: list[AuditEntry] = []
+        if not self.log_file.exists():
+            return items
+        try:
+            with self.log_file.open("r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        data = json.loads(line)
+                        items.append(AuditEntry(**data))
+                    except (json.JSONDecodeError, TypeError):
+                        continue
+        except OSError:
+            pass
+        return items
+
     def query(self, source: str | None = None, actor: str | None = None,
               limit: int = 100) -> list[AuditEntry]:
         """查询审计日志
+
+        优先从磁盘读取历史持久化记录，再合并内存中的最新记录，
+        确保容器重启后历史审计日志仍可查询。
 
         Args:
             source: 按来源筛选 ("web" or "mcp")
             actor: 按操作者筛选
             limit: 返回最大数量
         """
-        items = list(self._memory)
+        disk_items = self._load_from_disk()
+        memory_items = list(self._memory)
+        # 合并：磁盘记录为基准，内存记录追加（避免重复）
+        seen = set()
+        items: list[AuditEntry] = []
+        for e in disk_items:
+            key = (e.timestamp, e.source, e.actor, e.action)
+            if key not in seen:
+                seen.add(key)
+                items.append(e)
+        for e in memory_items:
+            key = (e.timestamp, e.source, e.actor, e.action)
+            if key not in seen:
+                seen.add(key)
+                items.append(e)
         if source:
             items = [e for e in items if e.source == source]
         if actor:

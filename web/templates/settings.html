@@ -28,19 +28,14 @@
                 <div class="setting-row">
                     <div class="setting-info">
                         <span class="setting-name">监听地址</span>
-                        <span class="setting-desc">服务监听的网络接口，0.0.0.0 表示所有接口</span>
+                        <span class="setting-desc">服务监听的网络接口。
+💡 建议填 <code>0.0.0.0</code> 监听所有接口（局域网、Tailscale、反代均可访问），
+再通过防火墙/Tailscale ACL/反代认证控制谁能连接。
+留空或 <code>0.0.0.0</code> 表示所有接口；
+如只监听本机，填 <code>127.0.0.1</code>。</span>
                     </div>
                     <div class="setting-control">
                         <input type="text" name="host" value="{{ settings.host }}">
-                    </div>
-                </div>
-                <div class="setting-row">
-                    <div class="setting-info">
-                        <span class="setting-name">绑定网段</span>
-                        <span class="setting-desc">逗号分隔的多个监听地址，留空表示绑定所有接口</span>
-                    </div>
-                    <div class="setting-control">
-                        <input type="text" name="bind_addresses" value="{{ ','.join(settings.bind_addresses) if settings.bind_addresses else '' }}">
                     </div>
                 </div>
                 <div class="setting-row">

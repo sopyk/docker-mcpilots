@@ -1,6 +1,8 @@
 """容器管理 MCP Tools"""
 from __future__ import annotations
 
+import asyncio
+
 from fastmcp import FastMCP
 from fastmcp.dependencies import CurrentContext
 from fastmcp.server.context import Context
@@ -32,7 +34,9 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient, app_stat
             app_state.permission_checker.check(key_config, "container:list")
         except PermissionDeniedError as e:
             return [{"success": False, "error": str(e)}]
-        return docker_client.list_containers(status=status, all=all)
+        return await asyncio.to_thread(
+            docker_client.list_containers, status=status, all=all
+        )
 
     @mcp.tool
     async def inspect_container(
@@ -51,7 +55,9 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient, app_stat
             app_state.permission_checker.check(key_config, "container:inspect", container_name=container_id)
         except PermissionDeniedError as e:
             return {"success": False, "error": str(e)}
-        return docker_client.get_container(container_id)
+        return await asyncio.to_thread(
+            docker_client.get_container, container_id
+        )
 
     @mcp.tool
     async def start_container(
@@ -70,7 +76,9 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient, app_stat
             app_state.permission_checker.check(key_config, "container:start", container_name=container_id)
         except PermissionDeniedError as e:
             return {"success": False, "error": str(e)}
-        return docker_client.start_container(container_id)
+        return await asyncio.to_thread(
+            docker_client.start_container, container_id
+        )
 
     @mcp.tool
     async def stop_container(
@@ -89,7 +97,9 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient, app_stat
             app_state.permission_checker.check(key_config, "container:stop", container_name=container_id)
         except PermissionDeniedError as e:
             return {"success": False, "error": str(e)}
-        return docker_client.stop_container(container_id)
+        return await asyncio.to_thread(
+            docker_client.stop_container, container_id
+        )
 
     @mcp.tool
     async def restart_container(
@@ -108,7 +118,9 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient, app_stat
             app_state.permission_checker.check(key_config, "container:restart", container_name=container_id)
         except PermissionDeniedError as e:
             return {"success": False, "error": str(e)}
-        return docker_client.restart_container(container_id)
+        return await asyncio.to_thread(
+            docker_client.restart_container, container_id
+        )
 
     @mcp.tool
     async def get_container_logs(
@@ -135,7 +147,8 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient, app_stat
             app_state.permission_checker.check(key_config, "container:logs", container_name=container_id)
         except PermissionDeniedError as e:
             return {"success": False, "error": str(e)}
-        return docker_client.get_container_logs(
+        return await asyncio.to_thread(
+            docker_client.get_container_logs,
             container_id,
             tail=tail,
             since=since,
@@ -160,7 +173,9 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient, app_stat
             app_state.permission_checker.check(key_config, "container:stats", container_name=container_id)
         except PermissionDeniedError as e:
             return {"success": False, "error": str(e)}
-        return docker_client.get_container_stats(container_id)
+        return await asyncio.to_thread(
+            docker_client.get_container_stats, container_id
+        )
 
     @mcp.tool
     async def remove_container(
@@ -181,7 +196,9 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient, app_stat
             app_state.permission_checker.check(key_config, "container:remove", container_name=container_id)
         except PermissionDeniedError as e:
             return {"success": False, "error": str(e)}
-        return docker_client.remove_container(container_id, force=force)
+        return await asyncio.to_thread(
+            docker_client.remove_container, container_id, force=force
+        )
 
     # ── 容器诊断工具 ──
 
@@ -202,7 +219,9 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient, app_stat
             app_state.permission_checker.check(key_config, "container:inspect", container_name=container_id)
         except PermissionDeniedError as e:
             return {"success": False, "error": str(e)}
-        return docker_client.get_container_processes(container_id)
+        return await asyncio.to_thread(
+            docker_client.get_container_processes, container_id
+        )
 
     @mcp.tool
     async def get_container_health(
@@ -223,7 +242,9 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient, app_stat
             app_state.permission_checker.check(key_config, "container:inspect", container_name=container_id)
         except PermissionDeniedError as e:
             return {"success": False, "error": str(e)}
-        return docker_client.get_container_health(container_id)
+        return await asyncio.to_thread(
+            docker_client.get_container_health, container_id
+        )
 
     @mcp.tool
     async def get_container_networks(
@@ -244,7 +265,9 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient, app_stat
             app_state.permission_checker.check(key_config, "container:inspect", container_name=container_id)
         except PermissionDeniedError as e:
             return {"success": False, "error": str(e)}
-        return docker_client.get_container_networks(container_id)
+        return await asyncio.to_thread(
+            docker_client.get_container_networks, container_id
+        )
 
     @mcp.tool
     async def get_container_mounts(
@@ -265,7 +288,9 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient, app_stat
             app_state.permission_checker.check(key_config, "container:inspect", container_name=container_id)
         except PermissionDeniedError as e:
             return {"success": False, "error": str(e)}
-        return docker_client.get_container_mounts(container_id)
+        return await asyncio.to_thread(
+            docker_client.get_container_mounts, container_id
+        )
 
     @mcp.tool
     async def get_container_changes(
@@ -286,4 +311,6 @@ def register_container_tools(mcp: FastMCP, docker_client: DockerClient, app_stat
             app_state.permission_checker.check(key_config, "container:inspect", container_name=container_id)
         except PermissionDeniedError as e:
             return {"success": False, "error": str(e)}
-        return docker_client.get_container_changes(container_id)
+        return await asyncio.to_thread(
+            docker_client.get_container_changes, container_id
+        )

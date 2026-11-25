@@ -3,15 +3,23 @@
 from __future__ import annotations
 
 from fastmcp import FastMCP
+from fastmcp.dependencies import CurrentContext
+from fastmcp.server.context import Context
 
 from core.audit import AuditLogger
+from core.auth import PermissionDeniedError
 
 
 def register_audit_tools(mcp: FastMCP, app_state) -> None:
     """注册审计日志 MCP Tools"""
 
     @mcp.tool
-    def list_audit_logs(source: str | None = None, actor: str | None = None, limit: int = 100) -> list[dict]:
+    async def list_audit_logs(
+        source: str | None = None,
+        actor: str | None = None,
+        limit: int = 100,
+        ctx: Context = CurrentContext(),
+    ) -> list[dict]:
         """查询审计日志（仅 admin 角色可调用）。
 
         Args:
@@ -22,6 +30,14 @@ def register_audit_tools(mcp: FastMCP, app_state) -> None:
         Returns:
             审计日志列表，每项包含 timestamp/source/actor/action/target/success 字段
         """
+        key_config = await ctx.get_state("auth_key_config")
+        if key_config is None:
+            return [{"success": False, "error": "Authentication required"}]
+        try:
+            app_state.permission_checker.check(key_config, "audit:read")
+        except PermissionDeniedError as e:
+            return [{"success": False, "error": str(e)}]
+
         audit = app_state.audit_logger
         if not audit:
             return []

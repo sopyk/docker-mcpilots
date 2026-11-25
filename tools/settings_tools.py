@@ -107,15 +107,6 @@ def update_settings_from_form(settings_yaml: str, form_data: dict[str, Any], app
         if tz:
             data["timezone"] = tz
 
-    if "bind_addresses" in form_data:
-        val = str(form_data["bind_addresses"]).strip()
-        if val:
-            # 将逗号分隔的地址转换为列表并保存
-            server["bind_addresses"] = [a.strip() for a in val.split(",") if a.strip()]
-        else:
-            # 空字符串表示恢复默认（绑定所有接口）
-            server.pop("bind_addresses", None)
-
     _save_settings_yaml(settings_yaml, data)
 
     if app_state is not None:
